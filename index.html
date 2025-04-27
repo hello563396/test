@@ -1,69 +1,47 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Iframe Flooder Tool</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      padding: 20px;
-      background: #f4f7fc;
-      color: #333;
-    }
-
-    h1 {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #f5f5f5;
       text-align: center;
-      color: #4CAF50;
+      padding: 40px;
     }
-
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-    }
-
     input, button {
+      margin: 10px;
       padding: 12px;
-      width: 100%;
-      margin: 10px 0;
-      font-size: 16px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
     }
-
-    input:focus, button:focus {
-      outline: none;
-      border-color: #4CAF50;
+    input {
+      width: 220px;
+      background: #1e1e1e;
+      color: white;
     }
-
     button {
       background-color: #4CAF50;
       color: white;
-      border: none;
       cursor: pointer;
+      transition: 0.3s;
     }
-
-    button.stop {
-      background-color: #f44336;
-    }
-
     button:hover {
       opacity: 0.9;
     }
-
-    .status {
-      text-align: center;
-      font-weight: bold;
-      color: #4CAF50;
-      margin-top: 20px;
+    button.stop {
+      background-color: #e53935;
     }
-
+    #status {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #03dac6;
+    }
     #iframeContainer {
       display: none;
     }
@@ -71,51 +49,66 @@
 </head>
 <body>
 
-  <h1>Iframe Flooder Tool</h1>
+  <h1>Custom Iframe Flooder</h1>
 
-  <div class="container">
-    <label for="targetUrl">Target URL:</label>
-    <input type="text" id="targetUrl" value="https://www.wikipedia.org">
-
-    <label for="iframeCount">Number of Iframes:</label>
-    <input type="number" id="iframeCount" value="50">
-
-    <button onclick="startFlood()">Start Flooding</button>
-    <button class="stop" onclick="stopFlood()">Stop Flooding</button>
-
-    <div class="status" id="status">Ready</div>
-
-    <div id="iframeContainer"></div>
+  <div>
+    <input type="number" id="iframeCount" placeholder="Iframes per spawn" value="50" min="1">
+    <input type="number" id="spawnRate" placeholder="Interval (ms)" value="200" min="10">
   </div>
 
+  <button onclick="startFlood()">Start Flood</button>
+  <button class="stop" onclick="stopFlood()">Stop Flood</button>
+
+  <div id="status">Status: Idle</div>
+  <div id="iframeContainer"></div>
+
   <script>
-    let flooding = false;
+    let intervalId = null;
+    let isFlooding = false;
+
+    const targets = [
+      "https://127.0.0.1/",
+      "https://localhost/",
+      "https://0.0.0.0/",
+      "https://example.invalid/",
+      "https://notarealwebsite.abc/",
+      "https://nohost.local/",
+      "https://thisdoesnotexist.tld/"
+    ];
+
+    function getRandomTarget() {
+      const index = Math.floor(Math.random() * targets.length);
+      return targets[index];
+    }
 
     function startFlood() {
-      if (flooding) return;
-      flooding = true;
-      document.getElementById('status').innerText = "Flooding in progress...";
+      if (isFlooding) return;
+      isFlooding = true;
 
-      const container = document.getElementById('iframeContainer');
-      container.innerHTML = ""; // Clear any previous iframes
+      const count = parseInt(document.getElementById('iframeCount').value) || 50;
+      const interval = parseInt(document.getElementById('spawnRate').value) || 200;
 
-      const target = document.getElementById('targetUrl').value;
-      const count = parseInt(document.getElementById('iframeCount').value);
+      document.getElementById('status').innerText = `Status: Flooding ${count} iframes every ${interval}ms`;
 
-      for (let i = 0; i < count; i++) {
-        const iframe = document.createElement('iframe');
-        iframe.src = target;
-        iframe.style.width = "0";
-        iframe.style.height = "0";
-        iframe.style.border = "none";
-        container.appendChild(iframe);
-      }
+      intervalId = setInterval(() => {
+        const container = document.getElementById('iframeContainer');
+        for (let i = 0; i < count; i++) {
+          const iframe = document.createElement('iframe');
+          iframe.src = getRandomTarget() + "?cacheBust=" + Math.random();
+          iframe.style.width = "0px";
+          iframe.style.height = "0px";
+          iframe.style.border = "none";
+          container.appendChild(iframe);
+        }
+      }, interval);
     }
 
     function stopFlood() {
-      flooding = false;
+      if (!isFlooding) return;
+      clearInterval(intervalId);
+      isFlooding = false;
       document.getElementById('iframeContainer').innerHTML = "";
-      document.getElementById('status').innerText = "Flooding stopped.";
+      document.getElementById('status').innerText = "Status: Flood stopped.";
     }
   </script>
 
