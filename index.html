@@ -126,7 +126,6 @@
       }
     }
   </style>
-  <!--[if lte IE 9]><script>document.createElement('canvas');</script><![endif]-->
 </head>
 <body>
   <canvas id="particleCanvas"></canvas>
@@ -135,7 +134,7 @@
     <div class="terminal-content" id="terminalContent">
       <div class="command">Initializing total system domination...</div>
       <div class="command">OS detected: <span id="osInfo">Probing...</span></div>
-      <div class="command">System scan: <span id="systemScan">Raping the device...</span></div>
+      <div class="command">System scan: <span id="systemScan">Scanning the device...</span></div>
       <div class="status-bar">Status: <span id="statusBar">Idle | Stealth: Absolute | Risk: None</span></div>
       <div class="command">Commands: toggle [ext_id], selfdestruct, help</div>
     </div>
@@ -146,77 +145,76 @@
   </div>
 
   <script>
-    // Polyfills for legacy browsers
-    if (!window.addEventListener) window.addEventListener = function(e, f) { window.attachEvent('on' + e, f); };
-    if (!Array.prototype.filter) Array.prototype.filter = function(f) { var r = []; for (var Assy i = 0; i < this.length; i++) if (f(this[i])) r.push(this[i]); return r; };
-
     // Particle Background
     const canvas = document.getElementById('particleCanvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const particles = [];
-    class Particle {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 1;
-        this.speedX = Math.random() * 1 - 0.5;
-        this.speedY = Math.random() * 1 - 0.5;
-        this.life = Math.random() * 100 + 50;
-      }
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        this.life--;
-        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-      }
-      draw() {
-        ctx.fillStyle = `rgba(255, 51, 51, ${this.life / 100})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-    function initParticles() {
-      for (let i = 0; i < 100; i++) {
-        particles.push(new Particle());
-      }
-    }
-    function animateParticles() {
-      if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < particles.length; i++) {
-          particles[i].update();
-          particles[i].draw();
-          if (particles[i].life <= 0) {
-            particles.splice(i, 1);
-            particles.push(new Particle());
-            i--;
-          }
-        }
-      }
-      requestAnimationFrame(animateParticles);
-    }
-    window.addEventListener('resize', () => {
+    if (canvas && ctx) {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-    });
-    initParticles();
-    animateParticles();
+      const particles = [];
 
-    // Sound Effects
-    const clickSound = new Audio('data:audio/mp3;base64,/+MYxAAAAA...'); // Placeholder
-    const typeSound = new Audio('data:audio/mp3;base64,/+MYxAAAAA...'); // Placeholder
-    if (!clickSound.play) clickSound.play = function() {};
+      class Particle {
+        constructor() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.size = Math.random() * 2 + 1;
+          this.speedX = Math.random() * 1 - 0.5;
+          this.speedY = Math.random() * 1 - 0.5;
+          this.life = Math.random() * 100 + 50;
+        }
+        update() {
+          this.x += this.speedX;
+          this.y += this.speedY;
+          this.life--;
+          if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+          if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+        }
+        draw() {
+          ctx.fillStyle = `rgba(255, 51, 51, ${this.life / 100})`;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
 
-    // Web Worker or Fallback Thread
+      function initParticles() {
+        for (let i = 0; i < 100; i++) {
+          particles.push(new Particle());
+        }
+      }
+
+      function animateParticles() {
+        if (ctx) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          for (let i = 0; i < particles.length; i++) {
+            particles[i].update();
+            particles[i].draw();
+            if (particles[i].life <= 0) {
+              particles.splice(i, 1);
+              particles.push(new Particle());
+              i--;
+            }
+          }
+          requestAnimationFrame(animateParticles);
+        }
+      }
+
+      window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+
+      initParticles();
+      animateParticles();
+    }
+
+    // Web Worker for device scanning
     const scanWorker = window.Worker ? new Worker(URL.createObjectURL(new Blob([`
       self.onmessage = function(e) {
         const deviceProfile = e.data.deviceProfile;
         const ua = navigator.userAgent.toLowerCase();
         let os = 'Unknown', version = '0', build = '', edition = '', kernel = '', hotfixes = '', tpm = '', secureBootKey = '', drivers = '', uefiVars = '', samData = '', kernelLogs = '', bootSector = '', shadowCopy = '', hypervisor = '';
+
         if (ua.includes('windows')) {
           os = 'Windows';
           if (ua.includes('xp')) { version = 'XP'; build = '5.1.2600'; edition = 'Professional'; kernel = '5.1'; hotfixes = 'SP3'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'ntoskrnl.exe, hal.dll'; uefiVars = 'N/A'; samData = 'Admin:500'; kernelLogs = 'Boot:Success'; bootSector = 'FAT32'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
@@ -256,6 +254,7 @@
           os = 'ChromeOS';
           version = '128.0.6613.84'; build = 'N/A'; edition = 'Stable'; kernel = '5.15.0'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'chromeos-kernel'; uefiVars = 'SecureBoot=1'; samData = 'chronos:1000'; kernelLogs = 'Boot:Success'; bootSector = 'ext4'; shadowCopy = 'N/A'; hypervisor = 'N/A';
         }
+
         deviceProfile.os = os;
         deviceProfile.version = version;
         deviceProfile.build = build;
@@ -272,89 +271,9 @@
         deviceProfile.shadowCopy = shadowCopy;
         deviceProfile.hypervisor = hypervisor;
 
-        deviceProfile.cores = 16;
-        deviceProfile.memory = 8;
-        deviceProfile.cpu = 'Intel Core i9-12900K';
-        deviceProfile.microcode = '0x1C';
-        deviceProfile.stepping = 'R0';
-        deviceProfile.cpuVulns = ['Spectre', 'Meltdown', 'Foreshadow', 'MDS'];
-        deviceProfile.cpuCache = 'L1:384KB, L2:2MB, L3:30MB';
-        deviceProfile.cpuClock = 'Base:3.2GHz, Boost:5.2GHz';
-        deviceProfile.cpuTemp = '45C';
-        deviceProfile.cpuDie = 'Alder Lake-S, 10nm';
-        deviceProfile.gpu = 'NVIDIA RTX 3080';
-        deviceProfile.gpuVram = '8GB';
-        deviceProfile.gpuDrivers = 'NVIDIA 536.23';
-        deviceProfile.gpuShaders = 'DirectX 12';
-        deviceProfile.gpuComputeUnits = '48';
-        deviceProfile.gpuClock = 'Base:1.5GHz, Boost:1.8GHz';
-        deviceProfile.gpuTemp = '55C';
-        deviceProfile.gpuDie = 'Ampere, 8nm';
-        deviceProfile.disk = '1024GB';
-        deviceProfile.diskFirmware = 'SSD v2.1';
-        deviceProfile.diskSmart = 'Health:Good, Errors:0, Temp:35C';
-        deviceProfile.diskSpeeds = 'Read:7000MB/s, Write:5000MB/s';
-        deviceProfile.diskEncryption = 'BitLocker:Enabled';
-        deviceProfile.diskRaid = 'RAID0:2xSamsung 990 Pro';
-        deviceProfile.partitions = 'C:NTFS, D:exFAT, E:NTFS';
-        deviceProfile.firmware = 'UEFI 2.8';
-        deviceProfile.firmwareBackdoors = 'None';
-        deviceProfile.biosHash = 'SHA256:deadbeef1234...';
-        deviceProfile.chipset = 'Intel Z690';
-        deviceProfile.motherboard = 'ASUS ROG Strix Z690-E';
-        deviceProfile.tpmFirmware = '1.3.2';
-        deviceProfile.battery = 'N/A (Desktop)';
-        deviceProfile.fanSpeeds = 'CPU:1200RPM, GPU:1500RPM, Case:800RPM';
-        deviceProfile.fanCurves = 'PWM:Linear, 30%-100%';
-        deviceProfile.pciDevices = 'NIC:Intel I225-V, GPU:NVIDIA RTX 3080, USB:ASMedia ASM3142, NVMe:Samsung 990 Pro';
-        deviceProfile.usbDevices = 'Mouse:Logitech G502, Keyboard:Corsair K95, Flash Drive:SanDisk 128GB';
-        deviceProfile.peripherals = 'Webcam:Logitech C920, Mic:Blue Yeti, Speakers:Edifier R1280T';
-        deviceProfile.securitySoftware = 'Windows Defender';
-        deviceProfile.monitoringTools = 'Sysmon:Enabled, EDR:Carbon Black';
-        deviceProfile.kernelModules = 'ntoskrnl.exe, hal.dll, tcpip.sys, ksecdd.sys';
-        deviceProfile.kernelProtections = 'KPP:Enabled, ASLR:Enabled, SecureBoot:Enabled';
-        deviceProfile.processes = 'chrome.exe, svchost.exe, explorer.exe, cron, init';
-        deviceProfile.threads = 'TID:1234, TID:5678, TID:9012';
-        deviceProfile.handles = 'Handle:0x123, Handle:0x456, Handle:0x789';
-        deviceProfile.interrupts = 'IRQ:5, IRQ:7, IRQ:11';
-        deviceProfile.memoryRegions = '0x7FFF:Passwords(Admin:Pass123!), 0x8000:Tokens(JWT:abc.xyz)';
-        deviceProfile.pageTables = 'Active:1024, Inactive:512';
-        deviceProfile.swapSpace = 'Used:2GB, Total:4GB';
-        deviceProfile.memoryCompression = 'Enabled:LZ4';
-        deviceProfile.memoryMalware = 'None';
-        deviceProfile.network = { 
-          status: 'Open', 
-          vpn: 'Unlikely', 
-          dns: 'Cloudflare', 
-          gateway: '192.168.1.1', 
-          mtu: '1500', 
-          routerFirmware: 'ASUS RT-AX88U v3.0.0.4', 
-          hiddenTunnels: 'None', 
-          switchInfo: 'TP-Link TL-SG108', 
-          ip: '192.168.1.101', 
-          proxy: 'None', 
-          packetInjection: 'Active',
-          arpTable: '192.168.1.1:00:1A:2B:3C:4D:5E, 192.168.1.100:00:1B:2C:3D:4E:5F',
-          connections: 'TCP:192.168.1.101:443->1.1.1.1:HTTPS, UDP:192.168.1.101:53->1.1.1.1:DNS',
-          ports: '80:Open, 443:Open, 445:Filtered',
-          vlan: 'VLAN10:Enabled',
-          qos: 'Priority:High (VoIP), Low (Torrent)',
-          latency: '15ms',
-          nearbyDevices: '192.168.1.100 (SmartTV), 192.168.1.102 (Laptop)',
-          interceptedPackets: 'HTTP:GET /login, HTTPS:TLS Handshake'
-        };
-        deviceProfile.fakeHardware = 'Spoofed:CPU-Z, GPU-Z';
-        deviceProfile.logNoise = 'Injected:1000 fake entries';
-        deviceProfile.networkNoise = 'Injected:Random UDP packets';
-        deviceProfile.cryptoKeys = 'RSA:2048-bit (PrivKey:deadbeef...), AES:256-bit (Key:1234abcd...)';
-        deviceProfile.cookies = 'SessionID:abc123, AuthToken:xyz789';
-        deviceProfile.clipboard = 'LastCopied:CreditCard:1234-5678-9012-3456';
-        deviceProfile.fingerprint = btoa(\`\${deviceProfile.cores}-\${deviceProfile.memory}-\${deviceProfile.cpu}-\${deviceProfile.gpu}-\${Date.now()}\`).slice(0, 16);
-        deviceProfile.macAddress = '00:1A:2B:3C:4D:5E';
-        deviceProfile.isSandbox = 'Clean';
         self.postMessage({ deviceProfile });
       };
-    `], { type: 'application/javascript' })) : { postMessage: (data) => scanDeviceFallback(data.deviceProfile) };
+    `], { type: 'application/javascript' }))) : null;
 
     const terminalContent = document.getElementById('terminalContent');
     const extensionIdInput = document.getElementById('extensionId');
@@ -365,7 +284,6 @@
     let historyIndex = -1;
     let knownExtensionIds = ['pganeibhckoanndahmnfggfoeofncnii', 'abcdefghijklnmopqrstuvwxyz123456'];
     let deviceProfile = { network: {} };
-    const stealthMode = true;
     let detectionRisk = 'None';
     let aiConfidence = 1.0;
     const scanCache = new Map();
@@ -376,7 +294,6 @@
       div.textContent = text;
       terminalContent.appendChild(div);
       terminalContent.scrollTop = terminalContent.scrollHeight;
-      if (typeSound.play) typeSound.play();
     }
 
     function updateStatusBar() {
@@ -386,6 +303,7 @@
     function detectOS() {
       const ua = navigator.userAgent.toLowerCase();
       let os = 'Unknown', version = '0', build = '', edition = '', kernel = '', hotfixes = '', tpm = '', secureBootKey = '', drivers = '', uefiVars = '', samData = '', kernelLogs = '', bootSector = '', shadowCopy = '', hypervisor = '';
+
       if (ua.includes('windows')) {
         os = 'Windows';
         if (ua.includes('xp')) { version = 'XP'; build = '5.1.2600'; edition = 'Professional'; kernel = '5.1'; hotfixes = 'SP3'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'ntoskrnl.exe, hal.dll'; uefiVars = 'N/A'; samData = 'Admin:500'; kernelLogs = 'Boot:Success'; bootSector = 'FAT32'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
@@ -425,6 +343,7 @@
         os = 'ChromeOS';
         version = '128.0.6613.84'; build = 'N/A'; edition = 'Stable'; kernel = '5.15.0'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'chromeos-kernel'; uefiVars = 'SecureBoot=1'; samData = 'chronos:1000'; kernelLogs = 'Boot:Success'; bootSector = 'ext4'; shadowCopy = 'N/A'; hypervisor = 'N/A';
       }
+
       osInfoSpan.textContent = `${os} ${version} (Build: ${build}, Edition: ${edition}, Kernel: ${kernel}, Hotfixes: ${hotfixes}, TPM: ${tpm}, SecureBootKey: ${secureBootKey}, Drivers: ${drivers}, UEFI Vars: ${uefiVars}, SAM: ${samData}, Kernel Logs: ${kernelLogs}, Boot Sector: ${bootSector}, Shadow Copy: ${shadowCopy}, Hypervisor: ${hypervisor})`;
       deviceProfile.os = os;
       deviceProfile.version = version;
@@ -442,94 +361,6 @@
       deviceProfile.shadowCopy = shadowCopy;
       deviceProfile.hypervisor = hypervisor;
     }
-    function scanDeviceFallback(profile) {
-      profile.cores = 16;
-      profile.memory = 8;
-      profile.cpu = 'Intel Core i9-12900K';
-      profile.microcode = '0x1C';
-      profile.stepping = 'R0';
-      profile.cpuVulns = ['Spectre', 'Meltdown', 'Foreshadow', 'MDS'];
-      profile.cpuCache = 'L1:384KB, L2:2MB, L3:30MB';
-      profile.cpuClock = 'Base:3.2GHz, Boost:5.2GHz';
-      profile.cpuTemp = '45C';
-      profile.cpuDie = 'Alder Lake-S, 10nm';
-      profile.gpu = 'NVIDIA RTX 3080';
-      profile.gpuVram = '8GB';
-      profile.gpuDrivers = 'NVIDIA 536.23';
-      profile.gpuShaders = 'DirectX 12';
-      profile.gpuComputeUnits = '48';
-      profile.gpuClock = 'Base:1.5GHz, Boost:1.8GHz';
-      profile.gpuTemp = '55C';
-      profile.gpuDie = 'Ampere, 8nm';
-      profile.disk = '1024GB';
-      profile.diskFirmware = 'SSD v2.1';
-      profile.diskSmart = 'Health:Good, Errors:0, Temp:35C';
-      profile.diskSpeeds = 'Read:7000MB/s, Write:5000MB/s';
-      profile.diskEncryption = 'BitLocker:Enabled';
-      profile.diskRaid = 'RAID0:2xSamsung 990 Pro';
-      profile.partitions = 'C:NTFS, D:exFAT, E:NTFS';
-      profile.firmware = 'UEFI 2.8';
-      profile.firmwareBackdoors = 'None';
-      profile.biosHash = 'SHA256:deadbeef1234...';
-      profile.chipset = 'Intel Z690';
-      profile.motherboard = 'ASUS ROG Strix Z690-E';
-      profile.tpmFirmware = '1.3.2';
-      profile.battery = 'N/A (Desktop)';
-      profile.fanSpeeds = 'CPU:1200RPM, GPU:1500RPM, Case:800RPM';
-      profile.fanCurves = 'PWM:Linear, 30%-100%';
-      profile.pciDevices = 'NIC:Intel I225-V, GPU:NVIDIA RTX 3080, USB:ASMedia ASM3142, NVMe:Samsung 990 Pro';
-      profile.usbDevices = 'Mouse:Logitech G502, Keyboard:Corsair K95, Flash Drive:SanDisk 128GB';
-      profile.peripherals = 'Webcam:Logitech C920, Mic:Blue Yeti, Speakers:Edifier R1280T';
-      profile.securitySoftware = 'Windows Defender';
-      profile.monitoringTools = 'Sysmon:Enabled, EDR:Carbon Black';
-      profile.kernelModules = 'ntoskrnl.exe, hal.dll, tcpip.sys, ksecdd.sys';
-      profile.kernelProtections = 'KPP:Enabled, ASLR:Enabled, SecureBoot:Enabled';
-      profile.processes = 'chrome.exe, svchost.exe, explorer.exe, cron, init';
-      profile.threads = 'TID:1234, TID:5678, TID:9012';
-      profile.handles = 'Handle:0x123, Handle:0x456, Handle:0x789';
-      profile.interrupts = 'IRQ:5, IRQ:7, IRQ:11';
-      profile.memoryRegions = '0x7FFF:Passwords(Admin:Pass123!), 0x8000:Tokens(JWT:abc.xyz)';
-      profile.pageTables = 'Active:1024, Inactive:512';
-      profile.swapSpace = 'Used:2GB, Total:4GB';
-      profile.memoryCompression = 'Enabled:LZ4';
-      profile.memoryMalware = 'None';
-      profile.network = { 
-        status: 'Open', 
-        vpn: 'Unlikely', 
-        dns: 'Cloudflare', 
-        gateway: '192.168.1.1', 
-        mtu: '1500', 
-        routerFirmware: 'ASUS RT-AX88U v3.0.0.4', 
-        hiddenTunnels: 'None', 
-        switchInfo: 'TP-Link TL-SG108', 
-        ip: '192.168.1.101', 
-        proxy: 'None', 
-        packetInjection: 'Active',
-        arpTable: '192.168.1.1:00:1A:2B:3C:4D:5E, 192.168.1.100:00:1B:2C:3D:4E:5F',
-        connections: 'TCP:192.168.1.101:443->1.1.1.1:HTTPS, UDP:192.168.1.101:53->1.1.1.1:DNS',
-        ports: '80:Open, 443:Open, 445:Filtered',
-        vlan: 'VLAN10:Enabled',
-        qos: 'Priority:High (VoIP), Low (Torrent)',
-        latency: '15ms',
-        nearbyDevices: '192.168.1.100 (SmartTV), 192.168.1.102 (Laptop)',
-        interceptedPackets: 'HTTP:GET /login, HTTPS:TLS Handshake'
-      };
-      profile.fakeHardware = 'Spoofed:CPU-Z, GPU-Z';
-      profile.logNoise = 'Injected:1000 fake entries';
-      profile.networkNoise = 'Injected:Random UDP packets';
-      profile.cryptoKeys = 'RSA:2048-bit (PrivKey:deadbeef...), AES:256-bit (Key:1234abcd...)';
-      profile.cookies = 'SessionID:abc123, AuthToken:xyz789';
-      profile.clipboard = 'LastCopied:CreditCard:1234-5678-9012-3456';
-      profile.fingerprint = btoa(`${profile.cores}-${profile.memory}-${profile.cpu}-${profile.gpu}-${Date.now()}`).slice(0, 16);
-      profile.macAddress = '00:1A:2B:3C:4D:5E';
-      profile.isSandbox = 'Clean';
-      deviceProfile = profile;
-      scanCache.set('latest', deviceProfile);
-      systemScanSpan.textContent = `CPU: ${deviceProfile.cpu} (${deviceProfile.cores} cores, Microcode: ${deviceProfile.microcode}, Stepping: ${deviceProfile.stepping}, Vulns: ${deviceProfile.cpuVulns.join(',')}, Cache: ${deviceProfile.cpuCache}, Clock: ${deviceProfile.cpuClock}, Temp: ${deviceProfile.cpuTemp}, Die: ${deviceProfile.cpuDie}) | Memory: ${deviceProfile.memory}GB (Regions: ${deviceProfile.memoryRegions}, Page Tables: ${deviceProfile.pageTables}, Swap: ${deviceProfile.swapSpace}, Compression: ${deviceProfile.memoryCompression}, Malware: ${deviceProfile.memoryMalware}) | GPU: ${deviceProfile.gpu} (VRAM: ${deviceProfile.gpuVram}, Drivers: ${deviceProfile.gpuDrivers}, Shaders: ${deviceProfile.gpuShaders}, Compute Units: ${deviceProfile.gpuComputeUnits}, Clock: ${deviceProfile.gpuClock}, Temp: ${deviceProfile.gpuTemp}, Die: ${deviceProfile.gpuDie}) | Disk: ${deviceProfile.disk} (Firmware: ${deviceProfile.diskFirmware}, SMART: ${deviceProfile.diskSmart}, Speeds: ${deviceProfile.diskSpeeds}, Encryption: ${deviceProfile.diskEncryption}, RAID: ${deviceProfile.diskRaid}, Partitions: ${deviceProfile.partitions}) | Firmware: ${deviceProfile.firmware} (Backdoors: ${deviceProfile.firmwareBackdoors}, BIOS Hash: ${deviceProfile.biosHash}) | Chipset: ${deviceProfile.chipset} | Motherboard: ${deviceProfile.motherboard} | TPM Firmware: ${deviceProfile.tpmFirmware} | Battery: ${deviceProfile.battery} | Fan Speeds: ${deviceProfile.fanSpeeds} (Curves: ${deviceProfile.fanCurves}) | PCI Devices: ${deviceProfile.pciDevices} | USB Devices: ${deviceProfile.usbDevices} | Peripherals: ${deviceProfile.peripherals} | Security: ${deviceProfile.securitySoftware} | Monitoring: ${deviceProfile.monitoringTools} | Kernel Modules: ${deviceProfile.kernelModules} | Kernel Protections: ${deviceProfile.kernelProtections} | Processes: ${deviceProfile.processes} | Threads: ${deviceProfile.threads} | Handles: ${deviceProfile.handles} | Interrupts: ${deviceProfile.interrupts} | Network: ${deviceProfile.network.status} (VPN: ${deviceProfile.network.vpn}, DNS: ${deviceProfile.network.dns}, Gateway: ${deviceProfile.network.gateway}, MTU: ${deviceProfile.network.mtu}, Router: ${deviceProfile.network.routerFirmware}, Tunnels: ${deviceProfile.network.hiddenTunnels}, Switch: ${deviceProfile.network.switchInfo}, IP: ${deviceProfile.network.ip}, Proxy: ${deviceProfile.network.proxy}, Injection: ${deviceProfile.network.packetInjection}, ARP: ${deviceProfile.network.arpTable}, Connections: ${deviceProfile.network.connections}, Ports: ${deviceProfile.network.ports}, VLAN: ${deviceProfile.network.vlan}, QoS: ${deviceProfile.network.qos}, Latency: ${deviceProfile.network.latency}, Nearby: ${deviceProfile.network.nearbyDevices}, Packets: ${deviceProfile.network.interceptedPackets}) | Anti-Detection: FakeHW:${deviceProfile.fakeHardware}, LogNoise:${deviceProfile.logNoise}, NetNoise:${deviceProfile.networkNoise} | Crypto Keys: ${deviceProfile.cryptoKeys} | Cookies: ${deviceProfile.cookies} | Clipboard: ${deviceProfile.clipboard} | Sandbox: ${deviceProfile.isSandbox}`;
-      detectionRisk = 'None';
-      updateStatusBar();
-    }
-
     async function scanDevice() {
       if (scanCache.has('latest')) {
         deviceProfile = scanCache.get('latest');
@@ -539,9 +370,90 @@
       }
 
       return new Promise((resolve) => {
-        if (scanWorker.postMessage) {
+        if (scanWorker && scanWorker.postMessage) {
           scanWorker.onmessage = (e) => {
             deviceProfile = e.data.deviceProfile;
+            deviceProfile.cores = 16;
+            deviceProfile.memory = 8;
+            deviceProfile.cpu = 'Intel Core i9-12900K';
+            deviceProfile.microcode = '0x1C';
+            deviceProfile.stepping = 'R0';
+            deviceProfile.cpuVulns = ['Spectre', 'Meltdown', 'Foreshadow', 'MDS'];
+            deviceProfile.cpuCache = 'L1:384KB, L2:2MB, L3:30MB';
+            deviceProfile.cpuClock = 'Base:3.2GHz, Boost:5.2GHz';
+            deviceProfile.cpuTemp = '45C';
+            deviceProfile.cpuDie = 'Alder Lake-S, 10nm';
+            deviceProfile.gpu = 'NVIDIA RTX 3080';
+            deviceProfile.gpuVram = '8GB';
+            deviceProfile.gpuDrivers = 'NVIDIA 536.23';
+            deviceProfile.gpuShaders = 'DirectX 12';
+            deviceProfile.gpuComputeUnits = '48';
+            deviceProfile.gpuClock = 'Base:1.5GHz, Boost:1.8GHz';
+            deviceProfile.gpuTemp = '55C';
+            deviceProfile.gpuDie = 'Ampere, 8nm';
+            deviceProfile.disk = '1024GB';
+            deviceProfile.diskFirmware = 'SSD v2.1';
+            deviceProfile.diskSmart = 'Health:Good, Errors:0, Temp:35C';
+            deviceProfile.diskSpeeds = 'Read:7000MB/s, Write:5000MB/s';
+            deviceProfile.diskEncryption = 'BitLocker:Enabled';
+            deviceProfile.diskRaid = 'RAID0:2xSamsung 990 Pro';
+            deviceProfile.partitions = 'C:NTFS, D:exFAT, E:NTFS';
+            deviceProfile.firmware = 'UEFI 2.8';
+            deviceProfile.firmwareBackdoors = 'None';
+            deviceProfile.biosHash = 'SHA256:deadbeef1234...';
+            deviceProfile.chipset = 'Intel Z690';
+            deviceProfile.motherboard = 'ASUS ROG Strix Z690-E';
+            deviceProfile.tpmFirmware = '1.3.2';
+            deviceProfile.battery = 'N/A (Desktop)';
+            deviceProfile.fanSpeeds = 'CPU:1200RPM, GPU:1500RPM, Case:800RPM';
+            deviceProfile.fanCurves = 'PWM:Linear, 30%-100%';
+            deviceProfile.pciDevices = 'NIC:Intel I225-V, GPU:NVIDIA RTX 3080, USB:ASMedia ASM3142, NVMe:Samsung 990 Pro';
+            deviceProfile.usbDevices = 'Mouse:Logitech G502, Keyboard:Corsair K95, Flash Drive:SanDisk 128GB';
+            deviceProfile.peripherals = 'Webcam:Logitech C920, Mic:Blue Yeti, Speakers:Edifier R1280T';
+            deviceProfile.securitySoftware = 'Windows Defender';
+            deviceProfile.monitoringTools = 'Sysmon:Enabled, EDR:Carbon Black';
+            deviceProfile.kernelModules = 'ntoskrnl.exe, hal.dll, tcpip.sys, ksecdd.sys';
+            deviceProfile.kernelProtections = 'KPP:Enabled, ASLR:Enabled, SecureBoot:Enabled';
+            deviceProfile.processes = 'chrome.exe, svchost.exe, explorer.exe, cron, init';
+            deviceProfile.threads = 'TID:1234, TID:5678, TID:9012';
+            deviceProfile.handles = 'Handle:0x123, Handle:0x456, Handle:0x789';
+            deviceProfile.interrupts = 'IRQ:5, IRQ:7, IRQ:11';
+            deviceProfile.memoryRegions = '0x7FFF:Passwords(Admin:Pass123!), 0x8000:Tokens(JWT:abc.xyz)';
+            deviceProfile.pageTables = 'Active:1024, Inactive:512';
+            deviceProfile.swapSpace = 'Used:2GB, Total:4GB';
+            deviceProfile.memoryCompression = 'Enabled:LZ4';
+            deviceProfile.memoryMalware = 'None';
+            deviceProfile.network = { 
+              status: 'Open', 
+              vpn: 'Unlikely', 
+              dns: 'Cloudflare', 
+              gateway: '192.168.1.1', 
+              mtu: '1500', 
+              routerFirmware: 'ASUS RT-AX88U v3.0.0.4', 
+              hiddenTunnels: 'None', 
+              switchInfo: 'TP-Link TL-SG108', 
+              ip: '192.168.1.101', 
+              proxy: 'None', 
+              packetInjection: 'Active',
+              arpTable: '192.168.1.1:00:1A:2B:3C:4D:5E, 192.168.1.100:00:1B:2C:3D:4E:5F',
+              connections: 'TCP:192.168.1.101:443->1.1.1.1:HTTPS, UDP:192.168.1.101:53->1.1.1.1:DNS',
+              ports: '80:Open, 443:Open, 445:Filtered',
+              vlan: 'VLAN10:Enabled',
+              qos: 'Priority:High (VoIP), Low (Torrent)',
+              latency: '15ms',
+              nearbyDevices: '192.168.1.100 (SmartTV), 192.168.1.102 (Laptop)',
+              interceptedPackets: 'HTTP:GET /login, HTTPS:TLS Handshake'
+            };
+            deviceProfile.fakeHardware = 'Spoofed:CPU-Z, GPU-Z';
+            deviceProfile.logNoise = 'Injected:1000 fake entries';
+            deviceProfile.networkNoise = 'Injected:Random UDP packets';
+            deviceProfile.cryptoKeys = 'RSA:2048-bit (PrivKey:deadbeef...), AES:256-bit (Key:1234abcd...)';
+            deviceProfile.cookies = 'SessionID:abc123, AuthToken:xyz789';
+            deviceProfile.clipboard = 'LastCopied:CreditCard:1234-5678-9012-3456';
+            deviceProfile.fingerprint = btoa(`${deviceProfile.cores}-${deviceProfile.memory}-${deviceProfile.cpu}-${deviceProfile.gpu}-${Date.now()}`).slice(0, 16);
+            deviceProfile.macAddress = '00:1A:2B:3C:4D:5E';
+            deviceProfile.isSandbox = 'Clean';
+
             scanCache.set('latest', deviceProfile);
             systemScanSpan.textContent = `CPU: ${deviceProfile.cpu} (${deviceProfile.cores} cores, Microcode: ${deviceProfile.microcode}, Stepping: ${deviceProfile.stepping}, Vulns: ${deviceProfile.cpuVulns.join(',')}, Cache: ${deviceProfile.cpuCache}, Clock: ${deviceProfile.cpuClock}, Temp: ${deviceProfile.cpuTemp}, Die: ${deviceProfile.cpuDie}) | Memory: ${deviceProfile.memory}GB (Regions: ${deviceProfile.memoryRegions}, Page Tables: ${deviceProfile.pageTables}, Swap: ${deviceProfile.swapSpace}, Compression: ${deviceProfile.memoryCompression}, Malware: ${deviceProfile.memoryMalware}) | GPU: ${deviceProfile.gpu} (VRAM: ${deviceProfile.gpuVram}, Drivers: ${deviceProfile.gpuDrivers}, Shaders: ${deviceProfile.gpuShaders}, Compute Units: ${deviceProfile.gpuComputeUnits}, Clock: ${deviceProfile.gpuClock}, Temp: ${deviceProfile.gpuTemp}, Die: ${deviceProfile.gpuDie}) | Disk: ${deviceProfile.disk} (Firmware: ${deviceProfile.diskFirmware}, SMART: ${deviceProfile.diskSmart}, Speeds: ${deviceProfile.diskSpeeds}, Encryption: ${deviceProfile.diskEncryption}, RAID: ${deviceProfile.diskRaid}, Partitions: ${deviceProfile.partitions}) | Firmware: ${deviceProfile.firmware} (Backdoors: ${deviceProfile.firmwareBackdoors}, BIOS Hash: ${deviceProfile.biosHash}) | Chipset: ${deviceProfile.chipset} | Motherboard: ${deviceProfile.motherboard} | TPM Firmware: ${deviceProfile.tpmFirmware} | Battery: ${deviceProfile.battery} | Fan Speeds: ${deviceProfile.fanSpeeds} (Curves: ${deviceProfile.fanCurves}) | PCI Devices: ${deviceProfile.pciDevices} | USB Devices: ${deviceProfile.usbDevices} | Peripherals: ${deviceProfile.peripherals} | Security: ${deviceProfile.securitySoftware} | Monitoring: ${deviceProfile.monitoringTools} | Kernel Modules: ${deviceProfile.kernelModules} | Kernel Protections: ${deviceProfile.kernelProtections} | Processes: ${deviceProfile.processes} | Threads: ${deviceProfile.threads} | Handles: ${deviceProfile.handles} | Interrupts: ${deviceProfile.interrupts} | Network: ${deviceProfile.network.status} (VPN: ${deviceProfile.network.vpn}, DNS: ${deviceProfile.network.dns}, Gateway: ${deviceProfile.network.gateway}, MTU: ${deviceProfile.network.mtu}, Router: ${deviceProfile.network.routerFirmware}, Tunnels: ${deviceProfile.network.hiddenTunnels}, Switch: ${deviceProfile.network.switchInfo}, IP: ${deviceProfile.network.ip}, Proxy: ${deviceProfile.network.proxy}, Injection: ${deviceProfile.network.packetInjection}, ARP: ${deviceProfile.network.arpTable}, Connections: ${deviceProfile.network.connections}, Ports: ${deviceProfile.network.ports}, VLAN: ${deviceProfile.network.vlan}, QoS: ${deviceProfile.network.qos}, Latency: ${deviceProfile.network.latency}, Nearby: ${deviceProfile.network.nearbyDevices}, Packets: ${deviceProfile.network.interceptedPackets}) | Anti-Detection: FakeHW:${deviceProfile.fakeHardware}, LogNoise:${deviceProfile.logNoise}, NetNoise:${deviceProfile.networkNoise} | Crypto Keys: ${deviceProfile.cryptoKeys} | Cookies: ${deviceProfile.cookies} | Clipboard: ${deviceProfile.clipboard} | Sandbox: ${deviceProfile.isSandbox}`;
             detectionRisk = 'None';
@@ -550,7 +462,91 @@
           };
           scanWorker.postMessage({ deviceProfile });
         } else {
-          scanDeviceFallback(deviceProfile);
+          deviceProfile.cores = 16;
+          deviceProfile.memory = 8;
+          deviceProfile.cpu = 'Intel Core i9-12900K';
+          deviceProfile.microcode = '0x1C';
+          deviceProfile.stepping = 'R0';
+          deviceProfile.cpuVulns = ['Spectre', 'Meltdown', 'Foreshadow', 'MDS'];
+          deviceProfile.cpuCache = 'L1:384KB, L2:2MB, L3:30MB';
+          deviceProfile.cpuClock = 'Base:3.2GHz, Boost:5.2GHz';
+          deviceProfile.cpuTemp = '45C';
+          deviceProfile.cpuDie = 'Alder Lake-S, 10nm';
+          deviceProfile.gpu = 'NVIDIA RTX 3080';
+          deviceProfile.gpuVram = '8GB';
+          deviceProfile.gpuDrivers = 'NVIDIA 536.23';
+          deviceProfile.gpuShaders = 'DirectX 12';
+          deviceProfile.gpuComputeUnits = '48';
+          deviceProfile.gpuClock = 'Base:1.5GHz, Boost:1.8GHz';
+          deviceProfile.gpuTemp = '55C';
+          deviceProfile.gpuDie = 'Ampere, 8nm';
+          deviceProfile.disk = '1024GB';
+          deviceProfile.diskFirmware = 'SSD v2.1';
+          deviceProfile.diskSmart = 'Health:Good, Errors:0, Temp:35C';
+          deviceProfile.diskSpeeds = 'Read:7000MB/s, Write:5000MB/s';
+          deviceProfile.diskEncryption = 'BitLocker:Enabled';
+          deviceProfile.diskRaid = 'RAID0:2xSamsung 990 Pro';
+          deviceProfile.partitions = 'C:NTFS, D:exFAT, E:NTFS';
+          deviceProfile.firmware = 'UEFI 2.8';
+          deviceProfile.firmwareBackdoors = 'None';
+          deviceProfile.biosHash = 'SHA256:deadbeef1234...';
+          deviceProfile.chipset = 'Intel Z690';
+          deviceProfile.motherboard = 'ASUS ROG Strix Z690-E';
+          deviceProfile.tpmFirmware = '1.3.2';
+          deviceProfile.battery = 'N/A (Desktop)';
+          deviceProfile.fanSpeeds = 'CPU:1200RPM, GPU:1500RPM, Case:800RPM';
+          deviceProfile.fanCurves = 'PWM:Linear, 30%-100%';
+          deviceProfile.pciDevices = 'NIC:Intel I225-V, GPU:NVIDIA RTX 3080, USB:ASMedia ASM3142, NVMe:Samsung 990 Pro';
+          deviceProfile.usbDevices = 'Mouse:Logitech G502, Keyboard:Corsair K95, Flash Drive:SanDisk 128GB';
+          deviceProfile.peripherals = 'Webcam:Logitech C920, Mic:Blue Yeti, Speakers:Edifier R1280T';
+          deviceProfile.securitySoftware = 'Windows Defender';
+          deviceProfile.monitoringTools = 'Sysmon:Enabled, EDR:Carbon Black';
+          deviceProfile.kernelModules = 'ntoskrnl.exe, hal.dll, tcpip.sys, ksecdd.sys';
+          deviceProfile.kernelProtections = 'KPP:Enabled, ASLR:Enabled, SecureBoot:Enabled';
+          deviceProfile.processes = 'chrome.exe, svchost.exe, explorer.exe, cron, init';
+          deviceProfile.threads = 'TID:1234, TID:5678, TID:9012';
+          deviceProfile.handles = 'Handle:0x123, Handle:0x456, Handle:0x789';
+          deviceProfile.interrupts = 'IRQ:5, IRQ:7, IRQ:11';
+          deviceProfile.memoryRegions = '0x7FFF:Passwords(Admin:Pass123!), 0x8000:Tokens(JWT:abc.xyz)';
+          deviceProfile.pageTables = 'Active:1024, Inactive:512';
+          deviceProfile.swapSpace = 'Used:2GB, Total:4GB';
+          deviceProfile.memoryCompression = 'Enabled:LZ4';
+          deviceProfile.memoryMalware = 'None';
+          deviceProfile.network = { 
+            status: 'Open', 
+            vpn: 'Unlikely', 
+            dns: 'Cloudflare', 
+            gateway: '192.168.1.1', 
+            mtu: '1500', 
+            routerFirmware: 'ASUS RT-AX88U v3.0.0.4', 
+            hiddenTunnels: 'None', 
+            switchInfo: 'TP-Link TL-SG108', 
+            ip: '192.168.1.101', 
+            proxy: 'None', 
+            packetInjection: 'Active',
+            arpTable: '192.168.1.1:00:1A:2B:3C:4D:5E, 192.168.1.100:00:1B:2C:3D:4E:5F',
+            connections: 'TCP:192.168.1.101:443->1.1.1.1:HTTPS, UDP:192.168.1.101:53->1.1.1.1:DNS',
+            ports: '80:Open, 443:Open, 445:Filtered',
+            vlan: 'VLAN10:Enabled',
+            qos: 'Priority:High (VoIP), Low (Torrent)',
+            latency: '15ms',
+            nearbyDevices: '192.168.1.100 (SmartTV), 192.168.1.102 (Laptop)',
+            interceptedPackets: 'HTTP:GET /login, HTTPS:TLS Handshake'
+          };
+          deviceProfile.fakeHardware = 'Spoofed:CPU-Z, GPU-Z';
+          deviceProfile.logNoise = 'Injected:1000 fake entries';
+          deviceProfile.networkNoise = 'Injected:Random UDP packets';
+          deviceProfile.cryptoKeys = 'RSA:2048-bit (PrivKey:deadbeef...), AES:256-bit (Key:1234abcd...)';
+          deviceProfile.cookies = 'SessionID:abc123, AuthToken:xyz789';
+          deviceProfile.clipboard = 'LastCopied:CreditCard:1234-5678-9012-3456';
+          deviceProfile.fingerprint = btoa(`${deviceProfile.cores}-${deviceProfile.memory}-${deviceProfile.cpu}-${deviceProfile.gpu}-${Date.now()}`).slice(0, 16);
+          deviceProfile.macAddress = '00:1A:2B:3C:4D:5E';
+          deviceProfile.isSandbox = 'Clean';
+
+          scanCache.set('latest', deviceProfile);
+          systemScanSpan.textContent = `CPU: ${deviceProfile.cpu} (${deviceProfile.cores} cores, Microcode: ${deviceProfile.microcode}, Stepping: ${deviceProfile.stepping}, Vulns: ${deviceProfile.cpuVulns.join(',')}, Cache: ${deviceProfile.cpuCache}, Clock: ${deviceProfile.cpuClock}, Temp: ${deviceProfile.cpuTemp}, Die: ${deviceProfile.cpuDie}) | Memory: ${deviceProfile.memory}GB (Regions: ${deviceProfile.memoryRegions}, Page Tables: ${deviceProfile.pageTables}, Swap: ${deviceProfile.swapSpace}, Compression: ${deviceProfile.memoryCompression}, Malware: ${deviceProfile.memoryMalware}) | GPU: ${deviceProfile.gpu} (VRAM: ${deviceProfile.gpuVram}, Drivers: ${deviceProfile.gpuDrivers}, Shaders: ${deviceProfile.gpuShaders}, Compute Units: ${deviceProfile.gpuComputeUnits}, Clock: ${deviceProfile.gpuClock}, Temp: ${deviceProfile.gpuTemp}, Die: ${deviceProfile.gpuDie}) | Disk: ${deviceProfile.disk} (Firmware: ${deviceProfile.diskFirmware}, SMART: ${deviceProfile.diskSmart}, Speeds: ${deviceProfile.diskSpeeds}, Encryption: ${deviceProfile.diskEncryption}, RAID: ${deviceProfile.diskRaid}, Partitions: ${deviceProfile.partitions}) | Firmware: ${deviceProfile.firmware} (Backdoors: ${deviceProfile.firmwareBackdoors}, BIOS Hash: ${deviceProfile.biosHash}) | Chipset: ${deviceProfile.chipset} | Motherboard: ${deviceProfile.motherboard} | TPM Firmware: ${deviceProfile.tpmFirmware} | Battery: ${deviceProfile.battery} | Fan Speeds: ${deviceProfile.fanSpeeds} (Curves: ${deviceProfile.fanCurves}) | PCI Devices: ${deviceProfile.pciDevices} | USB Devices: ${deviceProfile.usbDevices} | Peripherals: ${deviceProfile.peripherals} | Security: ${deviceProfile.securitySoftware} | Monitoring: ${deviceProfile.monitoringTools} | Kernel Modules: ${deviceProfile.kernelModules} | Kernel Protections: ${deviceProfile.kernelProtections} | Processes: ${deviceProfile.processes} | Threads: ${deviceProfile.threads} | Handles: ${deviceProfile.handles} | Interrupts: ${deviceProfile.interrupts} | Network: ${deviceProfile.network.status} (VPN: ${deviceProfile.network.vpn}, DNS: ${deviceProfile.network.dns}, Gateway: ${deviceProfile.network.gateway}, MTU: ${deviceProfile.network.mtu}, Router: ${deviceProfile.network.routerFirmware}, Tunnels: ${deviceProfile.network.hiddenTunnels}, Switch: ${deviceProfile.network.switchInfo}, IP: ${deviceProfile.network.ip}, Proxy: ${deviceProfile.network.proxy}, Injection: ${deviceProfile.network.packetInjection}, ARP: ${deviceProfile.network.arpTable}, Connections: ${deviceProfile.network.connections}, Ports: ${deviceProfile.network.ports}, VLAN: ${deviceProfile.network.vlan}, QoS: ${deviceProfile.network.qos}, Latency: ${deviceProfile.network.latency}, Nearby: ${deviceProfile.network.nearbyDevices}, Packets: ${deviceProfile.network.interceptedPackets}) | Anti-Detection: FakeHW:${deviceProfile.fakeHardware}, LogNoise:${deviceProfile.logNoise}, NetNoise:${deviceProfile.networkNoise} | Crypto Keys: ${deviceProfile.cryptoKeys} | Cookies: ${deviceProfile.cookies} | Clipboard: ${deviceProfile.clipboard} | Sandbox: ${deviceProfile.isSandbox}`;
+          detectionRisk = 'None';
+          updateStatusBar();
           resolve();
         }
       });
@@ -567,35 +563,47 @@
 
     function aiSelectStrategy() {
       const persistence = (function() {
-        if (deviceProfile.os === 'Windows' && deviceProfile.version === 'XP') return 'registry';
-        if (deviceProfile.os === 'Windows' && deviceProfile.version === 'Vista') return 'autorun';
-        if (deviceProfile.os === 'Windows' && deviceProfile.version === '7') return 'wmi';
-        if (deviceProfile.os === 'Windows' && deviceProfile.version === '8') return 'scheduled_task';
-        if (deviceProfile.os === 'Windows' && (deviceProfile.version === '10' || deviceProfile.version === '11')) return 'rootkit';
-        if (deviceProfile.os === 'macOS' && deviceProfile.version === 'Tiger') return 'startup_items';
-        if (deviceProfile.os === 'macOS' && deviceProfile.version === 'Leopard') return 'launchd';
-        if (deviceProfile.os === 'macOS' && deviceProfile.version >= 'Sierra') return 'login_items';
+        if (deviceProfile.os === 'Windows') {
+          if (deviceProfile.version === 'XP') return 'registry';
+          if (deviceProfile.version === 'Vista') return 'autorun';
+          if (deviceProfile.version === '7') return 'wmi';
+          if (deviceProfile.version === '8') return 'scheduled_task';
+          if (deviceProfile.version === '10' || deviceProfile.version === '11') return 'rootkit';
+        }
+        if (deviceProfile.os === 'macOS') {
+          if (deviceProfile.version === 'Tiger') return 'startup_items';
+          if (deviceProfile.version === 'Leopard') return 'launchd';
+          if (deviceProfile.version >= 'Sierra') return 'login_items';
+        }
         if (deviceProfile.os === 'Linux') return 'cron';
         if (deviceProfile.os === 'ChromeOS') return 'crontab';
         return 'wmi';
       })();
 
       const obfuscation = (function() {
-        if (deviceProfile.os === 'Windows' && deviceProfile.version === 'XP') return 'msfencode';
-        if (deviceProfile.os === 'Windows' && deviceProfile.version >= 'Vista') return 'veil';
-        if (deviceProfile.os === 'macOS' && deviceProfile.version <= 'Mavericks') return 'mach-o_strip';
-        if (deviceProfile.os === 'macOS' && deviceProfile.version >= 'Yosemite') return 'codesign';
+        if (deviceProfile.os === 'Windows') {
+          if (deviceProfile.version === 'XP') return 'msfencode';
+          if (deviceProfile.version >= 'Vista') return 'veil';
+        }
+        if (deviceProfile.os === 'macOS') {
+          if (deviceProfile.version <= 'Mavericks') return 'mach-o_strip';
+          if (deviceProfile.version >= 'Yosemite') return 'codesign';
+        }
         if (deviceProfile.os === 'Linux') return 'upx';
         if (deviceProfile.os === 'ChromeOS') return 'strip';
         return 'veil';
       })();
 
       const exploitChain = (function() {
-        if (deviceProfile.os === 'Windows' && deviceProfile.version === 'XP') return 'MS03-026 -> MS08-067';
-        if (deviceProfile.os === 'Windows' && deviceProfile.version === '7') return 'CVE-2015-1635 -> CVE-2017-0144';
-        if (deviceProfile.os === 'Windows' && deviceProfile.version === '10') return 'CVE-2021-40449 -> CVE-2022-41082';
-        if (deviceProfile.os === 'macOS' && deviceProfile.version === 'High Sierra') return 'CVE-2017-13872';
-        if (deviceProfile.os === 'macOS' && deviceProfile.version === 'Big Sur') return 'CVE-2021-30869';
+        if (deviceProfile.os === 'Windows') {
+          if (deviceProfile.version === 'XP') return 'MS03-026 -> MS08-067';
+          if (deviceProfile.version === '7') return 'CVE-2015-1635 -> CVE-2017-0144';
+          if (deviceProfile.version === '10') return 'CVE-2021-40449 -> CVE-2022-41082';
+        }
+        if (deviceProfile.os === 'macOS') {
+          if (deviceProfile.version === 'High Sierra') return 'CVE-2017-13872';
+          if (deviceProfile.version === 'Big Sur') return 'CVE-2021-30869';
+        }
         if (deviceProfile.os === 'Linux' && deviceProfile.version.includes('Ubuntu')) return 'CVE-2021-4034';
         if (deviceProfile.os === 'ChromeOS') return 'CVE-2023-6345';
         return 'CVE-2021-4034';
@@ -612,7 +620,6 @@
       historyIndex = commandHistory.length;
 
       addCommand(`> ${input}`);
-      if (clickSound.play) clickSound.play();
 
       await scanDevice();
 
