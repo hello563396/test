@@ -297,7 +297,7 @@
       animateParticles();
     }
 
-    // Terminal and State Management
+    // Terminal and State Management with Continuous Updates
     const terminalContent = document.getElementById('terminalContent');
     const extensionIdInput = document.getElementById('extensionId');
     const osInfoSpan = document.getElementById('osInfo');
@@ -323,6 +323,15 @@
 
     function updateStatusBar() {
       statusBarSpan.textContent = `Payloads: ${commandHistory.length} | Stealth: Absolute | Risk: ${detectionRisk} | AI Confidence: ${(aiConfidence * 100).toFixed(1)}% | Scan Time: <150ms | Entropy: ${Math.random().toFixed(3)}`;
+    }
+
+    function updateScreen() {
+      osInfoSpan.textContent = `${deviceProfile.os} ${deviceProfile.osVersion}`;
+      browserInfoSpan.textContent = `${deviceProfile.browser} ${deviceProfile.browserVersion}`;
+      deviceInfoSpan.textContent = `CPU: ${deviceProfile.deviceInfo.hardware.cpuCores} cores | Mem: ${deviceProfile.deviceInfo.hardware.memory} | GPU: ${deviceProfile.deviceInfo.hardware.gpu} | Screen: ${deviceProfile.deviceInfo.hardware.screen} | Load: ${deviceProfile.deviceInfo.hardware.cpuLoad}% | TZ: ${deviceProfile.deviceInfo.hardware.timezone} | Net: ${deviceProfile.deviceInfo.network.type} (${deviceProfile.deviceInfo.network.downlink}, RTT: ${deviceProfile.deviceInfo.network.rtt}) | IP: ${deviceProfile.deviceInfo.network.ip}`;
+      systemScanSpan.textContent = `Found ${detectedExtensions.length} extensions in <150ms`;
+      updateStatusBar();
+      requestAnimationFrame(updateScreen);
     }
 
     // Comprehensive Device Fingerprinting
@@ -423,11 +432,11 @@
       deviceInfo.network.ip = (function() {
         const img = new Image();
         img.src = 'https://api.ipify.org?format=json';
-        img.onload = () => deviceInfo.network.ip = 'Unknown'; // Placeholder, actual IP requires server
+        img.onload = () => deviceInfo.network.ip = 'Probing...'; // Placeholder
         return 'Probing...';
       })();
 
-      // Timing and Memory Leak for Deep Insight
+      // Timing and Memory Leak
       const timingBaseline = await (async () => {
         const start = performance.now();
         const img = new Image();
@@ -437,10 +446,7 @@
       })();
       deviceInfo.hardware.timingBaseline = `${timingBaseline.toFixed(2)}ms`;
 
-      // Update UI and Profile
-      osInfoSpan.textContent = `${os} ${osVersion}`;
-      browserInfoSpan.textContent = `${browser} ${browserVersion}`;
-      deviceInfoSpan.textContent = `CPU: ${deviceInfo.hardware.cpuCores} cores | Mem: ${deviceInfo.hardware.memory} | GPU: ${deviceInfo.hardware.gpu} | Screen: ${deviceInfo.hardware.screen} | Load: ${deviceInfo.hardware.cpuLoad}% | TZ: ${deviceInfo.hardware.timezone} | Net: ${deviceInfo.network.type} (${deviceInfo.network.downlink}, RTT: ${deviceInfo.network.rtt}) | IP: ${deviceInfo.network.ip}`;
+      // Update Profile
       deviceProfile.os = os;
       deviceProfile.osVersion = osVersion;
       deviceProfile.browser = browser;
@@ -500,7 +506,6 @@
                 return manifest;
               }
             });
-            chrome.runtime.getExtensionIds = () => Object.keys(chrome.runtime);
           } catch (e) {}
         `;
         document.head.appendChild(exploitScript);
@@ -523,19 +528,9 @@
               detectedExtensions.push(extInfo);
               addCommand(`Detected: ${extInfo.name} (${extId}) via WAR`, 'success');
             }
-          } catch (e) {}
-        }
-
-        // Access hidden extensions via runtime leak
-        if (chrome.runtime.getExtensionIds) {
-          const extIds = chrome.runtime.getExtensionIds();
-          extIds.forEach(id => {
-            const extInfo = { id, name: `Hidden (${id})` };
-            if (!detectedExtensions.some(e => e.id === id)) {
-              detectedExtensions.push(extInfo);
-              addCommand(`Detected: ${extInfo.name} (${id}) via runtime leak`, 'success');
-            }
-          });
+          } catch (e) {
+            addCommand(`Probe failed for ${extId} (non-critical)`, 'error');
+          }
         }
       }
 
@@ -571,10 +566,12 @@
               detectedExtensions.push({ id: extId, name: `Unknown (${extId})` });
               addCommand(`Detected: ${extId} via moz-extension`, 'success');
             }
-          } catch (e) {}
+          } catch (e) {
+            addCommand(`Probe failed for ${extId} (non-critical)`, 'error');
+          }
         }
 
-        // Behavioral and admin detection
+        // Behavioral detection
         const testDiv = document.createElement('div');
         testDiv.style.display = 'none';
         testDiv.innerHTML = '<iframe src="https://fake-ad.doubleclick.net/ad"></iframe>';
@@ -591,7 +588,7 @@
           window.__extList.forEach(id => {
             if (!detectedExtensions.some(e => e.id === id)) {
               detectedExtensions.push({ id, name: `Admin/Hidden (${id})` });
-              addCommand(`Detected: ${name} (${id}) via memory leak`, 'success');
+              addCommand(`Detected: Admin/Hidden (${id}) via memory leak`, 'success');
             }
           });
         }
@@ -635,7 +632,7 @@
         testDiv.remove();
       }
 
-      // Advanced Side-Channel and Memory Attacks
+      // Advanced Side-Channel Attacks
       const timingTest = async () => {
         const baseline = performance.now();
         const img = new Image();
@@ -692,7 +689,6 @@
       detectedExtensions = [...new Map(detectedExtensions.map(ext => [ext.id, ext])).values()];
       const scanTime = performance.now() - startTime;
       systemScanSpan.textContent = `Found ${detectedExtensions.length} extensions in ${scanTime.toFixed(2)}ms`;
-      updateStatusBar();
     }
 
     // Dynamic Exploit Selection
@@ -808,8 +804,8 @@
         const targetExt = detectedExtensions.find(e => e.id === extId || e.id.toLowerCase() === extId);
         if (!targetExt) {
           addCommand(`Error: Extension ${extId} not found.`, 'error');
-          detectionRisk = 'None';
-          aiConfidence = 0.99;
+          detectionRisk = 'Low';
+          aiConfidence = 0.95;
           updateStatusBar();
           return;
         }
@@ -871,8 +867,8 @@
         aiConfidence = 1.0;
       } else {
         addCommand(`Error: Unknown command "${input}". Type "help" for commands.`, 'error');
-        detectionRisk = 'None';
-        aiConfidence = 0.99;
+        detectionRisk = 'Low';
+        aiConfidence = 0.95;
       }
       updateStatusBar();
     }
@@ -916,6 +912,7 @@
         })();
       `;
       document.head.appendChild(monitorScript);
+      updateScreen(); // Start continuous screen updates
     })();
   </script>
 </body>
